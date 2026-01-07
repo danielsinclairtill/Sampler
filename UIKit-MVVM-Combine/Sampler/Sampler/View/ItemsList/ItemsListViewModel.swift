@@ -21,6 +21,8 @@ class SamplerListViewModelInput: ObservableObject {
     var refresh = PassthroughSubject<Void, Never>()
     /// The user performs an action which intends to refresh the items list.
     var refreshBegin = PassthroughSubject<Void, Never>()
+    /// The next page of items in the list should load.
+    var loadNextPage = PassthroughSubject<Void, Never>()
     /// The items list is currently scrolling automatically.
     @Published var isScrolling: Bool = false
     /// The user is at the top of the items list.
@@ -39,6 +41,8 @@ class SamplerListViewModelOutput: ObservableObject {
     @Published fileprivate(set) var error: String = ""
     /// Scroll the items list to the top automatically.
     private(set) var scrollToTop = PassthroughSubject<Void, Never>()
+    /// The total number of items in the list.
+    @Published fileprivate(set) var total: Int = 0
 }
 
 // MARK: ViewModel
@@ -61,9 +65,48 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
         // bind inputs and outputs
         setViewDidLoad()
         setRefresh()
+        setLoadNextPage()
         setCellTapped()
         setTabBarItemTappedWhileDisplayed()
     }
+    
+    private func updateData(offset: Int = 0) {
+        environment.api.get(request: ItemRequest.List(offset: offset)) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let data):
+                guard !data.items.isEmpty else {
+                    // if no items were recieved, assume there is an issue with the API
+                    // keep whatever the previous state of the items list was, and send an error
+                    strongSelf.output.error = APIError.serverError.message
+                    break
+                }
+
+                let newItems = data.items
+                
+                strongSelf.output.total = data.total
+                // if an offset was passed it is a load next page call
+                if offset > 0 && !strongSelf.output.items.isEmpty {
+                    strongSelf.output.items.append(contentsOf: newItems)
+                } else {
+                    strongSelf.output.items = newItems
+                }
+                // prefetch the first 10 items images required for the cells
+                strongSelf.prefetchImages(items: Array(newItems.prefix(10)))
+            case .failure(let error):
+                // keep whatever the previous state of the items list was, and send an error
+                strongSelf.output.error = error.message
+            }
+            strongSelf.output.isLoading = false
+        }
+    }
+
+    private func prefetchImages(items: [Item]) {
+        let prefetchImageURLs = items.compactMap { $0.image }
+        environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)
+    }
+    
+    // MARK: Binding
     
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] in
@@ -88,34 +131,19 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
             }
             .store(in: &cancelBag)
     }
-
-    private func updateData() {
-        environment.api.get(request: ItemRequest.List()) { [weak self] result in
-            guard let strongSelf = self else { return }
-            switch result {
-            case .success(let data):
-                guard !data.items.isEmpty else {
-                    // if no items were recieved, assume there is an issue with the API
-                    // keep whatever the previous state of the items list was, and send an error
-                    strongSelf.output.error = APIError.serverError.message
-                    break
-                }
-
-                let newSampler = data.items
-                strongSelf.output.items = newSampler
-                // prefetch the first 10 items images required for the cells
-                strongSelf.prefetchImages(items: Array(newSampler.prefix(10)))
-            case .failure(let error):
-                // keep whatever the previous state of the items list was, and send an error
-                strongSelf.output.error = error.message
+    
+    private func setLoadNextPage() {
+        input.loadNextPage
+            // ensure not to load anymore if the total number of items is already displayed
+            .filter { [weak self] in
+                guard let strongSelf = self else { return false }
+                return strongSelf.output.items.count < strongSelf.output.total
             }
-            strongSelf.output.isLoading = false
+            .sink {  [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.updateData(offset: strongSelf.output.items.count)
         }
-    }
-
-    private func prefetchImages(items: [Item]) {
-        let prefetchImageURLs = items.compactMap { $0.image }
-        environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)
+        .store(in: &cancelBag)
     }
 
     private func setCellTapped() {

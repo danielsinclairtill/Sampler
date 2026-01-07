@@ -10,17 +10,21 @@ import Lottie
 import Combine
 
 class SamplerListViewController: UIViewController,
-                                  UICollectionViewDelegateFlowLayout,
-                                  UICollectionViewDelegate,
-                                  UIScrollViewDelegate {
-    private let cellIdentifier = "SamplerListViewControllerCell"
+                                 UICollectionViewDelegate,
+                                 UIScrollViewDelegate {
+    private let itemCellIdentifier = "ItemListCell"
+    private let itemLoadingCellIdentifier = "ItemListLoadCell"
     private let viewModel: any SamplerListViewModelContract
     
-    private enum SectionKind: Int, CaseIterable, Hashable {
+    private enum Section: Hashable {
         case main
     }
-    private typealias DataSource = UICollectionViewDiffableDataSource<SectionKind, Item>
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<SectionKind, Item>
+    private enum Row: Hashable {
+        case item(Item)
+        case loading(UUID)
+    }
+    private typealias DataSource = UICollectionViewDiffableDataSource<Section, Row>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     
     private enum Sizes {
@@ -28,14 +32,35 @@ class SamplerListViewController: UIViewController,
         static let empty = 25.0
     }
     private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, environment in
+                let isLargeWidth = UITraitCollection.current.horizontalSizeClass == .regular
+            
+                let itemSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(isLargeWidth ? 0.5 : 1.0),
+                    heightDimension: .estimated(200)   // your estimate
+                )
+                let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+                let groupSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(isLargeWidth ? 0.5 : 1.0),
+                    heightDimension: .estimated(200)
+                )
+                let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize,
+                                                             subitems: [item])
+
+                let section = NSCollectionLayoutSection(group: group)
+                return section
+        }
+        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.refreshControl = refreshControl
         collectionView.backgroundColor = .clear
         collectionView.alpha = 0.0
-        collectionView.register(SamplerListCell.self,
-                                forCellWithReuseIdentifier: cellIdentifier)
+        collectionView.register(ItemListCell.self,
+                                forCellWithReuseIdentifier: itemCellIdentifier)
+        collectionView.register(ItemListLoadingCell.self,
+                                forCellWithReuseIdentifier: itemLoadingCellIdentifier)
         return collectionView
     }()
 
@@ -148,26 +173,37 @@ class SamplerListViewController: UIViewController,
             .store(in: &cancelBag)
         
         // stories collection
-        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
-                                                        cellProvider: { [weak self] collectionView, indexPath, item in
+        dataSource = UICollectionViewDiffableDataSource<Section, Row>(collectionView: collectionView,
+                                                                      cellProvider: { [weak self] collectionView, indexPath, row in
             guard let strongSelf = self else { return UICollectionViewCell() }
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: strongSelf.cellIdentifier,
-                                                                for: indexPath) as? SamplerListCell else {
-                assertionFailure("could not dequeue cell")
-                return UICollectionViewCell()
+            switch row {
+            case .item(let item):
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: strongSelf.itemCellIdentifier,
+                                                                    for: indexPath) as? ItemListCell else {
+                    assertionFailure("could not dequeue cell")
+                    return UICollectionViewCell()
+                }
+                cell.setUpWith(item: item,
+                               imageManager: strongSelf.viewModel.imageManager)
+                
+                return cell
+            case .loading:
+                guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: strongSelf.itemLoadingCellIdentifier,
+                                                                    for: indexPath) as? ItemListLoadingCell else {
+                    assertionFailure("could not dequeue cell")
+                    return UICollectionViewCell()
+                }
+                return cell
             }
-            
-            cell.setUpWith(item: item,
-                           imageManager: strongSelf.viewModel.imageManager)
-            
-            return cell
+
         })
         collectionView.dataSource = dataSource
         viewModel.output.$items
             .sink { [weak self] items in
                 var snapshot = Snapshot()
                 snapshot.appendSections([.main])
-                snapshot.appendItems(items)
+                snapshot.appendItems(items.map { .item($0)}, toSection: .main)
+                snapshot.appendItems([.loading(UUID())], toSection: .main)
                 self?.dataSource?.apply(snapshot, animatingDifferences: false)
             }
             .store(in: &cancelBag)
@@ -207,35 +243,19 @@ class SamplerListViewController: UIViewController,
     }
     
     // MARK: UICollectionView Delegates
-    private func getCellSize() -> CGSize {
-        // large width class devices (ex. iPad) should show two columns in the collection view
-        let isLargeWidth = UITraitCollection.current.horizontalSizeClass == .regular
-        let width = isLargeWidth ? collectionView.bounds.width / 2 : collectionView.bounds.width
-        let height = SamplerListCell.cellHeight
-        
-        return CGSize(width: width, height: height)
-    }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.input.cellTapped.send(indexPath.row)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return getCellSize()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets.zero
-    }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        guard let row = dataSource?.itemIdentifier(for: indexPath) else { return }
+        if case .loading = row {
+            viewModel.input.loadNextPage.send(())
+        }
     }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0
-    }
-    
+        
     // MARK: UIScrollViewDelegate
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         viewModel.input.isScrolling = false

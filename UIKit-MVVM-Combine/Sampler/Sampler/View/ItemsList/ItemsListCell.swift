@@ -1,5 +1,5 @@
 //
-//  SamplerListCell.swift
+//  ItemListCell.swift
 //  Sampler
 //
 //
@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import Combine
 
-class SamplerListCell: UICollectionViewCell {
+class ItemListCell: UICollectionViewCell {
     static let cellHeight: CGFloat = 180
     private let animationController = AnimationController()
     private var cancelBag = Set<AnyCancellable>()
@@ -85,7 +85,7 @@ class SamplerListCell: UICollectionViewCell {
         contentView.addSubview(horizontalStack)
         NSLayoutConstraint.activate([
             horizontalStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16.0),
-            horizontalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            horizontalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16.0),
             horizontalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16.0),
             horizontalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16.0)
         ])
@@ -179,5 +179,11 @@ class SamplerListCell: UICollectionViewCell {
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
         animationController.createTapBounceAnitmationOnTouchCancelledTo(view: photoView)
+    }
+}
+
+extension ItemListCell: SizeProvidingCell {
+    func sizeFor(width: CGFloat) -> CGSize {
+        return CGSize(width: width, height: Self.cellHeight)
     }
 }
