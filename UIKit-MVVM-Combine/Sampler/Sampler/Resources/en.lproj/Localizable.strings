@@ -1,0 +1,20 @@
+/* 
+  Localizable.strings
+  Sampler
+
+
+  
+*/
+
+// MARK: SamplerList
+"com.danielsinclairtill.Sampler.itemsList.title" = "Sampler";
+
+// MARK: APIErorr
+"com.danielsinclairtill.Sampler.apiError.message.offlineMode" = "There seems to be no internet connection.";
+"com.danielsinclairtill.Sampler.apiError.message.noConnection" = "Lost internet connection.";
+"com.danielsinclairtill.Sampler.apiError.message.serverError" = "There seems to be a problem with our servers at the moment.";
+
+// MARK: Alert
+"com.danielsinclairtill.Sampler.alert.title" = "Oops!";
+"com.danielsinclairtill.Sampler.alert.apiError.action.refresh" = "Refresh";
+"com.danielsinclairtill.Sampler.alert.apiError.action.okay" = "Okay";
