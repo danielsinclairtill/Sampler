@@ -10,6 +10,7 @@ import Network
 import Alamofire
 
 class SamplerAPI: APIContract {
+    // See https://dummyjson.com/docs/recipes#recipes-all for documentation on test API
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
