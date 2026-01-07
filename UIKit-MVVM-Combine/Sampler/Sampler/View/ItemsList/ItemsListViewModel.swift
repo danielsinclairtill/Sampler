@@ -90,7 +90,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
     }
 
     private func updateData() {
-        environment.api.get(request: SamplerRequests.SamplerTimelinePage()) { [weak self] result in
+        environment.api.get(request: ItemRequest.List()) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):

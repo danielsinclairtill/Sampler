@@ -155,17 +155,12 @@ class SamplerListCell: UICollectionViewCell {
     func setUpWith(item: Item,
                    imageManager: ImageManagerContract) {
         name.text = item.name
-//        username.text = item.user?.name
         descriptionText.text = item.ingredients?.joined(separator: ", ") ?? "..."
         
         if let photoUrl = item.image {
             photoView.setImage(url: photoUrl,
                                imageManager: imageManager)
         }
-//        if let avatarUrl = item.user?.avatar {
-//            avatarView.setImage(url: avatarUrl,
-//                                imageManager: imageManager)
-//        }
         
         setupDesign()
     }

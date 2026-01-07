@@ -1,5 +1,5 @@
 //
-//  SamplerRequests.swift
+//  ItemRequest.swift
 //  Sampler
 //
 //
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SamplerRequests {
+public struct ItemRequest {
     /**
      Retrieves a page of list of items to display on the 'Sampler' timeline.
 
@@ -16,7 +16,7 @@ public struct SamplerRequests {
         - stories: list of items
         - nextUrl: next URL  to use for paginated results
      */
-    public struct SamplerTimelinePage: APIRequestContract {
+    public struct List: APIRequestContract {
         /// Retrieves the next page of items to display on the 'Sampler' timeline.
         /// - Parameter offset: the offset that is the starting index of the next page
         init(offset: Int = 0,
@@ -51,7 +51,7 @@ public struct SamplerRequests {
 
      - Response: Item object
      */
-    public struct ItemDetail: APIRequestContract {
+    public struct Detail: APIRequestContract {
         /// Retrieves the details of an item.
         /// - Parameter id: the unqiue id of the item
         init(id: String) {

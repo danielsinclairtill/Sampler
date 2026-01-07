@@ -158,6 +158,12 @@ class ItemDetailViewController: UIViewController {
                 self?.setItem(item: item)
             }
             .store(in: &cancelBag)
+        
+        viewModel.output.$user
+            .sink { [weak self] user in
+                self?.setUser(user: user)
+            }
+            .store(in: &cancelBag)
 
         viewModel.output.$error
             .dropFirst()
@@ -171,12 +177,18 @@ class ItemDetailViewController: UIViewController {
         if let url = item?.image {
             itemCover.setImage(url: url, imageManager: viewModel.imageManager)
         }
-//        if let url = item?.user?.avatar {
-//            avatarView.setImage(url: url, imageManager: viewModel.imageManager)
-//        }
+
         itemTitle.text = item?.name ?? "..."
-//        authorTitle.text = item?.user?.name ?? "..."
         descriptionTitle.text = item?.ingredients?.joined(separator: ", ") ?? "..."
+    }
+    
+    private func setUser(user: User?) {
+        if let url = user?.image {
+            avatarView.setImage(url: url,
+                                placeholder: .unkownUser,
+                                imageManager: viewModel.imageManager)
+        }
+        authorTitle.text = user?.username ?? "..."
     }
     
     private func presentError(message: String) {

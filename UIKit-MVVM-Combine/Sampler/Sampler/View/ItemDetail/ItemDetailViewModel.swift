@@ -23,6 +23,8 @@ class ItemDetailViewModelInput: ObservableObject {
 class ItemDetailViewModelOutput: ObservableObject {
     /// The item to display.
     @Published fileprivate(set) var item: Item?
+    /// The user for the item.
+    @Published fileprivate(set) var user: User?
     /// Show an error message to display over the item details.
     @Published fileprivate(set) var error: String = ""
 }
@@ -49,12 +51,13 @@ class ItemDetailViewModel: ItemDetailViewModelContract, ObservableObject {
         
         // bind inputs and outputs
         setViewDidLoad()
+        setUser()
     }
     
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.environment.api.get(request: SamplerRequests.ItemDetail(id: strongSelf.itemId), result: { [weak self] result in
+            strongSelf.environment.api.get(request: ItemRequest.Detail(id: strongSelf.itemId), result: { [weak self] result in
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let item):
@@ -64,6 +67,24 @@ class ItemDetailViewModel: ItemDetailViewModelContract, ObservableObject {
                     strongSelf.output.error = error.message
                 }
             })
+        }
+        .store(in: &cancelBag)
+    }
+    
+    private func setUser() {
+        output.$item.sink { [weak self] item in
+            guard let strongSelf = self else { return }
+            guard let userID = item?.userId else { return }
+            
+            strongSelf.environment.api.get(request: UserRequest.Detail(id: String(userID))) { [weak self] result in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let user):
+                    strongSelf.output.user = user
+                case .failure:
+                    strongSelf.output.user = nil
+                }
+            }
         }
         .store(in: &cancelBag)
     }

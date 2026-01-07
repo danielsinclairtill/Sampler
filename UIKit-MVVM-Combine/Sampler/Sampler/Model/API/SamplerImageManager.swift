@@ -37,20 +37,15 @@ class SamplerAPIImageManager: ImageManagerContract {
         }
     }
     
-    func setImageView(imageView: UIImageView, url: URL?) {
-        guard let imageUrl = url else { return }
-        let fetchTime = Date()
-        
-        fetchImage(url: imageUrl) { (image) in
-            guard let image = image else { return }
-            let imageFetchTime = Date().timeIntervalSince(fetchTime)
-            
-            imageView.image = image
-            if imageFetchTime > 0.25 {
-                AnimationController.fadeInView(imageView)
-            } else {
-                imageView.alpha = 1.0
-            }
-        }
+    func setImage(imageView: UIImageView,
+                  url: URL?,
+                  placeholder: UIImage? = nil) {
+        imageView.sd_setImage(with: url,
+                              placeholderImage: placeholder,
+                              options: [.continueInBackground])
+    }
+    
+    func cancelImage(imageView: UIImageView) {
+        imageView.sd_cancelCurrentImageLoad()
     }
 }

@@ -9,13 +9,17 @@
 import Foundation
 
 public struct User: Codable, Equatable {
-    public let name: String?
-    public let avatar: URL?
-    public let fullname: String?
+    public let id: Int?
+    public let firstName: String?
+    public let lastName: String?
+    public let username: String?
+    public let image: URL?
     
     enum CodingKeys: String, CodingKey {
-        case name
-        case avatar
-        case fullname
+        case id
+        case firstName
+        case lastName
+        case username
+        case image
     }
 }

@@ -26,6 +26,15 @@ public protocol ImageManagerContract {
      - Parameters:
         - imageView: The UIImageView to set.
         - url: The URL of the image to be set to the imageView.
+        - placeholder: The placholder image to be set if the image from the url fails.
      */
-    func setImageView(imageView: UIImageView, url: URL?)
+    func setImage(imageView: UIImageView,
+                  url: URL?,
+                  placeholder: UIImage?)
+    
+    /**
+     Cancel any loading image within an image view.
+     - Parameter imageView: The UIImageView to cancel.
+     */
+    func cancelImage(imageView: UIImageView)
 }
