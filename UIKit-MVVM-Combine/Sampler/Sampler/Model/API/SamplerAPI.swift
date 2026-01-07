@@ -10,7 +10,7 @@ import Network
 import Alamofire
 
 class SamplerAPI: APIContract {
-    let baseUrl = "https://www.wattpad.com/api/v3/"
+    let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
     func isConnectedToInternet() -> Bool {

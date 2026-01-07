@@ -10,22 +10,24 @@ import UIKit
 
 public struct Item: Codable, Equatable, Hashable {
     /// Unique hashable id used for UICollectionViewDiffableDataSource.
-    public let hashableID = UUID().uuidString
+    public var hashableID = UUID().uuidString
 
-    public let id: String?
-    public let title: String?
-    public let user: User?
-    public let cover: URL?
-    public let description: String?
+    public let id: Int?
+    public let name: String?
+    public let ingredients: [String]?
+    public let difficulty: String?
     public let tags: [String]?
+    public let userId: Int?
+    public let image: URL?
     
     enum CodingKeys: String, CodingKey {
         case id
-        case title
-        case user
-        case cover
-        case description
+        case name
+        case ingredients
+        case difficulty
         case tags
+        case userId
+        case image
     }
     
     var identifier: String {

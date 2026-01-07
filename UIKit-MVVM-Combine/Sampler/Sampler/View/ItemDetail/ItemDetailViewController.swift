@@ -168,15 +168,15 @@ class ItemDetailViewController: UIViewController {
     }
     
     private func setItem(item: Item?) {
-        if let url = item?.cover {
+        if let url = item?.image {
             itemCover.setImage(url: url, imageManager: viewModel.imageManager)
         }
-        if let url = item?.user?.avatar {
-            avatarView.setImage(url: url, imageManager: viewModel.imageManager)
-        }
-        itemTitle.text = item?.title ?? "..."
-        authorTitle.text = item?.user?.name ?? "..."
-        descriptionTitle.text = item?.description ?? "..."
+//        if let url = item?.user?.avatar {
+//            avatarView.setImage(url: url, imageManager: viewModel.imageManager)
+//        }
+        itemTitle.text = item?.name ?? "..."
+//        authorTitle.text = item?.user?.name ?? "..."
+        descriptionTitle.text = item?.ingredients?.joined(separator: ", ") ?? "..."
     }
     
     private func presentError(message: String) {

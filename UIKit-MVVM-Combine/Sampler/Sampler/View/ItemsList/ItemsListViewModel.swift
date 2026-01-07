@@ -124,7 +124,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
     }
 
     private func prefetchImages(items: [Item]) {
-        let prefetchImageURLs = items.compactMap { $0.cover }
+        let prefetchImageURLs = items.compactMap { $0.image }
         environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)
     }
 
@@ -133,7 +133,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
             .sink { [weak self] (row, items) in
                 if items.indices.contains(row),
                    let id = items[row].id {
-                    self?.coordinator.itemDetail(id: id)
+                    self?.coordinator.itemDetail(id: String(id))
                 }
             }
             .store(in: &cancelBag)

@@ -16,12 +16,12 @@ class SamplerListViewController: UIViewController,
     private let cellIdentifier = "SamplerListViewControllerCell"
     private let viewModel: any SamplerListViewModelContract
     
-    private enum SectionKind: Int, CaseIterable {
+    private enum SectionKind: Int, CaseIterable, Hashable {
         case main
     }
-//    private typealias DataSource = UICollectionViewDiffableDataSource<SectionKind, Item>
-//    private typealias Snapshot = NSDiffableDataSourceSnapshot<SectionKind, Item>
-//    private var dataSource: DataSource?
+    private typealias DataSource = UICollectionViewDiffableDataSource<SectionKind, Item>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<SectionKind, Item>
+    private var dataSource: DataSource?
     
     private enum Sizes {
         static let animation = 100.0
@@ -148,29 +148,29 @@ class SamplerListViewController: UIViewController,
             .store(in: &cancelBag)
         
         // stories collection
-//        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
-//                                                        cellProvider: { [weak self] collectionView, indexPath, story in
-//            guard let strongSelf = self else { return UICollectionViewCell() }
-//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: strongSelf.cellIdentifier,
-//                                                                for: indexPath) as? SamplerListCell else {
-//                assertionFailure("could not dequeue cell")
-//                return UICollectionViewCell()
-//            }
-//            
-//            cell.setUpWith(story: story,
-//                           imageManager: strongSelf.viewModel.imageManager)
-//            
-//            return cell
-//        })
-//        collectionView.dataSource = dataSource
-//        viewModel.output.$stories
-//            .sink { [weak self] stories in
-//                var snapshot = Snapshot()
-//                snapshot.appendSections([.main])
-//                snapshot.appendItems(stories)
-//                self?.dataSource?.apply(snapshot, animatingDifferences: false)
-//            }
-//            .store(in: &cancelBag)
+        dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView,
+                                                        cellProvider: { [weak self] collectionView, indexPath, item in
+            guard let strongSelf = self else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: strongSelf.cellIdentifier,
+                                                                for: indexPath) as? SamplerListCell else {
+                assertionFailure("could not dequeue cell")
+                return UICollectionViewCell()
+            }
+            
+            cell.setUpWith(item: item,
+                           imageManager: strongSelf.viewModel.imageManager)
+            
+            return cell
+        })
+        collectionView.dataSource = dataSource
+        viewModel.output.$items
+            .sink { [weak self] items in
+                var snapshot = Snapshot()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(items)
+                self?.dataSource?.apply(snapshot, animatingDifferences: false)
+            }
+            .store(in: &cancelBag)
         
         // scrolling
         observation = collectionView.observe(\.contentOffset, options: .new) { [weak self] collectionView, change in
