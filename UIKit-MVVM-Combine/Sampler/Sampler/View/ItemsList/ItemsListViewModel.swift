@@ -68,12 +68,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] in
             guard let strongSelf = self else { return }
-            if !strongSelf.environment.api.isConnectedToInternet() {
-                strongSelf.output.error = APIError.offline.message
-                strongSelf.output.isLoading = false
-            } else {
-                strongSelf.input.refreshBegin.send(())
-            }
+            strongSelf.input.refreshBegin.send(())
         }
         .store(in: &cancelBag)
     }
@@ -89,12 +84,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
         input.refresh
             .sink { [weak self] _ in
                 guard let strongSelf = self else { return }
-                if !strongSelf.environment.api.isConnectedToInternet() {
-                    strongSelf.output.error = APIError.offline.message
-                    strongSelf.output.isLoading = false
-                } else {
-                    strongSelf.updateData()
-                }
+                strongSelf.updateData()
             }
             .store(in: &cancelBag)
     }
