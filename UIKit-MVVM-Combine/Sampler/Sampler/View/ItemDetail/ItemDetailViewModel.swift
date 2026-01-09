@@ -11,8 +11,8 @@ import Combine
 
 // MARK: Input + Output
 enum ItemDetailViewModelBinding {
-    protocol Contract: SamplerViewModel where Input == ItemDetailViewModelBinding.Input,
-                                              Output == ItemDetailViewModelBinding.Output {
+    protocol Contract: SamplerViewModelContract where Input == ItemDetailViewModelBinding.Input,
+                                                      Output == ItemDetailViewModelBinding.Output {
         var imageManager: ImageManagerContract { get }
     }
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol SamplerViewModel {
+protocol SamplerViewModelContract {
     associatedtype Input
     associatedtype Output
 

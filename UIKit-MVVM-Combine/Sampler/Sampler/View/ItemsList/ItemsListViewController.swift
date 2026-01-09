@@ -14,7 +14,7 @@ class SamplerListViewController: UIViewController,
                                  UIScrollViewDelegate {
     private let itemCellIdentifier = "ItemListCell"
     private let itemLoadingCellIdentifier = "ItemListLoadCell"
-    private let viewModel: any SamplerListViewModelContract
+    private let viewModel: any SamplerListViewModelBinding.Contract
     
     private enum Sizes {
         static let animation = 100.0
@@ -83,7 +83,7 @@ class SamplerListViewController: UIViewController,
     private var observation: NSKeyValueObservation?
     private var cancelBag = Set<AnyCancellable>()
 
-    init(viewModel: any SamplerListViewModelContract) {
+    init(viewModel: any SamplerListViewModelBinding.Contract) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

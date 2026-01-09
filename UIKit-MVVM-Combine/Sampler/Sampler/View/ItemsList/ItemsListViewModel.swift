@@ -8,49 +8,52 @@
 import Foundation
 import Combine
 
-protocol SamplerListViewModelContract: SamplerViewModel
-where Input == SamplerListViewModelInput, Output == SamplerListViewModelOutput {
-    var imageManager: ImageManagerContract { get }
+// MARK: Input + Output
+enum SamplerListViewModelBinding {
+    protocol Contract: SamplerViewModelContract where Input == SamplerListViewModelBinding.Input,
+                                                      Output == SamplerListViewModelBinding.Output {
+        var imageManager: ImageManagerContract { get }
+    }
+    
+    class Input: ObservableObject {
+        /// The view did load.
+        var viewDidLoad = PassthroughSubject<Void, Never>()
+        /// The items list is in the loading state and ready to refresh the data.
+        var refresh = PassthroughSubject<Void, Never>()
+        /// The user performs an action which intends to refresh the items list.
+        var refreshBegin = PassthroughSubject<Void, Never>()
+        /// The next page of items in the list should load.
+        var loadNextPage = PassthroughSubject<Void, Never>()
+        /// The items list is currently scrolling automatically.
+        @Published var isScrolling: Bool = false
+        /// The user is at the top of the items list.
+        @Published var isTopOfPage: Bool = true
+        /// A cell at a row index was tapped in the items list.
+        var cellTapped = PassthroughSubject<Int, Never>()
+    }
+
+    // MARK: Output
+    class Output: ObservableObject {
+        /// The items list to display.
+        @Published fileprivate(set) var items: [Item] = []
+        /// Show the items list in a refreshing state.
+        @Published fileprivate(set) var isRefreshing: Bool = false
+        /// Show an error message to display over the items list.
+        @Published fileprivate(set) var error: String = ""
+        /// Scroll the items list to the top automatically.
+        fileprivate(set) var scrollToTop = PassthroughSubject<Void, Never>()
+        /// The total number of items possible in the list.
+        @Published fileprivate(set) var total: Int = 0
+        /// If the items list are loading by refreshing or pagnation.
+        @Published fileprivate var isLoading: Bool = false
+    }
 }
 
-// MARK: Input
-class SamplerListViewModelInput: ObservableObject {
-    /// The view did load.
-    var viewDidLoad = PassthroughSubject<Void, Never>()
-    /// The items list is in the loading state and ready to refresh the data.
-    var refresh = PassthroughSubject<Void, Never>()
-    /// The user performs an action which intends to refresh the items list.
-    var refreshBegin = PassthroughSubject<Void, Never>()
-    /// The next page of items in the list should load.
-    var loadNextPage = PassthroughSubject<Void, Never>()
-    /// The items list is currently scrolling automatically.
-    @Published var isScrolling: Bool = false
-    /// The user is at the top of the items list.
-    @Published var isTopOfPage: Bool = true
-    /// A cell at a row index was tapped in the items list.
-    var cellTapped = PassthroughSubject<Int, Never>()
-}
-
-// MARK: Output
-class SamplerListViewModelOutput: ObservableObject {
-    /// The items list to display.
-    @Published fileprivate(set) var items: [Item] = []
-    /// Show the items list in a refreshing state.
-    @Published fileprivate(set) var isRefreshing: Bool = false
-    /// Show an error message to display over the items list.
-    @Published fileprivate(set) var error: String = ""
-    /// Scroll the items list to the top automatically.
-    fileprivate(set) var scrollToTop = PassthroughSubject<Void, Never>()
-    /// The total number of items possible in the list.
-    @Published fileprivate(set) var total: Int = 0
-    /// If the items list are loading by refreshing or pagnation.
-    @Published fileprivate var isLoading: Bool = false
-}
 
 // MARK: ViewModel
-class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
-    @Published var input = SamplerListViewModelInput()
-    @Published var output = SamplerListViewModelOutput()
+class SamplerListViewModel: SamplerListViewModelBinding.Contract, ObservableObject {
+    @Published var input = SamplerListViewModelBinding.Input()
+    @Published var output = SamplerListViewModelBinding.Output()
     private let coordinator: ItemsListCoordinator
     private var cancelBag = Set<AnyCancellable>()
     
