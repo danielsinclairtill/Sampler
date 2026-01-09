@@ -8,31 +8,42 @@
 import Foundation
 import Combine
 
-protocol ItemDetailViewModelContract: SamplerViewModel
-where Input == ItemDetailViewModelInput, Output == ItemDetailViewModelOutput {
-    var imageManager: ImageManagerContract { get }
-}
 
-// MARK: Input
-class ItemDetailViewModelInput: ObservableObject {
-    /// The view did load.
-    var viewDidLoad = PassthroughSubject<Void, Never>()
-}
+// MARK: Input + Output
+enum ItemDetailViewModelBinding {
+    protocol Contract: SamplerViewModel where Input == ItemDetailViewModelBinding.Input,
+                                              Output == ItemDetailViewModelBinding.Output {
+        var imageManager: ImageManagerContract { get }
+    }
+    
+    class Input: ObservableObject {
+        /// The view did load.
+        var viewDidLoad = PassthroughSubject<Void, Never>()
+    }
 
-// MARK: Output
-class ItemDetailViewModelOutput: ObservableObject {
-    /// The item to display.
-    @Published fileprivate(set) var item: Item?
-    /// The user for the item.
-    @Published fileprivate(set) var user: User?
-    /// Show an error message to display over the item details.
-    @Published fileprivate(set) var error: String = ""
+    class Output: ObservableObject {
+        /// The item to display.
+        @Published var item: Item?
+        /// The user for the item.
+        @Published var user: User?
+        /// Show an error message to display over the item details.
+        @Published var error: String = ""
+        
+        init(item: Item? = nil,
+             user: User? = nil,
+             error: String = "") {
+            self.item = item
+            self.user = user
+            self.error = error
+        }
+    }
 }
 
 // MARK: ViewModel
-class ItemDetailViewModel: ItemDetailViewModelContract, ObservableObject {
-    @Published var input = ItemDetailViewModelInput()
-    @Published var output = ItemDetailViewModelOutput()
+class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject {
+    let input = ItemDetailViewModelBinding.Input()
+    let output = ItemDetailViewModelBinding.Output()
+    
     private let coordinator: ItemsListCoordinator
     private var cancelBag = Set<AnyCancellable>()
     

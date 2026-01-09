@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 class ItemDetailViewController: UIViewController {
-    private let viewModel: any ItemDetailViewModelContract
+    private let viewModel: any ItemDetailViewModelBinding.Contract
     private var cancelBag = Set<AnyCancellable>()
 
     private lazy var rootStackView: UIStackView = {
@@ -82,7 +82,7 @@ class ItemDetailViewController: UIViewController {
         return label
     }()
     
-    init(viewModel: any ItemDetailViewModelContract) {
+    init(viewModel: any ItemDetailViewModelBinding.Contract) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
