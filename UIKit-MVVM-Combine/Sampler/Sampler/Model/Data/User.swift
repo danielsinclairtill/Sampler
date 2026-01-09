@@ -9,7 +9,7 @@
 import Foundation
 
 public struct User: Codable, Equatable {
-    public let id: Int?
+    @StringForced public var id: String?
     public let firstName: String?
     public let lastName: String?
     public let username: String?

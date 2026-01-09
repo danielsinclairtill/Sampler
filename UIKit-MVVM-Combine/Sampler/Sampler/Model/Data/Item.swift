@@ -8,16 +8,13 @@
 
 import UIKit
 
-public struct Item: Codable, Equatable, Hashable {
-    /// Unique hashable id used for UICollectionViewDiffableDataSource.
-    public var hashableID = UUID().uuidString
-
-    public let id: Int?
+public struct Item: Codable, Equatable {
+    @StringForced public var id: String?
     public let name: String?
     public let ingredients: [String]?
     public let difficulty: String?
     public let tags: [String]?
-    public let userId: Int?
+    @StringForced public var userId: String?
     public let image: URL?
     
     enum CodingKeys: String, CodingKey {
@@ -29,16 +26,10 @@ public struct Item: Codable, Equatable, Hashable {
         case userId
         case image
     }
-    
-    var identifier: String {
-        return hashableID
-    }
-    
+}
+
+extension Item: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(identifier)
-    }
-    
-    public static func == (lhs: Item, rhs: Item) -> Bool {
-        return lhs.hashableID == rhs.hashableID
+        hasher.combine(id)
     }
 }

@@ -35,14 +35,16 @@ class SamplerListViewModelInput: ObservableObject {
 class SamplerListViewModelOutput: ObservableObject {
     /// The items list to display.
     @Published fileprivate(set) var items: [Item] = []
-    /// Show the items list in a loading and refreshing state.
-    @Published fileprivate(set) var isLoading: Bool = false
+    /// Show the items list in a refreshing state.
+    @Published fileprivate(set) var isRefreshing: Bool = false
     /// Show an error message to display over the items list.
     @Published fileprivate(set) var error: String = ""
     /// Scroll the items list to the top automatically.
-    private(set) var scrollToTop = PassthroughSubject<Void, Never>()
+    fileprivate(set) var scrollToTop = PassthroughSubject<Void, Never>()
     /// The total number of items possible in the list.
     @Published fileprivate(set) var total: Int = 0
+    /// If the items list are loading by refreshing or pagnation.
+    @Published fileprivate var isLoading: Bool = false
 }
 
 // MARK: ViewModel
@@ -71,6 +73,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
     }
     
     private func updateData(offset: Int = 0) {
+        output.isLoading = true
         environment.api.get(request: ItemRequest.List(offset: offset)) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
@@ -98,6 +101,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
                 strongSelf.output.error = error.message
             }
             strongSelf.output.isLoading = false
+            strongSelf.output.isRefreshing = false
         }
     }
 
@@ -119,7 +123,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
     private func setRefresh() {
         input.refreshBegin.sink { [weak self] refreshType in
             guard let strongSelf = self else { return }
-            strongSelf.output.isLoading = true
+            strongSelf.output.isRefreshing = true
         }
         .store(in: &cancelBag)
 
@@ -137,7 +141,7 @@ class SamplerListViewModel: SamplerListViewModelContract, ObservableObject {
             // ensure not to load anymore if the total number of items is already displayed
             .filter { [weak self] in
                 guard let strongSelf = self else { return false }
-                return strongSelf.output.items.count < strongSelf.output.total
+                return !strongSelf.output.isLoading && strongSelf.output.items.count < strongSelf.output.total
             }
             .sink {  [weak self] in
             guard let strongSelf = self else { return }

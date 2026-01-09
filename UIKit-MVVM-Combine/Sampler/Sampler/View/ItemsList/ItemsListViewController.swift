@@ -39,13 +39,13 @@ class SamplerListViewController: UIViewController,
             
                 let itemSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(isLargeWidth ? 0.5 : 1.0),
-                    heightDimension: .estimated(200)   // your estimate
+                    heightDimension: .estimated(150)   // your estimate
                 )
                 let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(isLargeWidth ? 0.5 : 1.0),
-                    heightDimension: .estimated(200)
+                    heightDimension: .estimated(150)
                 )
                 let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize,
                                                              subitems: [item])
@@ -152,7 +152,7 @@ class SamplerListViewController: UIViewController,
         refreshControl.addTarget(self, action: #selector(self.didPullRefresh(_:)), for: .valueChanged)
         
         // loading list animation
-        viewModel.output.$isLoading
+        viewModel.output.$isRefreshing
             .dropFirst()
             .removeDuplicates()
             // make sure animating between loading states is buffered by at least 0.8 seconds

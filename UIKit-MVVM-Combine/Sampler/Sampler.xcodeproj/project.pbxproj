@@ -20,19 +20,11 @@
 			remoteGlobalIDString = 65C112CE2F0EC33400D16954;
 			remoteInfo = Sampler;
 		};
-		65C112F32F0EC33400D16954 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 65C112C72F0EC33400D16954 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 65C112CE2F0EC33400D16954;
-			remoteInfo = Sampler;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		65C112CF2F0EC33400D16954 /* Sampler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sampler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65C112E82F0EC33400D16954 /* SamplerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SamplerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		65C112F22F0EC33400D16954 /* SamplerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SamplerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,11 +51,6 @@
 			path = SamplerTests;
 			sourceTree = "<group>";
 		};
-		65C112F52F0EC33400D16954 /* SamplerUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SamplerUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,13 +71,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		65C112EF2F0EC33400D16954 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -99,7 +79,6 @@
 			children = (
 				65C112D12F0EC33400D16954 /* Sampler */,
 				65C112EB2F0EC33400D16954 /* SamplerTests */,
-				65C112F52F0EC33400D16954 /* SamplerUITests */,
 				65C112D02F0EC33400D16954 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,7 +88,6 @@
 			children = (
 				65C112CF2F0EC33400D16954 /* Sampler.app */,
 				65C112E82F0EC33400D16954 /* SamplerTests.xctest */,
-				65C112F22F0EC33400D16954 /* SamplerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,29 +143,6 @@
 			productReference = 65C112E82F0EC33400D16954 /* SamplerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		65C112F12F0EC33400D16954 /* SamplerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 65C113032F0EC33400D16954 /* Build configuration list for PBXNativeTarget "SamplerUITests" */;
-			buildPhases = (
-				65C112EE2F0EC33400D16954 /* Sources */,
-				65C112EF2F0EC33400D16954 /* Frameworks */,
-				65C112F02F0EC33400D16954 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				65C112F42F0EC33400D16954 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				65C112F52F0EC33400D16954 /* SamplerUITests */,
-			);
-			name = SamplerUITests;
-			packageProductDependencies = (
-			);
-			productName = SamplerUITests;
-			productReference = 65C112F22F0EC33400D16954 /* SamplerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -202,10 +157,6 @@
 						CreatedOnToolsVersion = 26.1;
 					};
 					65C112E72F0EC33400D16954 = {
-						CreatedOnToolsVersion = 26.1;
-						TestTargetID = 65C112CE2F0EC33400D16954;
-					};
-					65C112F12F0EC33400D16954 = {
 						CreatedOnToolsVersion = 26.1;
 						TestTargetID = 65C112CE2F0EC33400D16954;
 					};
@@ -231,7 +182,6 @@
 			targets = (
 				65C112CE2F0EC33400D16954 /* Sampler */,
 				65C112E72F0EC33400D16954 /* SamplerTests */,
-				65C112F12F0EC33400D16954 /* SamplerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -245,13 +195,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		65C112E62F0EC33400D16954 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		65C112F02F0EC33400D16954 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -275,13 +218,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		65C112EE2F0EC33400D16954 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -289,11 +225,6 @@
 			isa = PBXTargetDependency;
 			target = 65C112CE2F0EC33400D16954 /* Sampler */;
 			targetProxy = 65C112E92F0EC33400D16954 /* PBXContainerItemProxy */;
-		};
-		65C112F42F0EC33400D16954 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 65C112CE2F0EC33400D16954 /* Sampler */;
-			targetProxy = 65C112F32F0EC33400D16954 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -521,44 +452,6 @@
 			};
 			name = Release;
 		};
-		65C113042F0EC33400D16954 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = danielsinclairtill.SamplerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Sampler;
-			};
-			name = Debug;
-		};
-		65C113052F0EC33400D16954 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = danielsinclairtill.SamplerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Sampler;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -585,15 +478,6 @@
 			buildConfigurations = (
 				65C113012F0EC33400D16954 /* Debug */,
 				65C113022F0EC33400D16954 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		65C113032F0EC33400D16954 /* Build configuration list for PBXNativeTarget "SamplerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				65C113042F0EC33400D16954 /* Debug */,
-				65C113052F0EC33400D16954 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
