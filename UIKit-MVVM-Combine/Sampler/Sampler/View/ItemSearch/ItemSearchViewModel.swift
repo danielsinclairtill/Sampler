@@ -139,6 +139,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
     private func setRefresh() {
         input.$searchText
             .removeDuplicates()
+            // debounce search text input to limit how often we request to the API and refresh
             .debounce(for: 0.2,
                       scheduler: DispatchQueue.main)
             .sink { [weak self] searchText in
