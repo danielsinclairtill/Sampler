@@ -10,6 +10,7 @@
 		65C1133B2F0EC3E700D16954 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133A2F0EC3E700D16954 /* Alamofire */; };
 		65C1133E2F0EC41700D16954 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133D2F0EC41700D16954 /* SDWebImage */; };
 		65C113A82F0EC4A700D16954 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 65C113A72F0EC4A700D16954 /* Lottie */; };
+		65C464B72F116EA8007B0B67 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65C464B62F116EA8007B0B67 /* SnapshotTesting */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65C464B72F116EA8007B0B67 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +140,7 @@
 			);
 			name = SamplerTests;
 			packageProductDependencies = (
+				65C464B62F116EA8007B0B67 /* SnapshotTesting */,
 			);
 			productName = SamplerTests;
 			productReference = 65C112E82F0EC33400D16954 /* SamplerTests.xctest */;
@@ -174,6 +177,7 @@
 				65C113392F0EC3E700D16954 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				65C1133C2F0EC41700D16954 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				65C113A62F0EC4A700D16954 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65C112D02F0EC33400D16954 /* Products */;
@@ -509,6 +513,14 @@
 				minimumVersion = 4.6.0;
 			};
 		};
+		65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.18.7;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -526,6 +538,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 65C113A62F0EC4A700D16954 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		65C464B62F116EA8007B0B67 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
