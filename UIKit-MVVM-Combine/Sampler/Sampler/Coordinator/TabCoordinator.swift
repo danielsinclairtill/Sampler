@@ -25,7 +25,7 @@ class TabCoordinator: Coordinator {
     
     // MARK: Tabs
     private func setupRootUITabBarController() {
-        children = [itemsListTab()]
+        children = [itemsListTab(), itemSearchTab()]
         let rootViewController = RootUITabBarController(tabBarItems:children.map { $0.navigationController })
         navigationController.setNavigationBarHidden(true, animated: false)
         navigationController.viewControllers = [rootViewController]
@@ -66,6 +66,17 @@ class TabCoordinator: Coordinator {
                                                        selectedImage: #imageLiteral(resourceName: "List"))
         let coordinator = ItemsListCoordinator(parentCoordinator: self,
                                                navigationController: navigationController)
+        coordinator.start()
+        return coordinator
+    }
+    
+    private func itemSearchTab() -> ItemSearchCoordinator {
+        let navigationController = formatNavigationControllerUI(UINavigationController())
+        navigationController.tabBarItem = UITabBarItem(title: "com.danielsinclairtill.Sampler.itemSearch.title".localized(),
+                                                       image: .search,
+                                                       selectedImage: .searchSelected)
+        let coordinator = ItemSearchCoordinator(parentCoordinator: self,
+                                                navigationController: navigationController)
         coordinator.start()
         return coordinator
     }

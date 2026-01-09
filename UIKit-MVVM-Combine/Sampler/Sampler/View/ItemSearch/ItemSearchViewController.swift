@@ -1,20 +1,20 @@
 //
-//  ItemsListViewController.swift
+//  ItemSearchViewController.swift
 //  Sampler
 //
-//
+//  Created by Daniel on 2026-01-09.
 //
 
 import UIKit
-import Lottie
 import Combine
+import Lottie
 
-class ItemsListViewController: UIViewController,
-                               UICollectionViewDelegate,
-                               UIScrollViewDelegate {
+class ItemSearchViewController: UIViewController,
+                                UICollectionViewDelegate,
+                                UIScrollViewDelegate {
     private let itemCellIdentifier = "ItemListCell"
     private let itemLoadingCellIdentifier = "ItemListLoadCell"
-    private let viewModel: any ItemsListViewModelBinding.Contract
+    private let viewModel: any ItemSearchViewModelBinding.Contract
     
     private enum Sizes {
         static let animation = 100.0
@@ -32,6 +32,15 @@ class ItemsListViewController: UIViewController,
     private typealias DataSource = UICollectionViewDiffableDataSource<Section, Row>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
+    
+    private lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search"
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchResultsUpdater = self
+        return searchController
+    }()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, environment in
@@ -56,7 +65,6 @@ class ItemsListViewController: UIViewController,
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
-        collectionView.refreshControl = refreshControl
         collectionView.backgroundColor = .clear
         collectionView.alpha = 0.0
         collectionView.register(ItemListCell.self,
@@ -68,7 +76,7 @@ class ItemsListViewController: UIViewController,
 
     private lazy var loadingAnimationView: LottieAnimationView = {
         let loadingAnimationView = LottieAnimationView(name: "loading_animation")
-        loadingAnimationView.isHidden = false
+        loadingAnimationView.isHidden = true
         loadingAnimationView.backgroundBehavior = .pauseAndRestore
         return loadingAnimationView
     }()
@@ -79,11 +87,10 @@ class ItemsListViewController: UIViewController,
         image.alpha = 0.0
         return image
     }()
-    private let refreshControl = UIRefreshControl()
     private var observation: NSKeyValueObservation?
     private var cancelBag = Set<AnyCancellable>()
 
-    init(viewModel: any ItemsListViewModelBinding.Contract) {
+    init(viewModel: any ItemSearchViewModelBinding.Contract) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -95,7 +102,10 @@ class ItemsListViewController: UIViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "com.danielsinclairtill.Sampler.itemsList.title".localized()
+        title = "com.danielsinclairtill.Sampler.itemSearch.title".localized()
+        
+        // search controller
+        navigationItem.searchController = searchController
         
         // empty view
         view.addSubview(emptyView)
@@ -148,17 +158,10 @@ class ItemsListViewController: UIViewController,
     
     // MARK: Binding
     private func bindViewModel() {
-        // refresh control
-        refreshControl.addTarget(self, action: #selector(self.didPullRefresh(_:)), for: .valueChanged)
-        
         // loading list animation
         viewModel.output.$isRefreshing
             .dropFirst()
             .removeDuplicates()
-            // make sure animating between loading states is buffered by at least 0.8 seconds
-            .throttle(for: 0.8,
-                      scheduler: DispatchQueue.main,
-                      latest: false)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isRefreshing in
                 if isRefreshing {
@@ -198,6 +201,8 @@ class ItemsListViewController: UIViewController,
         viewModel.output.$items
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
+                guard let strongSelf = self else { return }
+                
                 var snapshot = Snapshot()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(items.map { .item($0)}, toSection: .main)
@@ -208,6 +213,10 @@ class ItemsListViewController: UIViewController,
                     snapshot.appendItems([.loading], toSection: .main)
                 }
                 self?.dataSource?.apply(snapshot, animatingDifferences: false)
+                
+                if items.isEmpty && strongSelf.emptyView.alpha == 0 {
+                    AnimationController.fadeInView(strongSelf.emptyView)
+                }
             }
             .store(in: &cancelBag)
         
@@ -226,7 +235,7 @@ class ItemsListViewController: UIViewController,
             })
             .store(in: &cancelBag)
 
-        // error message
+        // error messagCe
         viewModel.output.$error
             .filter { !$0.isEmpty }
             .receive(on: DispatchQueue.main)
@@ -280,11 +289,6 @@ class ItemsListViewController: UIViewController,
     }
     
     private func finishLoadingList() {
-        if let refreshControl = collectionView.refreshControl,
-           refreshControl.isRefreshing {
-            collectionView.refreshControl?.endRefreshing()
-        }
-        
         AnimationController.fadeOutView(loadingAnimationView) { [weak self] completed in
             if completed {
                 self?.loadingAnimationView.stop()
@@ -294,8 +298,11 @@ class ItemsListViewController: UIViewController,
         AnimationController.fadeInView(collectionView) { [weak self] completed in
             self?.collectionView.isScrollEnabled = true
         }
-        if viewModel.output.items.isEmpty {
-            AnimationController.fadeInView(emptyView)
-        }
+    }
+}
+
+extension ItemSearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        viewModel.input.searchText = searchController.searchBar.text ?? ""
     }
 }

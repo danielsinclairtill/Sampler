@@ -44,7 +44,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
     let input = ItemDetailViewModelBinding.Input()
     let output = ItemDetailViewModelBinding.Output()
     
-    private let coordinator: ItemsListCoordinator
+    private let coordinator: any Coordinator
     private var cancelBag = Set<AnyCancellable>()
     
     private let itemId: String
@@ -55,7 +55,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
     
     required init(itemId: String,
                   environment: EnvironmentContract,
-                  coordinator: ItemsListCoordinator) {
+                  coordinator: Coordinator) {
         self.itemId = itemId
         self.environment = environment
         self.coordinator = coordinator

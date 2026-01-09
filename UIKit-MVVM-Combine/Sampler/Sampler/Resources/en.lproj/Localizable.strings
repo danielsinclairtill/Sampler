@@ -6,8 +6,11 @@
   
 */
 
-// MARK: SamplerList
+// MARK: ItemsList
 "com.danielsinclairtill.Sampler.itemsList.title" = "Sampler";
+
+// MARK: ItemSearch
+"com.danielsinclairtill.Sampler.itemSearch.title" = "Search";
 
 // MARK: APIErorr
 "com.danielsinclairtill.Sampler.apiError.message.offlineMode" = "There seems to be no internet connection.";
