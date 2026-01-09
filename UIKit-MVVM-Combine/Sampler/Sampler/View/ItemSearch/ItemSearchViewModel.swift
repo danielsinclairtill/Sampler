@@ -17,8 +17,6 @@ enum ItemSearchViewModelBinding {
     }
     
     class Input: ObservableObject {
-        /// The view did load.
-        var viewDidLoad = PassthroughSubject<Void, Never>()
         /// The items list is in the loading state and ready to refresh the data.
         var refresh = PassthroughSubject<Void, Never>()
         /// The user performs an action which intends to refresh the items list.
@@ -83,7 +81,6 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
         self.coordinator = coordinator
         
         // bind inputs and outputs
-        setViewDidLoad()
         setRefresh()
         setLoadNextPage()
         setCellTapped()
@@ -139,15 +136,6 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
     }
     
     // MARK: Binding
-    
-    private func setViewDidLoad() {
-        input.viewDidLoad.sink { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.input.refreshBegin.send(())
-        }
-        .store(in: &cancelBag)
-    }
-
     private func setRefresh() {
         input.$searchText
             .removeDuplicates()

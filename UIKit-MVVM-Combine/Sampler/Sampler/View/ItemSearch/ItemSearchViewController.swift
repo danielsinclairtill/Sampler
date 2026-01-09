@@ -84,7 +84,7 @@ class ItemSearchViewController: UIViewController,
     private lazy var emptyView: UIImageView = {
         let image = UIImageView(image: UIImage(named: "empty"))
         image.isUserInteractionEnabled = false
-        image.alpha = 0.0
+        image.alpha = 1.0
         return image
     }()
     private var observation: NSKeyValueObservation?
@@ -139,8 +139,6 @@ class ItemSearchViewController: UIViewController,
         
         bindViewModel()
         setupDesign()
-
-        viewModel.input.viewDidLoad.send(())
     }
     
     @objc
