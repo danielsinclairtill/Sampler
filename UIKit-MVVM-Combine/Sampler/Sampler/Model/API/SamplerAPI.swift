@@ -20,9 +20,9 @@ class SamplerAPI: APIContract {
             return
         }
         
-        url.queryItems = request.parameters?.map({ key, value in
+        url.queryItems = request.parameters?.map { key, value in
             URLQueryItem(name: key, value: value)
-        })
+        }.sorted { $0.name < $1.name }
         
         guard let url = url.url else {
             assertionFailure("url for api request was not formatted correctly")
