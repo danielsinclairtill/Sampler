@@ -1,15 +1,6 @@
 {
-  "originHash" : "1be78065ad888a176afc70a425c1713157f8fbb0f8118c50feeb79e7cc7cfdba",
+  "originHash" : "10a485756d080f6602b547cce6cca7b2cfb21713689487f46caf617a368aa12b",
   "pins" : [
-    {
-      "identity" : "alamofire",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Alamofire/Alamofire.git",
-      "state" : {
-        "revision" : "7be73f6c2b5cd90e40798b06ebd5da8f9f79cf88",
-        "version" : "5.11.0"
-      }
-    },
     {
       "identity" : "lottie-spm",
       "kind" : "remoteSourceControl",

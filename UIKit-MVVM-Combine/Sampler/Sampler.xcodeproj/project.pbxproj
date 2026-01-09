@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		65C1133B2F0EC3E700D16954 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133A2F0EC3E700D16954 /* Alamofire */; };
 		65C1133E2F0EC41700D16954 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133D2F0EC41700D16954 /* SDWebImage */; };
 		65C113A82F0EC4A700D16954 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 65C113A72F0EC4A700D16954 /* Lottie */; };
 		65C465192F11872B007B0B67 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65C465182F11872B007B0B67 /* SnapshotTesting */; };
@@ -60,7 +59,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				65C1133E2F0EC41700D16954 /* SDWebImage in Frameworks */,
-				65C1133B2F0EC3E700D16954 /* Alamofire in Frameworks */,
 				65C113A82F0EC4A700D16954 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,7 +120,6 @@
 			);
 			name = Sampler;
 			packageProductDependencies = (
-				65C1133A2F0EC3E700D16954 /* Alamofire */,
 				65C1133D2F0EC41700D16954 /* SDWebImage */,
 				65C113A72F0EC4A700D16954 /* Lottie */,
 			);
@@ -183,7 +180,6 @@
 			mainGroup = 65C112C62F0EC33400D16954;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				65C113392F0EC3E700D16954 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				65C1133C2F0EC41700D16954 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				65C113A62F0EC4A700D16954 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				65C464F82F1182D2007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
@@ -498,14 +494,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		65C113392F0EC3E700D16954 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.11.0;
-			};
-		};
 		65C1133C2F0EC41700D16954 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
@@ -533,11 +521,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		65C1133A2F0EC3E700D16954 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 65C113392F0EC3E700D16954 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
-		};
 		65C1133D2F0EC41700D16954 /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 65C1133C2F0EC41700D16954 /* XCRemoteSwiftPackageReference "SDWebImage" */;

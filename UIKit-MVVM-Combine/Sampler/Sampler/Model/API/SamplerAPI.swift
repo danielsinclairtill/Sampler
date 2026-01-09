@@ -7,7 +7,6 @@
 
 import Foundation
 import Network
-import Alamofire
 
 class SamplerAPI: APIContract {
     // See https://dummyjson.com/docs/recipes#recipes-all for documentation on test API
