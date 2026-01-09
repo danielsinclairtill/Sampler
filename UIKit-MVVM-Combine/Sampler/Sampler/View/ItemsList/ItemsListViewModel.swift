@@ -41,7 +41,7 @@ class SamplerListViewModelOutput: ObservableObject {
     @Published fileprivate(set) var error: String = ""
     /// Scroll the items list to the top automatically.
     private(set) var scrollToTop = PassthroughSubject<Void, Never>()
-    /// The total number of items in the list.
+    /// The total number of items possible in the list.
     @Published fileprivate(set) var total: Int = 0
 }
 

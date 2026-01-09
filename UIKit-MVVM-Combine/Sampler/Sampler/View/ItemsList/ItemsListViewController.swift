@@ -16,6 +16,11 @@ class SamplerListViewController: UIViewController,
     private let itemLoadingCellIdentifier = "ItemListLoadCell"
     private let viewModel: any SamplerListViewModelContract
     
+    private enum Sizes {
+        static let animation = 100.0
+        static let empty = 25.0
+    }
+    
     private enum Section: Hashable {
         case main
     }
@@ -23,14 +28,11 @@ class SamplerListViewController: UIViewController,
         case item(Item)
         case loading
     }
+    
     private typealias DataSource = UICollectionViewDiffableDataSource<Section, Row>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     private var dataSource: DataSource?
     
-    private enum Sizes {
-        static let animation = 100.0
-        static let empty = 25.0
-    }
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, environment in
                 let isLargeWidth = UITraitCollection.current.horizontalSizeClass == .regular

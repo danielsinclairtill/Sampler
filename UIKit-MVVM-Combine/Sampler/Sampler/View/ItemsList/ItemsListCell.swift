@@ -181,9 +181,3 @@ class ItemListCell: UICollectionViewCell {
         animationController.createTapBounceAnitmationOnTouchCancelledTo(view: photoView)
     }
 }
-
-extension ItemListCell: SizeProvidingCell {
-    func sizeFor(width: CGFloat) -> CGSize {
-        return CGSize(width: width, height: Self.cellHeight)
-    }
-}

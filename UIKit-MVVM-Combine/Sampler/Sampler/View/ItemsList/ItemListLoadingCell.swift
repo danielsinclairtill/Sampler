@@ -40,9 +40,3 @@ final class ItemListLoadingCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-extension ItemListLoadingCell: SizeProvidingCell {
-    func sizeFor(width: CGFloat) -> CGSize {
-        return CGSize(width: width, height: 100.0)
-    }
-}

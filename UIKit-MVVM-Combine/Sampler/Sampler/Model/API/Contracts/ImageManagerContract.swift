@@ -11,7 +11,7 @@ import UIKit
 
 public protocol ImageManagerContract {
     /**
-     Prefetches a list of images given by URL.
+     Prefetches a list of images given by URLs.
      - Parameters:
         - urls: List of images given by URLs.
         - reset: Boolean value determining to reset and cancel all currently running prefetch jobs.
@@ -19,21 +19,19 @@ public protocol ImageManagerContract {
     func prefetchImages(_ urls: [URL], reset: Bool)
 
     /**
-     Set an image view with an image from a specified URL. This image could be downloaded or fetched from the cache.
-     The image view should by set to alpha 0.0 before calling this.
-     When the download is complete, the image from the url is set to the imageView, and alpha is set to 1.0 by this manager.
+     Set a UIImageView with an image from a specified URL. This image could be downloaded or fetched from the cache.
      This process is done asynchronously.
      - Parameters:
         - imageView: The UIImageView to set.
-        - url: The URL of the image to be set to the imageView.
-        - placeholder: The placholder image to be set if the image from the url fails.
+        - url: The URL of the image to be set to the UIImageView.
+        - placeholder: The placholder image to be set if the image from the URL fails.
      */
     func setImage(imageView: UIImageView,
                   url: URL?,
                   placeholder: UIImage?)
     
     /**
-     Cancel any loading image within an image view.
+     Cancel any loading and setting of an image within a UIImageView.
      - Parameter imageView: The UIImageView to cancel.
      */
     func cancelImage(imageView: UIImageView)
