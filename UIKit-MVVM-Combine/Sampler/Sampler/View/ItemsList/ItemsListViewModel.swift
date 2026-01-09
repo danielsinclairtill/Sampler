@@ -1,5 +1,5 @@
 //
-//  SamplerListViewModel.swift
+//  ItemsListViewModel.swift
 //  Sampler
 //
 //
@@ -9,9 +9,9 @@ import Foundation
 import Combine
 
 // MARK: Input + Output
-enum SamplerListViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Input == SamplerListViewModelBinding.Input,
-                                                      Output == SamplerListViewModelBinding.Output {
+enum ItemsListViewModelBinding {
+    protocol Contract: SamplerViewModelContract where Input == ItemsListViewModelBinding.Input,
+                                                      Output == ItemsListViewModelBinding.Output {
         var imageManager: ImageManagerContract { get }
     }
     
@@ -35,25 +35,39 @@ enum SamplerListViewModelBinding {
     // MARK: Output
     class Output: ObservableObject {
         /// The items list to display.
-        @Published fileprivate(set) var items: [Item] = []
+        @Published var items: [Item] = []
         /// Show the items list in a refreshing state.
-        @Published fileprivate(set) var isRefreshing: Bool = false
+        @Published var isRefreshing: Bool = false
         /// Show an error message to display over the items list.
-        @Published fileprivate(set) var error: String = ""
+        @Published var error: String = ""
         /// Scroll the items list to the top automatically.
         fileprivate(set) var scrollToTop = PassthroughSubject<Void, Never>()
         /// The total number of items possible in the list.
-        @Published fileprivate(set) var total: Int = 0
+        @Published var total: Int = 0
         /// If the items list are loading by refreshing or pagnation.
         @Published fileprivate var isLoading: Bool = false
+        
+        init(items: [Item] = [],
+             isRefreshing: Bool = false,
+             error: String = "",
+             scrollToTop: PassthroughSubject<Void, Never> = PassthroughSubject<Void, Never>(),
+             total: Int = 0,
+             isLoading: Bool = false) {
+            self.items = items
+            self.isRefreshing = isRefreshing
+            self.error = error
+            self.scrollToTop = scrollToTop
+            self.total = total
+            self.isLoading = isLoading
+        }
     }
 }
 
 
 // MARK: ViewModel
-class SamplerListViewModel: SamplerListViewModelBinding.Contract, ObservableObject {
-    @Published var input = SamplerListViewModelBinding.Input()
-    @Published var output = SamplerListViewModelBinding.Output()
+class ItemsListViewModel: ItemsListViewModelBinding.Contract, ObservableObject {
+    @Published var input = ItemsListViewModelBinding.Input()
+    @Published var output = ItemsListViewModelBinding.Output()
     private let coordinator: ItemsListCoordinator
     private var cancelBag = Set<AnyCancellable>()
     

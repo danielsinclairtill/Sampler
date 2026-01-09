@@ -10,7 +10,7 @@
 		65C1133B2F0EC3E700D16954 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133A2F0EC3E700D16954 /* Alamofire */; };
 		65C1133E2F0EC41700D16954 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 65C1133D2F0EC41700D16954 /* SDWebImage */; };
 		65C113A82F0EC4A700D16954 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 65C113A72F0EC4A700D16954 /* Lottie */; };
-		65C464B72F116EA8007B0B67 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65C464B62F116EA8007B0B67 /* SnapshotTesting */; };
+		65C465192F11872B007B0B67 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65C465182F11872B007B0B67 /* SnapshotTesting */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				65C464B72F116EA8007B0B67 /* SnapshotTesting in Frameworks */,
+				65C465192F11872B007B0B67 /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +81,7 @@
 			children = (
 				65C112D12F0EC33400D16954 /* Sampler */,
 				65C112EB2F0EC33400D16954 /* SamplerTests */,
+				65C464EF2F118073007B0B67 /* Frameworks */,
 				65C112D02F0EC33400D16954 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -92,6 +93,13 @@
 				65C112E82F0EC33400D16954 /* SamplerTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		65C464EF2F118073007B0B67 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,7 +148,7 @@
 			);
 			name = SamplerTests;
 			packageProductDependencies = (
-				65C464B62F116EA8007B0B67 /* SnapshotTesting */,
+				65C465182F11872B007B0B67 /* SnapshotTesting */,
 			);
 			productName = SamplerTests;
 			productReference = 65C112E82F0EC33400D16954 /* SamplerTests.xctest */;
@@ -170,6 +178,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 65C112C62F0EC33400D16954;
 			minimizedProjectReferenceProxies = 1;
@@ -177,7 +186,7 @@
 				65C113392F0EC3E700D16954 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				65C1133C2F0EC41700D16954 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 				65C113A62F0EC4A700D16954 /* XCRemoteSwiftPackageReference "lottie-spm" */,
-				65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+				65C464F82F1182D2007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65C112D02F0EC33400D16954 /* Products */;
@@ -513,7 +522,7 @@
 				minimumVersion = 4.6.0;
 			};
 		};
-		65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+		65C464F82F1182D2007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
 			requirement = {
@@ -539,9 +548,9 @@
 			package = 65C113A62F0EC4A700D16954 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
-		65C464B62F116EA8007B0B67 /* SnapshotTesting */ = {
+		65C465182F11872B007B0B67 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65C464B52F116EA8007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			package = 65C464F82F1182D2007B0B67 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */

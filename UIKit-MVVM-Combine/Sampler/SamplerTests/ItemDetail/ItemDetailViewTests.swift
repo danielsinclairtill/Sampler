@@ -54,10 +54,10 @@ class ItemDetailViewTests: XCTestCase {
         let viewModel = MockItemDetailViewModel(item: item, user: user)
         let view = ItemDetailViewController(viewModel: viewModel)
         
-        assertSnapshot(matching: view,
+        assertSnapshot(of: view,
                        as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                        named: "light mode")
-        assertSnapshot(matching: view,
+        assertSnapshot(of: view,
                        as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
                        named: "dark mode")
     }

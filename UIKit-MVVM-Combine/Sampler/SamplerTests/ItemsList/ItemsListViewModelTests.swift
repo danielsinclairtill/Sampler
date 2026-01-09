@@ -1,5 +1,5 @@
 //
-//  SamplerListViewModelTests.swift
+//  ItemsListViewModelTests.swift
 //  Sampler
 //
 //
@@ -10,7 +10,7 @@ import XCTest
 import Combine
 @testable import Sampler
 
-class SamplerListViewModelTests: XCTestCase {
+class ItemsListViewModelTests: XCTestCase {
     private let mockEnvironment: SamplerEnvironmentMock = SamplerEnvironmentMock()
     private let mockCoordinator = ItemsListCoordinator(parentCoordinator: nil,
                                                        navigationController: UINavigationController())
@@ -28,8 +28,8 @@ class SamplerListViewModelTests: XCTestCase {
         mockEnvironment.mockApi.mockAPIResponses = [
             .success(ItemRequest.List.Response(items: mockItems, total: 10, offset: 0))
         ]
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         
         XCTAssertTrue(viewModel.output.items.isEmpty)
         
@@ -50,8 +50,8 @@ class SamplerListViewModelTests: XCTestCase {
         mockEnvironment.mockApi.mockAPIResponses = [
             .failure(.serverError)
         ]
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         
         XCTAssertTrue(viewModel.output.items.isEmpty)
         
@@ -65,8 +65,8 @@ class SamplerListViewModelTests: XCTestCase {
         mockEnvironment.mockApi.mockAPIResponses = [
             .success(ItemRequest.List.Response(items: [], total: 0, offset: 0))
         ]
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         
         XCTAssertTrue(viewModel.output.items.isEmpty)
         
@@ -80,8 +80,8 @@ class SamplerListViewModelTests: XCTestCase {
         mockEnvironment.mockApi.mockAPIResponses = [
             .failure(.lostConnection)
         ]
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         
         XCTAssertTrue(viewModel.output.items.isEmpty)
         
@@ -96,8 +96,8 @@ class SamplerListViewModelTests: XCTestCase {
         mockEnvironment.mockApi.mockAPIResponses = [
             .success(ItemRequest.List.Response(items: mockItems, total: 10, offset: 0))
         ]
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         
         XCTAssertTrue(mockEnvironment.mockApi.mockImageManager.mockPrefetchTaskURLs.isEmpty)
         
@@ -110,8 +110,8 @@ class SamplerListViewModelTests: XCTestCase {
     
     // MARK: TabBarItem
     func testTapTabBarItemDoesScrollToTop() {
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         var scrollToTopCount = 0
         viewModel.input.isTopOfPage = false
         viewModel.input.isScrolling = false
@@ -128,8 +128,8 @@ class SamplerListViewModelTests: XCTestCase {
     }
     
     func testTapTabBarItemDoesNotScrollsToTopWhileScrolling() {
-        let viewModel = SamplerListViewModel(environment: mockEnvironment,
-                                             coordinator: mockCoordinator)
+        let viewModel = ItemsListViewModel(environment: mockEnvironment,
+                                           coordinator: mockCoordinator)
         viewModel.input.isTopOfPage = false
         viewModel.input.isScrolling = true
         

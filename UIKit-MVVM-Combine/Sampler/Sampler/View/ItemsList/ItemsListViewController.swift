@@ -1,5 +1,5 @@
 //
-//  SamplerListViewController.swift
+//  ItemsListViewController.swift
 //  Sampler
 //
 //
@@ -9,12 +9,12 @@ import UIKit
 import Lottie
 import Combine
 
-class SamplerListViewController: UIViewController,
-                                 UICollectionViewDelegate,
-                                 UIScrollViewDelegate {
+class ItemsListViewController: UIViewController,
+                               UICollectionViewDelegate,
+                               UIScrollViewDelegate {
     private let itemCellIdentifier = "ItemListCell"
     private let itemLoadingCellIdentifier = "ItemListLoadCell"
-    private let viewModel: any SamplerListViewModelBinding.Contract
+    private let viewModel: any ItemsListViewModelBinding.Contract
     
     private enum Sizes {
         static let animation = 100.0
@@ -83,7 +83,7 @@ class SamplerListViewController: UIViewController,
     private var observation: NSKeyValueObservation?
     private var cancelBag = Set<AnyCancellable>()
 
-    init(viewModel: any SamplerListViewModelBinding.Contract) {
+    init(viewModel: any ItemsListViewModelBinding.Contract) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -160,8 +160,8 @@ class SamplerListViewController: UIViewController,
                       scheduler: DispatchQueue.main,
                       latest: false)
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] isLoading in
-                if isLoading {
+            .sink(receiveValue: { [weak self] isRefreshing in
+                if isRefreshing {
                     self?.initiateLoadingList()
                 } else {
                     self?.finishLoadingList()

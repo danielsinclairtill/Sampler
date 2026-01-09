@@ -14,15 +14,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        // If we are running tests, use minimal setup, no production initialization
+        if NSClassFromString("XCTestCase") != nil {
+            window = UIWindow(windowScene: windowScene)
+            window?.rootViewController = UIViewController() // Empty VC
+            window?.makeKeyAndVisible()
+            return
+        }
+        
         let navigationController = UINavigationController.init()
         let coordinator = TabCoordinator(navigationController: navigationController)
         coordinator.start()
         self.coordinator = coordinator
         
-        let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-        self.window = window
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

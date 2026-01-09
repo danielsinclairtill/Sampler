@@ -27,9 +27,9 @@ class ItemsListCoordinator: TabItemCoordinator {
     }
     
     func itemsList() {
-        let vm = SamplerListViewModel(environment: SamplerEnvironment.shared,
+        let vm = ItemsListViewModel(environment: SamplerEnvironment.shared,
                                        coordinator: self)
-        let vc = SamplerListViewController(viewModel: vm)
+        let vc = ItemsListViewController(viewModel: vm)
         navigationController.viewControllers = [vc]
     }
     
