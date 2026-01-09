@@ -21,7 +21,7 @@ class AnimationController {
     // MARK: Resizing
     static func shrinkView(_ view: UIView,
                            duration: TimeInterval,
-                           completion: ((Bool) -> Void)? = nil) {
+                           _ completion: ((Bool) -> Void)? = nil) {
         UIView.animate(
             withDuration: duration,
             delay: 0,
@@ -35,7 +35,7 @@ class AnimationController {
     
     static func expandView(_ view: UIView,
                            duration: TimeInterval,
-                           completion: ((Bool) -> Void)? = nil) {
+                           _ completion: ((Bool) -> Void)? = nil) {
         UIView.animate(
             withDuration: duration,
             delay: 0,
@@ -55,7 +55,7 @@ class AnimationController {
     ///   - completion: Completion block to call after the fade completes.
     static func fadeInView(_ view: UIView,
                            delay: TimeInterval = 0.0,
-                           completion: ((Bool) -> Void)? = nil) {
+                           _ completion: ((Bool) -> Void)? = nil) {
         UIView.animate(
             withDuration: AnimationController.fadeDuration,
             delay: delay,
@@ -72,7 +72,7 @@ class AnimationController {
     ///   - completion: Completion block to call after the fade completes.
     static func fadeOutView(_ view: UIView,
                             delay: TimeInterval = 0.0,
-                            completion: ((Bool) -> Void)? = nil) {
+                            _ completion: ((Bool) -> Void)? = nil) {
         UIView.animate(
             withDuration: AnimationController.fadeDuration,
             delay: delay,
@@ -87,22 +87,22 @@ class AnimationController {
 extension AnimationController {
     func createTapBounceAnitmationOnTouchBeganTo(view: UIView) {
         isSelected = true
-        AnimationController.shrinkView(view, duration: AnimationController.quickTapDuration, completion: { [weak self] completed in
+        AnimationController.shrinkView(view, duration: AnimationController.quickTapDuration) { [weak self] completed in
             if completed && !(self?.isSelected ?? false) {
-                AnimationController.expandView(view, duration: AnimationController.quickTapDuration, completion: nil)
+                AnimationController.expandView(view, duration: AnimationController.quickTapDuration)
             }
-        })
+        }
     }
     
     func createTapBounceAnitmationOnTouchEndedTo(view: UIView) {
         isSelected = false
         if view.layer.animationKeys()?.isEmpty ?? true {
-            AnimationController.expandView(view, duration: AnimationController.bounceDuration, completion: nil)
+            AnimationController.expandView(view, duration: AnimationController.bounceDuration)
         }
     }
     
     func createTapBounceAnitmationOnTouchCancelledTo(view: UIView) {
         isSelected = false
-        AnimationController.expandView(view, duration: AnimationController.bounceDuration, completion: nil)
+        AnimationController.expandView(view, duration: AnimationController.bounceDuration)
     }
 }

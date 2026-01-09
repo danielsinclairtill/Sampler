@@ -21,7 +21,7 @@ class SamplerListViewController: UIViewController,
     }
     private enum Row: Hashable {
         case item(Item)
-        case loading(UUID)
+        case loading
     }
     private typealias DataSource = UICollectionViewDiffableDataSource<Section, Row>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
@@ -148,12 +148,6 @@ class SamplerListViewController: UIViewController,
     private func bindViewModel() {
         // refresh control
         refreshControl.addTarget(self, action: #selector(self.didPullRefresh(_:)), for: .valueChanged)
-        viewModel.output.$isLoading
-            .filter { !$0 }
-            .sink(receiveValue: { [weak self] isLoading in
-                self?.collectionView.refreshControl?.endRefreshing()
-            })
-            .store(in: &cancelBag)
         
         // loading list animation
         viewModel.output.$isLoading
@@ -163,6 +157,7 @@ class SamplerListViewController: UIViewController,
             .throttle(for: 0.8,
                       scheduler: DispatchQueue.main,
                       latest: false)
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] isLoading in
                 if isLoading {
                     self?.initiateLoadingList()
@@ -199,11 +194,15 @@ class SamplerListViewController: UIViewController,
         })
         collectionView.dataSource = dataSource
         viewModel.output.$items
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 var snapshot = Snapshot()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(items.map { .item($0)}, toSection: .main)
-                snapshot.appendItems([.loading(UUID())], toSection: .main)
+                if let totalItems = self?.viewModel.output.total,
+                    items.count < totalItems  {
+                    snapshot.appendItems([.loading], toSection: .main)
+                }
                 self?.dataSource?.apply(snapshot, animatingDifferences: false)
             }
             .store(in: &cancelBag)
@@ -216,6 +215,7 @@ class SamplerListViewController: UIViewController,
             strongSelf.viewModel.input.isTopOfPage = strongSelf.collectionView.contentOffset == .zero
         }
         viewModel.output.scrollToTop
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in
                 self?.viewModel.input.isScrolling = true
                 self?.collectionView.setContentOffset(.zero, animated: true)
@@ -225,6 +225,7 @@ class SamplerListViewController: UIViewController,
         // error message
         viewModel.output.$error
             .filter { !$0.isEmpty }
+            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] message in
                 self?.presentError(message: message)
             })
@@ -271,17 +272,21 @@ class SamplerListViewController: UIViewController,
             self?.viewModel.input.refresh.send(())
         }
         AnimationController.fadeOutView(emptyView)
-        AnimationController.fadeInView(loadingAnimationView, completion: nil)
+        AnimationController.fadeInView(loadingAnimationView)
     }
     
     private func finishLoadingList() {
-        AnimationController.fadeOutView(loadingAnimationView,
-                                        completion: { [weak self] completed in
+        if let refreshControl = collectionView.refreshControl,
+           refreshControl.isRefreshing {
+            collectionView.refreshControl?.endRefreshing()
+        }
+        
+        AnimationController.fadeOutView(loadingAnimationView) { [weak self] completed in
             if completed {
                 self?.loadingAnimationView.stop()
                 self?.loadingAnimationView.isHidden = true
             }
-        })
+        }
         AnimationController.fadeInView(collectionView) { [weak self] completed in
             self?.collectionView.isScrollEnabled = true
         }
