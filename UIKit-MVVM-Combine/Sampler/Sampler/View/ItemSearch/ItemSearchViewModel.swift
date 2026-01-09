@@ -89,9 +89,6 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
     
     private func updateData(searchText: String,
                             offset: Int = 0) {
-        if offset == 0 {
-            output.isRefreshing = true
-        }
         output.isLoading = true
 
         guard !searchText.isEmpty else {
