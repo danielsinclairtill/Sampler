@@ -21,11 +21,14 @@ public struct UserRequest {
             path = "/users/\(id)"
         }
         
-        public var path: String
+        public let path: String
         public var parameters: [String : String]? = [
             "select": "id,firstName,lastName,username,image",
         ]
-        public var timeoutInterval: TimeInterval = 10
+        public let method: RequestMethod = .get
+        public var headers: [String : String]?
+        public let body: [String: Any]? = nil
+        public let timeoutInterval: TimeInterval = 10
         
         public typealias Response = User
     }

@@ -68,7 +68,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.environment.api.get(request: ItemRequest.Detail(id: strongSelf.itemId), result: { [weak self] result in
+            strongSelf.environment.api.request(ItemRequest.Detail(id: strongSelf.itemId), result: { [weak self] result in
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let item):
@@ -87,7 +87,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
             guard let strongSelf = self else { return }
             guard let userID = item?.userId else { return }
             
-            strongSelf.environment.api.get(request: UserRequest.Detail(id: String(userID))) { [weak self] result in
+            strongSelf.environment.api.request(UserRequest.Detail(id: String(userID))) { [weak self] result in
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let user):

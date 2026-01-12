@@ -23,4 +23,13 @@ public struct StringForced: Codable, Equatable {
         throw DecodingError.typeMismatch(String.self, .init(codingPath: decoder.codingPath,
                                                             debugDescription: "Expected String/Int/Double"))
     }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        if let value = wrappedValue {
+            try container.encode(value)
+        } else {
+            try container.encodeNil()
+        }
+    }
 }

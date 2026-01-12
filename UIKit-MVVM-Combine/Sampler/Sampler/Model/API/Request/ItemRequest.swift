@@ -10,7 +10,7 @@ import Foundation
 
 public struct ItemRequest {
     /**
-     Retrieves a page of list of items to display on the 'Sampler' timeline.
+     Retrieves a page of list of items to display on the 'Sampler' home timeline.
 
      - Response:
         - stories: list of items
@@ -21,9 +21,14 @@ public struct ItemRequest {
         /// - Parameter offset: the offset that is the starting index of the next page
         /// - Parameter limit: The limit of items to get in the response.
         init(offset: Int = 0,
-             limit: Int = 10) {
+             limit: Int = 10,
+             accessToken: String? = SamplerEnvironment.shared.state.user?.accessToken) {
             parameters?.updateValue(String(offset), forKey: "skip")
             parameters?.updateValue(String(limit), forKey: "limit")
+            
+            if let accessToken {
+                headers = ["Authorization": "Bearer \(accessToken)"]
+            }
         }
         
         public let path: String = "/recipes"
@@ -32,7 +37,10 @@ public struct ItemRequest {
             "limit": "10",
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public var timeoutInterval: TimeInterval = 10
+        public let method: RequestMethod = .get
+        public var headers: [String : String]?
+        public let body: [String: Any]? = nil
+        public let timeoutInterval: TimeInterval = 10
         
         public struct Response: Decodable {
             public let items: [Item]
@@ -73,7 +81,10 @@ public struct ItemRequest {
             "limit": "10",
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public var timeoutInterval: TimeInterval = 10
+        public let method: RequestMethod = .get
+        public var headers: [String : String]?
+        public let body: [String: Any]? = nil
+        public let timeoutInterval: TimeInterval = 10
         
         public struct Response: Decodable {
             public let items: [Item]
@@ -98,15 +109,17 @@ public struct ItemRequest {
         /// Retrieves the details of an item.
         /// - Parameter id: the unqiue id of the item
         init(id: String) {
-            parameters?.updateValue(id, forKey: "id")
             path = "/recipes/\(id)"
         }
         
-        public var path: String
+        public let path: String
         public var parameters: [String : String]? = [
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public var timeoutInterval: TimeInterval = 10
+        public let method: RequestMethod = .get
+        public var headers: [String : String]?
+        public let body: [String: Any]? = nil
+        public let timeoutInterval: TimeInterval = 10
         
         public typealias Response = Item
     }

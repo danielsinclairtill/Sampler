@@ -16,6 +16,7 @@
 "com.danielsinclairtill.Sampler.apiError.message.offlineMode" = "There seems to be no internet connection.";
 "com.danielsinclairtill.Sampler.apiError.message.noConnection" = "Lost internet connection.";
 "com.danielsinclairtill.Sampler.apiError.message.serverError" = "There seems to be a problem with our servers at the moment.";
+"com.danielsinclairtill.Sampler.apiError.message.authentification" = "You are not authenticated.";
 
 // MARK: Alert
 "com.danielsinclairtill.Sampler.alert.title" = "Oops!";

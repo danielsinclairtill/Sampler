@@ -24,4 +24,16 @@ class AlertFactory {
         alert.view.tintColor = SamplerDesign.shared.theme.attributes.colors.primaryFill()
         return alert
     }
+    
+    /// Create a generic error alert.
+    static func createError(message: String) -> UIAlertController {
+        let alert = UIAlertController(title: "com.danielsinclairtill.Sampler.alert.title".localized(),
+                                      message: message,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "com.danielsinclairtill.Sampler.alert.apiError.action.okay".localized(),
+                                      style: .default,
+                                      handler: nil))
+        alert.view.tintColor = SamplerDesign.shared.theme.attributes.colors.primaryFill()
+        return alert
+    }
 }

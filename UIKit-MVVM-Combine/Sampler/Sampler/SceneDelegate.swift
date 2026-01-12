@@ -24,8 +24,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let navigationController = UINavigationController.init()
         let coordinator = TabCoordinator(navigationController: navigationController)
-        coordinator.start()
         self.coordinator = coordinator
+        
+        if SamplerEnvironment.shared.state.user == nil {
+            coordinator.presentLoginScreen()
+        } else {
+            coordinator.start()
+        }
         
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navigationController

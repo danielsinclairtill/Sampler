@@ -23,6 +23,13 @@ class TabCoordinator: Coordinator {
         setupRootUITabBarController()
     }
     
+    func presentLoginScreen() {
+        let vm = LoginViewModel(environment: SamplerEnvironment.shared,
+                                coordinator: self)
+        let vc = LoginViewController(viewModel: vm)
+        navigationController.viewControllers = [vc]
+    }
+    
     // MARK: Tabs
     private func setupRootUITabBarController() {
         children = [itemsListTab(), itemSearchTab()]

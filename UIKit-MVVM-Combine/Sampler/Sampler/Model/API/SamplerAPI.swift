@@ -13,7 +13,7 @@ class SamplerAPI: APIContract {
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
-    func get<R>(request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : APIRequestContract {
+    func request<R>(_ request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : APIRequestContract {
         guard var url = URLComponents(string: baseUrl + request.path) else {
             assertionFailure("url for api request was not formatted correctly")
             result?(.failure(.serverError))
@@ -29,7 +29,25 @@ class SamplerAPI: APIContract {
             result?(.failure(.serverError))
             return
         }
-        let urlRequest = URLRequest(url: url, timeoutInterval: request.timeoutInterval)
+        var urlRequest = URLRequest(url: url, timeoutInterval: request.timeoutInterval)
+        urlRequest.httpMethod = request.method.rawValue.capitalized
+        
+        if let headers = request.headers {
+            for (key, value) in headers {
+                urlRequest.setValue(value, forHTTPHeaderField: key)
+            }
+        }
+        
+        if let body = request.body{
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: body)
+                urlRequest.httpBody = jsonData
+                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            } catch {
+                assertionFailure("body for api request was not formatted correctly")
+                result?(.failure(.requestError))
+            }
+        }
         
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         let task = session.dataTask(with: urlRequest) { data, response, error in
@@ -42,6 +60,14 @@ class SamplerAPI: APIContract {
                 return
             }
             
+            if let response = response as? HTTPURLResponse, response.statusCode == 400 {
+                result?(.failure(.requestError))
+            }
+            
+            if let response = response as? HTTPURLResponse, response.statusCode == 401 {
+                result?(.failure(.authentification))
+            }
+
             if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
                 result?(.failure(.serverError))
                 return

@@ -91,7 +91,7 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract, ObservableObject {
     
     private func updateData(offset: Int = 0) {
         output.isLoading = true
-        environment.api.get(request: ItemRequest.List(offset: offset)) { [weak self] result in
+        environment.api.request(ItemRequest.List(offset: offset)) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):

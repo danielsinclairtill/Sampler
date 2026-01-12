@@ -98,7 +98,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
             return
         }
         
-        environment.api.get(request: ItemRequest.Search(text: searchText, offset: offset)) { [weak self] result in
+        environment.api.request(ItemRequest.Search(text: searchText, offset: offset)) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):
