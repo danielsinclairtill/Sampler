@@ -22,6 +22,9 @@ enum LoginViewModelBinding {
         
         /// When the login button is tapped.
         var loginTapped = PassthroughSubject<Void, Never>()
+        
+        /// When the skip login button is tapped.
+        var skipLoginTapped = PassthroughSubject<Void, Never>()
     }
 
     class Output: ObservableObject {
@@ -56,6 +59,26 @@ class LoginViewModel: LoginViewModelBinding.Contract, ObservableObject {
         setLogin()
     }
     
+    private func login(username: String, password: String) {
+        environment.api.request(LoginRequest.Login(username: username,
+                                                   password: password)) { [weak self] result in
+            guard let strongSelf = self else { return }
+
+            switch result {
+            case .success(let response):
+                strongSelf.environment.state.user = response
+                strongSelf.coordinator.start()
+            case .failure(let error):
+                // the API returns a `.requestError` when login credentials are not found
+                if error == .requestError {
+                    strongSelf.output.error = APIError.authentification.message
+                } else {
+                    strongSelf.output.error = error.message
+                }
+            }
+        }
+    }
+    
     private func setLogin() {
         input.$username
             .combineLatest(input.$password)
@@ -67,21 +90,15 @@ class LoginViewModel: LoginViewModelBinding.Contract, ObservableObject {
         input.loginTapped
             .sink { [weak self] _ in
                 guard let strongSelf = self else { return }
-                strongSelf.environment.api.request(LoginRequest.Login(username: strongSelf.input.username,
-                                                                      password: strongSelf.input.password)) { result in
-                    switch result {
-                    case .success(let response):
-                        strongSelf.environment.state.user = response
-                        strongSelf.coordinator.start()
-                    case .failure(let error):
-                        // the API returns a `.requestError` when login credentials are not found
-                        if error == .requestError {
-                            strongSelf.output.error = APIError.authentification.message
-                        } else {
-                            strongSelf.output.error = error.message
-                        }
-                    }
-                }
+                strongSelf.login(username: strongSelf.input.username, password: strongSelf.input.password)
+            }
+            .store(in: &cancelBag)
+        
+        input.skipLoginTapped
+            .sink { [weak self] _ in
+                // Just used for testing purposes to login without credentials.
+                // It's fine these credentials are exposed since we are using a test API.
+                self?.login(username: "emilys", password: "emilyspass")
             }
             .store(in: &cancelBag)
     }

@@ -22,7 +22,7 @@ class LoginViewController: UIViewController,
     }()
     
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, usernameField, passwordField, loginButton])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, usernameField, passwordField, loginButton, skipButton])
         stackView.axis = .vertical
         stackView.spacing = 16
         stackView.setCustomSpacing(64, after: titleLabel)
@@ -63,6 +63,14 @@ class LoginViewController: UIViewController,
         return button
     }()
     
+    private lazy var skipButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Login with test account", for: .normal)
+        button.configuration = .bordered()
+        button.addTarget(self, action: #selector(didTapSkipLoginButton), for: .touchUpInside)
+        return button
+    }()
+    
     init(viewModel: any LoginViewModelBinding.Contract) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -94,6 +102,11 @@ class LoginViewController: UIViewController,
     @objc
     private func didTapLoginButton() {
         viewModel.input.loginTapped.send(())
+    }
+    
+    @objc
+    private func didTapSkipLoginButton() {
+        viewModel.input.skipLoginTapped.send(())
     }
     
     private func bindViewModel() {
