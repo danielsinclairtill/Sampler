@@ -6,6 +6,13 @@
   
 */
 
+// MARK: Login
+"com.danielsinclairtill.Sampler.login.title" = "Sampler";
+"com.danielsinclairtill.Sampler.login.usernameField.placeholder" = "Username";
+"com.danielsinclairtill.Sampler.login.passwordField.placholder" = "Password";
+"com.danielsinclairtill.Sampler.login.loginButton.title" = "Login";
+"com.danielsinclairtill.Sampler.login.skipLoginButton.title" = "Login with test account";
+
 // MARK: ItemsList
 "com.danielsinclairtill.Sampler.itemsList.title" = "Sampler";
 

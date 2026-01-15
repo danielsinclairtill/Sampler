@@ -32,7 +32,7 @@ class LoginViewController: UIViewController,
     
     private lazy var usernameField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Username"
+        textField.placeholder = "com.danielsinclairtill.Sampler.login.usernameField.placeholder".localized()
         textField.clearButtonMode = .whileEditing
         textField.borderStyle = .roundedRect
         textField.autocapitalizationType = .none
@@ -44,7 +44,7 @@ class LoginViewController: UIViewController,
     
     private lazy var passwordField: UITextField = {
         let textField = UITextField()
-        textField.placeholder = "Password"
+        textField.placeholder = "com.danielsinclairtill.Sampler.login.passwordField.placholder".localized()
         textField.isSecureTextEntry = true
         textField.clearButtonMode = .whileEditing
         textField.borderStyle = .roundedRect
@@ -57,7 +57,7 @@ class LoginViewController: UIViewController,
     
     private lazy var loginButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Login", for: .normal)
+        button.setTitle("com.danielsinclairtill.Sampler.login.loginButton.title".localized(), for: .normal)
         button.configuration = .bordered()
         button.addTarget(self, action: #selector(didTapLoginButton), for: .touchUpInside)
         return button
@@ -65,7 +65,7 @@ class LoginViewController: UIViewController,
     
     private lazy var skipButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Login with test account", for: .normal)
+        button.setTitle("com.danielsinclairtill.Sampler.login.skipLoginButton.title".localized(), for: .normal)
         button.configuration = .bordered()
         button.addTarget(self, action: #selector(didTapSkipLoginButton), for: .touchUpInside)
         return button
