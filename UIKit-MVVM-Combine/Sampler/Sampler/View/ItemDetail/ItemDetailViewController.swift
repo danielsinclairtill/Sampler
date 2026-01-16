@@ -154,18 +154,21 @@ class ItemDetailViewController: UIViewController {
     
     private func bindViewModel() {
         viewModel.output.$item
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.setItem(item: item)
             }
             .store(in: &cancelBag)
         
         viewModel.output.$user
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
                 self?.setUser(user: user)
             }
             .store(in: &cancelBag)
 
         viewModel.output.$error
+            .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] message in
                 self?.presentError(message: message)
