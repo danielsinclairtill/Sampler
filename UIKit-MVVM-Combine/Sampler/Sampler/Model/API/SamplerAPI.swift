@@ -14,6 +14,8 @@ class SamplerAPI: APIContract {
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
     func request<R>(_ request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : APIRequestContract {
+        /// TRY THIS
+        /// https://theswiftdev.com/urlsession-and-the-combine-framework/
         guard var url = URLComponents(string: baseUrl + request.path) else {
             assertionFailure("url for api request was not formatted correctly")
             result?(.failure(.serverError))
@@ -49,8 +51,7 @@ class SamplerAPI: APIContract {
             }
         }
         
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        let task = session.dataTask(with: urlRequest) { data, response, error in
+        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
             if let error = error as? URLError {
                 if error.code == .notConnectedToInternet || error.code == .timedOut {
                     result?(.failure(.lostConnection))
