@@ -1,8 +1,8 @@
 //
-//  SamplerAPI.swift
+//  SampleConcurrentAPI.swift
 //  Sampler
 //
-//
+//  Created by Daniel on 2026-01-28.
 //
 
 import Foundation
@@ -12,22 +12,21 @@ class SamplerAPI: APIContract {
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
-    func request<R>(_ request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : APIRequestContract {
-        // 1. URL Construction (Renamed variable to avoid shadowing)
-        guard var components = URLComponents(string: baseUrl + request.path) else {
+    /// Converted to async/await
+    func request<R>(_ request: R) async throws -> R.Response where R : APIRequestContract {
+        // 1. URL Construction
+        guard var urlComponents = URLComponents(string: baseUrl + request.path) else {
             assertionFailure("url for api request was not formatted correctly")
-            result?(.failure(.serverError))
-            return
+            throw APIError.serverError
         }
         
-        components.queryItems = request.parameters?.map { key, value in
+        urlComponents.queryItems = request.parameters?.map { key, value in
             URLQueryItem(name: key, value: value)
         }.sorted { $0.name < $1.name }
         
-        guard let url = components.url else {
+        guard let url = urlComponents.url else {
             assertionFailure("url for api request was not formatted correctly")
-            result?(.failure(.serverError))
-            return
+            throw APIError.serverError
         }
         
         // 2. Request Configuration
@@ -47,59 +46,53 @@ class SamplerAPI: APIContract {
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             } catch {
                 assertionFailure("body for api request was not formatted correctly")
-                result?(.failure(.requestError))
-                return
+                throw APIError.requestError
             }
         }
         
         // 3. Network Execution
-        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-            // Check for fundamental networking errors (e.g., offline)
-            if let error = error as? URLError {
-                if error.code == .notConnectedToInternet || error.code == .timedOut {
-                    result?(.failure(.lostConnection))
-                } else {
-                    result?(.failure(.serverError))
-                }
-                return
-            }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                result?(.failure(.serverError))
-                return
+                throw APIError.serverError
             }
             
-            // 4. Status Code Handling (Using Switch to prevent multiple callbacks)
+            // 4. Status Code Handling
             switch httpResponse.statusCode {
             case 200...299:
-                // Success range, proceed to decoding
+                // Success - continue to decoding
                 break
             case 400:
-                result?(.failure(.requestError))
-                return
+                throw APIError.requestError
             case 401:
-                result?(.failure(.authentification))
-                return
+                throw APIError.authentification
             default:
-                result?(.failure(.serverError))
-                return
+                throw APIError.serverError
             }
             
-            // 5. Data Unwrapping
-            guard let data = data else {
-                result?(.failure(.serverError))
-                return
-            }
-            
-            // 6. Decoding
+            // 5. Decoding
             do {
                 let decoder = JSONDecoder()
-                let decodedData = try decoder.decode(R.Response.self, from: data)
-                result?(.success(decodedData))
+                return try decoder.decode(R.Response.self, from: data)
             } catch {
-                result?(.failure(.serverError))
+                // Mapping decoding errors to serverError to match original logic
+                throw APIError.serverError
             }
+            
+        } catch let error as URLError {
+            // 6. Network Error Mapping
+            if error.code == .notConnectedToInternet || error.code == .timedOut {
+                throw APIError.lostConnection
+            } else {
+                throw APIError.serverError
+            }
+        } catch let error as APIError {
+            // Re-throw known API errors (from status code checks)
+            throw error
+        } catch {
+            // Catch-all for any other unexpected errors
+            throw APIError.serverError
         }
-        task.resume()
     }
 }

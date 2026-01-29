@@ -66,36 +66,35 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
     }
     
     private func setViewDidLoad() {
-        input.viewDidLoad.sink { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.environment.api.request(ItemRequest.Detail(id: strongSelf.itemId), result: { [weak self] result in
+        input.viewDidLoad.sink {
+            Task { @MainActor [weak self] in
                 guard let strongSelf = self else { return }
-                switch result {
-                case .success(let item):
+                do {
+                    let item = try await strongSelf.environment.api.request(ItemRequest.Detail(id: strongSelf.itemId))
                     strongSelf.output.item = item
-                case .failure(let error):
+                } catch let error as APIError {
                     strongSelf.output.item = nil
                     strongSelf.output.error = error.message
                 }
-            })
+            }
         }
         .store(in: &cancelBag)
     }
     
     private func setUser() {
-        output.$item.sink { [weak self] item in
-            guard let strongSelf = self else { return }
-            guard let userID = item?.userId else { return }
-            
-            strongSelf.environment.api.request(UserRequest.Detail(id: String(userID))) { [weak self] result in
+        output.$item.sink { item in
+            Task { @MainActor [weak self] in
                 guard let strongSelf = self else { return }
-                switch result {
-                case .success(let user):
+                guard let userID = item?.userId else { return }
+                do {
+                    let user = try await strongSelf.environment.api.request(UserRequest.Detail(id: String(userID)))
                     strongSelf.output.user = user
-                case .failure:
+                } catch let error as APIError {
                     strongSelf.output.user = nil
+                    strongSelf.output.error = error.message
                 }
             }
+
         }
         .store(in: &cancelBag)
     }
