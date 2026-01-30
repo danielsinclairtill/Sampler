@@ -60,10 +60,10 @@ class LoginViewModel: LoginViewModelBinding.Contract, ObservableObject {
     }
     
     private func login(username: String, password: String) {
-        environment.api.request(LoginRequest.Login(username: username,
-                                                   password: password)) { [weak self] result in
+        environment.api.request(LoginAPIRequest.Login(username: username,
+                                                      password: password)) { [weak self] result in
             guard let strongSelf = self else { return }
-
+            
             switch result {
             case .success(let response):
                 strongSelf.environment.state.user = response

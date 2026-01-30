@@ -98,7 +98,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
             return
         }
         
-        environment.api.request(ItemRequest.Search(text: searchText, offset: offset)) { [weak self] result in
+        environment.api.request(ItemAPIRequest.Search(text: searchText, offset: offset)) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
             case .success(let data):
@@ -106,7 +106,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
                     strongSelf.output.items = []
                     break
                 }
-
+                
                 let newItems = data.items
                 
                 strongSelf.output.total = data.total
@@ -126,7 +126,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
             strongSelf.output.isRefreshing = false
         }
     }
-
+    
     private func prefetchImages(items: [Item]) {
         let prefetchImageURLs = items.compactMap { $0.image }
         environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)

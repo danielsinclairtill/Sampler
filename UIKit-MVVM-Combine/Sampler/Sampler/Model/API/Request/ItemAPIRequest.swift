@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ItemRequest {
+public struct ItemAPIRequest {
     /**
      Retrieves a page of list of items to display on the 'Sampler' home timeline.
 

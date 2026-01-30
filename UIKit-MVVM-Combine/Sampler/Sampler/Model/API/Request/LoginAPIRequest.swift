@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LoginRequest {
+public struct LoginAPIRequest {
     /**
      Attempts to login with a username and password.
 

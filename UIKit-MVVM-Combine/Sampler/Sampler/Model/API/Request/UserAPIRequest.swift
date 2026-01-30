@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct UserRequest {
+public struct UserAPIRequest {
     /**
      Retrieves the details of a user.
 
