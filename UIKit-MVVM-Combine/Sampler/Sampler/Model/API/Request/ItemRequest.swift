@@ -16,7 +16,7 @@ public struct ItemRequest {
         - stories: list of items
         - nextUrl: next URL  to use for paginated results
      */
-    public struct List: APIRequestContract {
+    public struct List: RequestAPIContract {
         /// Retrieves the next page of items to display on the 'Sampler' timeline.
         /// - Parameter offset: the offset that is the starting index of the next page
         /// - Parameter limit: The limit of items to get in the response.
@@ -37,7 +37,7 @@ public struct ItemRequest {
             "limit": "10",
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public let method: RequestMethod = .get
+        public let method: APIRequestMethod = .get
         public var headers: [String : String]?
         public let body: [String: Any]? = nil
         public let timeoutInterval: TimeInterval = 10
@@ -62,7 +62,7 @@ public struct ItemRequest {
         - stories: list of items
         - nextUrl: next URL  to use for paginated results
      */
-    public struct Search: APIRequestContract {
+    public struct Search: RequestAPIContract {
         /// Retrieves the next page of items to display on the 'Sampler' timeline.
         /// - Parameter text: The search text.
         /// - Parameter offset: the offset that is the starting index of the next page
@@ -81,7 +81,7 @@ public struct ItemRequest {
             "limit": "10",
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public let method: RequestMethod = .get
+        public let method: APIRequestMethod = .get
         public var headers: [String : String]?
         public let body: [String: Any]? = nil
         public let timeoutInterval: TimeInterval = 10
@@ -105,7 +105,7 @@ public struct ItemRequest {
 
      - Response: Item object
      */
-    public struct Detail: APIRequestContract {
+    public struct Detail: RequestAPIContract {
         /// Retrieves the details of an item.
         /// - Parameter id: the unqiue id of the item
         init(id: String) {
@@ -116,7 +116,7 @@ public struct ItemRequest {
         public var parameters: [String : String]? = [
             "select": "id,name,body,ingredients,difficulty,tags,userId,image",
         ]
-        public let method: RequestMethod = .get
+        public let method: APIRequestMethod = .get
         public var headers: [String : String]?
         public let body: [String: Any]? = nil
         public let timeoutInterval: TimeInterval = 10

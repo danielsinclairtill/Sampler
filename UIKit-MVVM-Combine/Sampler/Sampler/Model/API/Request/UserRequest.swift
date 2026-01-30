@@ -13,7 +13,7 @@ public struct UserRequest {
 
      - Response: User object
      */
-    public struct Detail: APIRequestContract {
+    public struct Detail: RequestAPIContract {
         /// Retrieves the details of a user.
         /// - Parameter id: the unqiue id of the user
         init(id: String) {
@@ -25,7 +25,7 @@ public struct UserRequest {
         public var parameters: [String : String]? = [
             "select": "id,firstName,lastName,username,image",
         ]
-        public let method: RequestMethod = .get
+        public let method: APIRequestMethod = .get
         public var headers: [String : String]?
         public let body: [String: Any]? = nil
         public let timeoutInterval: TimeInterval = 10

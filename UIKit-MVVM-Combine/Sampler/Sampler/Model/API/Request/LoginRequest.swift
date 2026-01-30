@@ -13,7 +13,7 @@ public struct LoginRequest {
 
      - Response: User object
      */
-    public struct Login: APIRequestContract {
+    public struct Login: RequestAPIContract {
         /// Retrieves the details of a user.
         /// - Parameter id: the unqiue id of the user
         init(username: String,
@@ -26,7 +26,7 @@ public struct LoginRequest {
         
         public var path: String = "/auth/login"
         public var parameters: [String : String]? = nil
-        public var method: RequestMethod = .post
+        public var method: APIRequestMethod = .post
         public var headers: [String : String]?
         public var body: [String: Any]?
         public var timeoutInterval: TimeInterval = 10

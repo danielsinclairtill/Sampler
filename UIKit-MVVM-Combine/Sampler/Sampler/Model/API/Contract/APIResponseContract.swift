@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol ResponseContract {
+public protocol APIResponseContract {
     /// The decodable response of the API request.
     associatedtype Response: Decodable
 }
