@@ -19,6 +19,7 @@ class ItemListCell: UICollectionViewCell {
         stackView.alignment = .top
         stackView.axis = .horizontal
         stackView.spacing = 8.0
+        stackView.distribution = .fill
         return stackView
     }()
     
@@ -29,26 +30,6 @@ class ItemListCell: UICollectionViewCell {
         stackView.spacing = 8.0
         stackView.distribution = .fill
         return stackView
-    }()
-    
-    private lazy var userStack: UIStackView = {
-        let stackView = UIStackView()
-        stackView.alignment = .center
-        stackView.axis = .horizontal
-        stackView.spacing = 4.0
-        return stackView
-    }()
-    
-    private lazy var avatarView: AsyncImageView = {
-        return AvatarView(placeholderImage: UIImage(named: "UnkownUser"),
-                          size: SamplerDesign.shared.theme.attributes.dimensions.avatarSizeSmall())
-    }()
-    
-    private lazy var username: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.adjustsFontForContentSizeCategory = true
-        return label
     }()
     
     private lazy var photoView: AsyncImageView = {
@@ -64,7 +45,7 @@ class ItemListCell: UICollectionViewCell {
     
     private lazy var descriptionText: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.adjustsFontForContentSizeCategory = true
         return label
     }()
@@ -84,41 +65,32 @@ class ItemListCell: UICollectionViewCell {
         horizontalStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(horizontalStack)
         NSLayoutConstraint.activate([
-            horizontalStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16.0),
-            horizontalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16.0),
+            horizontalStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0),
+            horizontalStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0),
             horizontalStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16.0),
             horizontalStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16.0)
         ])
         
         // photo
         photoView.translatesAutoresizingMaskIntoConstraints = false
+        photoView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         NSLayoutConstraint.activate([
             photoView.widthAnchor.constraint(equalToConstant: 100),
-            photoView.heightAnchor.constraint(equalToConstant: 150),
+            // set lower priority to supress the UICollectionViewCompositionalLayout warnings when trying to autosize
+            photoView.heightAnchor.constraint(equalToConstant: 150).withPriority(.init(999)),
         ])
+        photoView.backgroundColor = .blue
         
         horizontalStack.addArrangedSubview(photoView)
         
         // detail stack
+        detailStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
         horizontalStack.addArrangedSubview(detailStack)
-        
+
         // name
         detailStack.addArrangedSubview(name)
-        
-        // user
-        detailStack.addArrangedSubview(userStack)
-        
-        // avatar
-        userStack.addArrangedSubview(avatarView)
-        avatarView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            avatarView.widthAnchor.constraint(equalToConstant: SamplerDesign.shared.theme.attributes.dimensions.avatarSizeSmall()),
-            avatarView.heightAnchor.constraint(equalToConstant: SamplerDesign.shared.theme.attributes.dimensions.avatarSizeSmall()),
-        ])
-        userStack.addArrangedSubview(username)
-                
+
         // descriptionText
-        descriptionText.setContentHuggingPriority(.defaultLow, for: .vertical)
         detailStack.addArrangedSubview(descriptionText)
     }
     
@@ -132,8 +104,6 @@ class ItemListCell: UICollectionViewCell {
                 
                 strongSelf.name.font = theme.attributes.fonts.primaryTitle()
                 strongSelf.name.textColor = theme.attributes.colors.primaryFill()
-                strongSelf.username.font = theme.attributes.fonts.primaryTitle()
-                strongSelf.username.textColor = theme.attributes.colors.primaryFill()
                 strongSelf.descriptionText.font = theme.attributes.fonts.body()
                 strongSelf.descriptionText.textColor = theme.attributes.colors.primaryFill()
             }
@@ -144,10 +114,8 @@ class ItemListCell: UICollectionViewCell {
         super.prepareForReuse()
         
         name.text = ""
-        username.text = ""
         descriptionText.text = ""
         photoView.clearImage()
-        avatarView.clearImage()
         
         cancelBag = Set<AnyCancellable>()
     }
