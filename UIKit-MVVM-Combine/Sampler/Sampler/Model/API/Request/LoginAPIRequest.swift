@@ -18,17 +18,17 @@ public struct LoginAPIRequest {
         /// - Parameter id: the unqiue id of the user
         init(username: String,
              password: String) {
-            body = [
+            body = .dictionary([
                 "username": username,
                 "password": password
-            ]
+            ])
         }
         
         public var path: String = "/auth/login"
         public var parameters: [String : String]? = nil
         public var method: APIRequestMethod = .post
         public var headers: [String : String]?
-        public var body: [String: Any]?
+        public let body: APIRequestBody?
         public var timeoutInterval: TimeInterval = 10
         
         public typealias Response = AuthUser

@@ -19,6 +19,8 @@ enum ItemDetailViewModelBinding {
     class Input: ObservableObject {
         /// The view did load.
         var viewDidLoad = PassthroughSubject<Void, Never>()
+        /// The post button was tapped.
+        var tappedPostButton = PassthroughSubject<Void, Never>()
     }
 
     class Output: ObservableObject {
@@ -62,13 +64,14 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
         
         // bind inputs and outputs
         setViewDidLoad()
+        setPostButton()
         setUser()
     }
     
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.environment.api.request(ItemAPIRequest.Detail(id: strongSelf.itemId), result: { [weak self] result in
+            strongSelf.environment.api.request(ItemAPIRequest.Detail(id: strongSelf.itemId)) { [weak self] result in
                 guard let strongSelf = self else { return }
                 switch result {
                 case .success(let item):
@@ -77,7 +80,24 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
                     strongSelf.output.item = nil
                     strongSelf.output.error = error.message
                 }
-            })
+            }
+        }
+        .store(in: &cancelBag)
+    }
+    
+    
+    private func setPostButton() {
+        input.tappedPostButton.sink { [weak self] _ in
+            guard let self, let item = self.output.item else { return }
+            self.environment.api.request(ItemAPIRequest.Create(item: item)) { [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let item):
+                    print(item)
+                case .failure(let error):
+                    output.error = error.message
+                }
+            }
         }
         .store(in: &cancelBag)
     }

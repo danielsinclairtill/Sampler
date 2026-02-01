@@ -16,6 +16,9 @@
 // MARK: ItemsList
 "com.danielsinclairtill.Sampler.itemsList.title" = "Sampler";
 
+// MARK: ItemDetail
+"com.danielsinclairtill.Sampler.itemDetail.postButton.title" = "Post";
+
 // MARK: ItemSearch
 "com.danielsinclairtill.Sampler.itemSearch.title" = "Search";
 

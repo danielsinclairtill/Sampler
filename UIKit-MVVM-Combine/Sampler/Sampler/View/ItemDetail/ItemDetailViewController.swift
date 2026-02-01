@@ -16,7 +16,7 @@ class ItemDetailViewController: UIViewController {
     private lazy var rootStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.alignment = .center
+        stackView.alignment = .leading
         stackView.spacing = 16.0
         stackView.backgroundColor = .clear
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,6 +66,19 @@ class ItemDetailViewController: UIViewController {
         return stackView
     }()
     
+    
+    private lazy var actionStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 8.0
+        stackView.distribution = .equalSpacing
+        stackView.backgroundColor = .clear
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
+    }()
+    
     private lazy var authorTitle: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
@@ -80,6 +93,14 @@ class ItemDetailViewController: UIViewController {
         label.numberOfLines = 0
         
         return label
+    }()
+    
+    private lazy var postButton: UIButton = {
+        let button = UIButton(configuration: .borderedTinted())
+        button.configuration?.title = "com.danielsinclairtill.Sampler.itemDetail.postButton.title".localized()
+        button.addTarget(self, action: #selector(didTapPostButton), for: .touchUpInside)
+        
+        return button
     }()
     
     init(viewModel: any ItemDetailViewModelBinding.Contract) {
@@ -135,6 +156,12 @@ class ItemDetailViewController: UIViewController {
         // make the descriptionTitle be the first the compress if the vertical spacing cannot fit all elements
         descriptionTitle.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         descrptionStackView.addArrangedSubview(descriptionTitle)
+        
+        // action section
+        rootStackView.addArrangedSubview(actionStackView)
+        
+        // postButton
+        actionStackView.addArrangedSubview(postButton)
     }
     
     private func setupDesign() {
@@ -148,6 +175,16 @@ class ItemDetailViewController: UIViewController {
                 strongSelf.authorTitle.textColor = theme.attributes.colors.primaryFill()
                 strongSelf.descriptionTitle.font = theme.attributes.fonts.body()
                 strongSelf.descriptionTitle.textColor = theme.attributes.colors.primaryFill()
+                strongSelf.postButton.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .highlighted:
+                        button.configuration?.baseForegroundColor = theme.attributes.colors.primaryFill().withAlphaComponent(0.8)
+                        button.configuration?.background.backgroundColor = theme.attributes.colors.secondary().withAlphaComponent(0.8)
+                    default:
+                        button.configuration?.baseForegroundColor = theme.attributes.colors.primaryFill()
+                        button.configuration?.background.backgroundColor = theme.attributes.colors.secondary()
+                    }
+                }
             }
             .store(in: &cancelBag)
     }
@@ -197,5 +234,10 @@ class ItemDetailViewController: UIViewController {
     private func presentError(message: String) {
         let alert = AlertFactory.createAPIError(message: message, refreshHandler: nil)
         present(alert, animated: true, completion: nil)
+    }
+    
+    @objc
+    private func didTapPostButton() {
+        viewModel.input.tappedPostButton.send(())
     }
 }
