@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 class SamplerStore: StoreContract {
     private let container: NSPersistentContainer
@@ -27,7 +28,11 @@ class SamplerStore: StoreContract {
         // perform store read on asynchronous thread, completion is called on main thread
         let asyncRequest = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { results in
             if let results = results.finalResult {
-                guard let dataCD = results as? R.Data.CD else {
+                guard !results.isEmpty else {
+                    result?(.failure(StoreError.empty))
+                    return
+                }
+                guard let dataCD = results.first as? R.Data.CD else {
                     result?(.failure(StoreError.readError))
                     return
                 }
@@ -85,5 +90,17 @@ class SamplerStore: StoreContract {
                 }
             }
         }
+    }
+}
+
+extension SamplerStore {
+    static func persistentContainer() -> NSPersistentContainer {
+        let container = NSPersistentContainer(name: "SamplerModel")
+        container.loadPersistentStores { (storeDescription, error) in
+            if let error = error as NSError? {
+                assertionFailure("Unresolved error \(error), \(error.userInfo)")
+            }
+        }
+        return container
     }
 }

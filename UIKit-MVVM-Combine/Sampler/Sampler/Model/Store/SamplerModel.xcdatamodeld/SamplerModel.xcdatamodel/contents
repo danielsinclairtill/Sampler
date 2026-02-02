@@ -4,9 +4,9 @@
         <attribute name="difficulty" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="image" optional="YES" attributeType="String"/>
-        <attribute name="ingredients" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="ingredients" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer" customClassName="[String]"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="tags" optional="YES" attributeType="Transformable" customClassName="[String]"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer" customClassName="[String]"/>
         <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserCD" inverseName="items" inverseEntity="UserCD"/>
         <uniquenessConstraints>
             <uniquenessConstraint>

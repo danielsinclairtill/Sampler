@@ -36,7 +36,7 @@ extension Item: StoreConvertible {
             image = URL(string: coverURLString)
         }
 
-        return Item(name: itemCD.id,
+        return Item(name: itemCD.name,
                     ingredients: itemCD.ingredients,
                     difficulty: itemCD.difficulty,
                     tags: itemCD.tags,
