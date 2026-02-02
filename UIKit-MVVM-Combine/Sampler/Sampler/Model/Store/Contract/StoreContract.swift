@@ -18,4 +18,6 @@ public protocol StoreContract {
     
     func store<R: RequestStoreStoreContract>(_ request: R,
                                              result: ((Result<Void, StoreError>) -> Void)?)
+    
+    func wipe(result: ((Result<Void, StoreError>) -> Void)?)
 }

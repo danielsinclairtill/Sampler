@@ -96,16 +96,54 @@ class SamplerStore: StoreContract {
             context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
             // data
             let _ = request.data.convertToCD(context: context)
-
+            
             do {
                 try context.save()
                 // call on main thread
-                DispatchQueue.main.async {
-                    completion(.success(()))
-                }
+                completion(.success(()))
+                NotificationCenter.default.post(name: .itemDidUpdate, object: request.data)
             } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(StoreError.writeError))
+                completion(.failure(StoreError.writeError))
+            }
+        }
+    }
+    
+    
+    func wipe(result: ((Result<Void, StoreError>) -> Void)?) {
+        container.performBackgroundTask { context in
+            guard let entities = context.persistentStoreCoordinator?.managedObjectModel.entities else { return }
+            context.performAndWait { [weak self] in
+                guard let self else { return }
+                // Loop through every entity in your model
+                for entity in entities {
+                    guard let name = entity.name else { continue }
+                    
+                    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: name)
+                    let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+                    
+                    // Optional: Specify result type if you need the count
+                    deleteRequest.resultType = .resultTypeObjectIDs
+                    
+                    do {
+                        // Execute the delete
+                        let executeResult = try context.execute(deleteRequest) as? NSBatchDeleteResult
+                        
+                        // Important: Batch deletes happen on disk, so we must
+                        // merge changes back into memory if other contexts are active
+                        if let objectIDs = executeResult?.result as? [NSManagedObjectID] {
+                            NSManagedObjectContext.mergeChanges(
+                                fromRemoteContextSave: [NSDeletedObjectsKey: objectIDs],
+                                into: [self.container.viewContext]
+                            )
+                        }
+                        DispatchQueue.main.async {
+                            result?(.success(()))
+                        }
+                    } catch {
+                        DispatchQueue.main.async {
+                            result?(.failure(.writeError))
+                        }
+                    }
                 }
             }
         }
