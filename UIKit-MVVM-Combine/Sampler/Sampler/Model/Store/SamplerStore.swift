@@ -75,6 +75,7 @@ class SamplerStore: StoreContract {
     func store<R>(_ request: R, result: ((Result<Void, StoreError>) -> Void)?) where R : RequestStoreStoreContract {
         // perform store write on asynchronous thread
         container.performBackgroundTask { context in
+            context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy 
             // data
             let _ = request.data.convertToCD(context: context)
 
