@@ -21,6 +21,12 @@ class SamplerStore: StoreContract {
     }
     
     func get<R>(_ request: R, result: ((Result<R.Data, StoreError>) -> Void)?) where R : RequestStoreGetContract {
+        func completion(_ finalResult: Result<R.Data, StoreError>) {
+            DispatchQueue.main.async {
+                result?(finalResult)
+            }
+        }
+        
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: R.Data.enitityName)
         // Predicate: "WHERE id equals the id I passed in"
         fetchRequest.predicate = NSPredicate(format: "id == %@", request.id as CVarArg)
@@ -29,53 +35,65 @@ class SamplerStore: StoreContract {
         let asyncRequest = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { results in
             if let results = results.finalResult {
                 guard !results.isEmpty else {
-                    result?(.failure(StoreError.empty))
+                    completion(.failure(StoreError.empty))
                     return
                 }
                 guard let dataCD = results.first as? R.Data.CD else {
-                    result?(.failure(StoreError.readError))
+                    completion(.failure(StoreError.readError))
                     return
                 }
                 let data: R.Data = R.Data.convertFromCD(dataCD)
-                result?(.success(data))
+                completion(.success(data))
             }
         }
         do {
             try container.viewContext.execute(asyncRequest)
         } catch {
-            result?(.failure(StoreError.readError))
+            completion(.failure(StoreError.readError))
         }
     }
     
     func getList<R>(_ request: R,
                     result: ((Result<R.DataList, StoreError>) -> Void)?) where R : RequestStoreGetListContract {
+        func completion(_ finalResult: Result<R.DataList, StoreError>) {
+            DispatchQueue.main.async {
+                result?(finalResult)
+            }
+        }
+        
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: R.Data.enitityName)
         // perform store read on asynchronous thread, completion is called on main thread
         let asyncRequest = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { results in
             if let results = results.finalResult {
                 guard let dataCD = results as? [R.Data.CD] else {
-                    result?(.failure(StoreError.readError))
+                    completion(.failure(StoreError.readError))
                     return
                 }
                 let data = dataCD.map { R.Data.convertFromCD($0) }
                 if let data = data as? R.DataList {
-                    result?(.success(data))
+                    completion(.success(data))
                 } else {
-                    result?(.failure(StoreError.readError))
+                    completion(.failure(StoreError.readError))
                 }
             }
         }
         do {
             try container.viewContext.execute(asyncRequest)
         } catch {
-            result?(.failure(StoreError.readError))
+            completion(.failure(StoreError.readError))
         }
     }
     
     func store<R>(_ request: R, result: ((Result<Void, StoreError>) -> Void)?) where R : RequestStoreStoreContract {
+        func completion(_ finalResult: Result<Void, StoreError>) {
+            DispatchQueue.main.async {
+                result?(finalResult)
+            }
+        }
+        
         // perform store write on asynchronous thread
         container.performBackgroundTask { context in
-            context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy 
+            context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
             // data
             let _ = request.data.convertToCD(context: context)
 
@@ -83,11 +101,11 @@ class SamplerStore: StoreContract {
                 try context.save()
                 // call on main thread
                 DispatchQueue.main.async {
-                    result?(.success(()))
+                    completion(.success(()))
                 }
             } catch {
                 DispatchQueue.main.async {
-                    result?(.failure(StoreError.writeError))
+                    completion(.failure(StoreError.writeError))
                 }
             }
         }
