@@ -73,35 +73,40 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
         setPostButton()
         setSaveButton()
         setUser()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleItemUpdate), name: .itemDidUpdate, object: nil)
+    }
+    
+    private func updateItem(itemId: String) {
+        environment.store.get(ItemStoreRequest.GetDetail(id: itemId)) { [weak self] result in
+            guard let strongSelf = self else { return }
+            switch result {
+            case .success(let item):
+                strongSelf.output.item = item
+                strongSelf.output.isSaved = true
+            case .failure:
+                // do nothing
+                break
+            }
+            
+            guard strongSelf.output.item == nil else { return }
+            strongSelf.environment.api.request(ItemAPIRequest.Detail(id: strongSelf.itemId)) { [weak self] result in
+                guard let strongSelf = self else { return }
+                switch result {
+                case .success(let item):
+                    strongSelf.output.item = item
+                case .failure(let error):
+                    strongSelf.output.item = nil
+                    strongSelf.output.error = error.message
+                }
+            }
+        }
     }
     
     private func setViewDidLoad() {
         input.viewDidLoad.sink { [weak self] _ in
             guard let strongSelf = self else { return }
-            
-            strongSelf.environment.store.get(ItemStoreRequest.GetDetail(id: strongSelf.itemId)) { [weak self] result in
-                guard let strongSelf = self else { return }
-                switch result {
-                case .success(let item):
-                    strongSelf.output.item = item
-                    strongSelf.output.isSaved = true
-                case .failure:
-                    // do nothing
-                    break
-                }
-                
-                guard strongSelf.output.item == nil else { return }
-                strongSelf.environment.api.request(ItemAPIRequest.Detail(id: strongSelf.itemId)) { [weak self] result in
-                    guard let strongSelf = self else { return }
-                    switch result {
-                    case .success(let item):
-                        strongSelf.output.item = item
-                    case .failure(let error):
-                        strongSelf.output.item = nil
-                        strongSelf.output.error = error.message
-                    }
-                }
-            }
+            strongSelf.updateItem(itemId: strongSelf.itemId)
         }
         .store(in: &cancelBag)
     }
@@ -158,5 +163,11 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
             }
         }
         .store(in: &cancelBag)
+    }
+    
+    @objc func handleItemUpdate(_ notification: Notification) {
+        if let updatedItem = notification.object as? Item, updatedItem.id == itemId {
+            updateItem(itemId: itemId)
+        }
     }
 }
