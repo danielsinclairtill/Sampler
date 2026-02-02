@@ -11,6 +11,11 @@ class SamplerAPI: APIContract {
     // See [https://dummyjson.com/docs/recipes#recipes-all](https://dummyjson.com/docs/recipes#recipes-all) for documentation on test API
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
+    private let urlSession: URLSession
+    
+    init(urlSession: URLSession = URLSession.shared) {
+        self.urlSession = urlSession
+    }
     
     func request<R>(_ request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : RequestAPIContract {
         func completion(_ finalResult: Result<R.Response, APIError>) {
@@ -67,7 +72,7 @@ class SamplerAPI: APIContract {
         }
         
         // 3. Network Execution
-        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
             // Check for fundamental networking errors (e.g., offline)
             if let error = error as? URLError {
                 if error.code == .notConnectedToInternet || error.code == .timedOut {
