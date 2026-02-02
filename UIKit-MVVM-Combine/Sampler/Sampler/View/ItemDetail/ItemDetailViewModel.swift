@@ -73,8 +73,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
         setPostButton()
         setSaveButton()
         setUser()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleItemUpdate), name: .itemDidUpdate, object: nil)
+        setExternalItemUpdate()
     }
     
     private func updateItem(itemId: String) {
@@ -165,9 +164,14 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract, ObservableObject
         .store(in: &cancelBag)
     }
     
-    @objc func handleItemUpdate(_ notification: Notification) {
-        if let updatedItem = notification.object as? Item, updatedItem.id == itemId {
-            updateItem(itemId: itemId)
-        }
+    func setExternalItemUpdate() {
+        NotificationCenter.default.publisher(for: .itemDidUpdate)
+            .compactMap { $0.object as? Item } // Extract the ID safely
+            .filter { [weak self] updatedItem in updatedItem.id == self?.itemId } // Only react if it matches MY recipe
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.updateItem(itemId: self.itemId)
+            }
+            .store(in: &cancelBag)
     }
 }
