@@ -26,7 +26,7 @@ class ItemsListViewModelTests: XCTestCase {
     func testRefreshSampler() {
         let mockItems: [Item] = ModelMockData.makeMockItems(count: 10)
         mockEnvironment.mockApi.mockAPIResponses = [
-            .success(ItemRequest.List.Response(items: mockItems, total: 10, offset: 0))
+            .success(ItemAPIRequest.List.Response(items: mockItems, total: 10, offset: 0))
         ]
         let viewModel = ItemsListViewModel(environment: mockEnvironment,
                                            coordinator: mockCoordinator)
@@ -39,7 +39,7 @@ class ItemsListViewModelTests: XCTestCase {
         
         viewModel.input.refresh.send(())
         
-        let expectedRequest = ItemRequest.List()
+        let expectedRequest = ItemAPIRequest.List()
         XCTAssertFalse(viewModel.output.isRefreshing)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
@@ -63,7 +63,7 @@ class ItemsListViewModelTests: XCTestCase {
     
     func testRefreshSamplerEmptyError() {
         mockEnvironment.mockApi.mockAPIResponses = [
-            .success(ItemRequest.List.Response(items: [], total: 0, offset: 0))
+            .success(ItemAPIRequest.List.Response(items: [], total: 0, offset: 0))
         ]
         let viewModel = ItemsListViewModel(environment: mockEnvironment,
                                            coordinator: mockCoordinator)
@@ -94,7 +94,7 @@ class ItemsListViewModelTests: XCTestCase {
     func testRefreshSamplerImagesArePrefetched() {
         let mockItems: [Item] = ModelMockData.makeMockItems(count: 10)
         mockEnvironment.mockApi.mockAPIResponses = [
-            .success(ItemRequest.List.Response(items: mockItems, total: 10, offset: 0))
+            .success(ItemAPIRequest.List.Response(items: mockItems, total: 10, offset: 0))
         ]
         let viewModel = ItemsListViewModel(environment: mockEnvironment,
                                            coordinator: mockCoordinator)

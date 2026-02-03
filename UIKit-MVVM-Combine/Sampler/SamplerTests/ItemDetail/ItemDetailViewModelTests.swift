@@ -35,8 +35,8 @@ class ItemDetailViewModelTests: XCTestCase {
                                             coordinator: mockCoordinator)
         
         viewModel.input.viewDidLoad.send(())
-        
-        let expectedRequest = ItemRequest.Detail(id: itemId)
+
+        let expectedRequest = ItemAPIRequest.Detail(id: itemId)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 2)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
         XCTAssertEqual(viewModel.output.item, item)
@@ -55,7 +55,7 @@ class ItemDetailViewModelTests: XCTestCase {
         viewModel.input.viewDidLoad.send(())
 
         XCTAssertEqual(viewModel.output.error, APIError.serverError.message)
-        let expectedRequest = ItemRequest.Detail(id: itemId)
+        let expectedRequest = ItemAPIRequest.Detail(id: itemId)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
         XCTAssertEqual(viewModel.output.item, nil)
