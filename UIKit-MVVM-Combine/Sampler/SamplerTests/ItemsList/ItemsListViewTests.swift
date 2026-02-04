@@ -16,43 +16,7 @@ class ItemsListViewTests: XCTestCase {
         let view = ItemsListViewController(viewModel: viewModel)
         viewModel.output.isRefreshing = false
 
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
-    }
-    
-    func testItemsListSmallDevice() {
-        let items = ModelMockData.makeMockItems(count: 10)
-        let viewModel = MockItemsListViewModel(items: items)
-        let view = ItemsListViewController(viewModel: viewModel)
-        
-        assertSnapshot(of: view,
-                       as: .image(on: .iPhoneSe,
-                                  traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(on: .iPhoneSe,
-                                  traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
-    }
-    
-    func testItemsListLargeDevice() {
-        let items = ModelMockData.makeMockItems(count: 10)
-        let viewModel = MockItemsListViewModel(items: items)
-        let view = ItemsListViewController(viewModel: viewModel)
-        viewModel.output.isRefreshing = false
-        
-        assertSnapshot(of: view,
-                       as: .image(on: .iPadPro11,
-                                  traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(on: .iPadPro11,
-                                  traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
+        assertSnapshotSuite(of: view)
     }
 }
 
