@@ -15,7 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         // If we are running tests, use minimal setup, no production initialization
-        if NSClassFromString("XCTestCase") != nil {
+        if SamplerEnvironment.isTesting {
             window = UIWindow(windowScene: windowScene)
             window?.rootViewController = UIViewController() // Empty VC
             window?.makeKeyAndVisible()
