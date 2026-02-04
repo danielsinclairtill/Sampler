@@ -25,7 +25,6 @@
 /* Begin PBXFileReference section */
 		65C112CF2F0EC33400D16954 /* Sampler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sampler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65C112E82F0EC33400D16954 /* SamplerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SamplerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		65FE91672F33E39000DD3047 /* SamplerTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; name = SamplerTests.xctestplan; path = SamplerTests/SamplerTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -78,7 +77,6 @@
 		65C112C62F0EC33400D16954 = {
 			isa = PBXGroup;
 			children = (
-				65FE91672F33E39000DD3047 /* SamplerTests.xctestplan */,
 				65C112D12F0EC33400D16954 /* Sampler */,
 				65C112EB2F0EC33400D16954 /* SamplerTests */,
 				65C464EF2F118073007B0B67 /* Frameworks */,
