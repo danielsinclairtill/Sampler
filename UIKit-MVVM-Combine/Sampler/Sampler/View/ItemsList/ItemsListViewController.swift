@@ -196,7 +196,6 @@ class ItemsListViewController: UIViewController,
         })
         collectionView.dataSource = dataSource
         viewModel.output.$items
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 var snapshot = Snapshot()
                 snapshot.appendSections([.main])
@@ -219,7 +218,6 @@ class ItemsListViewController: UIViewController,
             strongSelf.viewModel.input.isTopOfPage = strongSelf.collectionView.contentOffset == .zero
         }
         viewModel.output.scrollToTop
-            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in
                 self?.viewModel.input.isScrolling = true
                 self?.collectionView.setContentOffset(.zero, animated: true)
@@ -229,7 +227,6 @@ class ItemsListViewController: UIViewController,
         // error message
         viewModel.output.$error
             .filter { !$0.isEmpty }
-            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] message in
                 self?.presentError(message: message)
             })

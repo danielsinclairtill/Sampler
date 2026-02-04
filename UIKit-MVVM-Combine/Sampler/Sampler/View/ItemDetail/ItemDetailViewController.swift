@@ -211,14 +211,12 @@ class ItemDetailViewController: UIViewController {
     
     private func bindViewModel() {
         viewModel.output.$item
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.setItem(item: item)
             }
             .store(in: &cancelBag)
 
         viewModel.output.$error
-            .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] message in
                 self?.presentError(message: message)
@@ -226,7 +224,6 @@ class ItemDetailViewController: UIViewController {
             .store(in: &cancelBag)
         
         viewModel.output.$isSaved
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] isSaved in
                 self?.setIsSaved(isSaved)
             }

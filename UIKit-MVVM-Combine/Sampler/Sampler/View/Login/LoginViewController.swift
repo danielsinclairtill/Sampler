@@ -111,14 +111,12 @@ class LoginViewController: UIViewController,
     
     private func bindViewModel() {
         viewModel.output.$loginButtonEnabled
-            .receive(on: DispatchQueue.main)
             .assign(to: \.isEnabled, on: loginButton)
             .store(in: &cancelBag)
         
         // error message
         viewModel.output.$error
             .filter { !$0.isEmpty }
-            .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] message in
                 self?.presentError(message: message)
             })
