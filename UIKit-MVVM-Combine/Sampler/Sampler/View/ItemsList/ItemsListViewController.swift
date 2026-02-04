@@ -21,10 +21,10 @@ class ItemsListViewController: UIViewController,
         static let empty = 25.0
     }
     
-    nonisolated private enum Section: Hashable {
+    private enum Section: Hashable {
         case main
     }
-    nonisolated private enum Row: Hashable {
+    private enum Row: Hashable {
         case item(Item)
         case loading
     }
