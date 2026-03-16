@@ -12,7 +12,7 @@
     "environmentVariableEntries" : [
       {
         "key" : "RECORD_SNAPSHOTS",
-        "value" : "FAILED"
+        "value" : "NONE"
       },
       {
         "key" : "IS_TEST",
