@@ -28,7 +28,8 @@ final class ItemListLoadingCell: UICollectionViewCell {
         spinner.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             spinner.topAnchor.constraint(equalTo: contentView.topAnchor),
-            spinner.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            // set lower priority to supress the UICollectionViewCompositionalLayout warnings when trying to autosize
+            spinner.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).withPriority(.init(999)),
             spinner.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             spinner.widthAnchor.constraint(equalToConstant: Sizes.animation),
             spinner.heightAnchor.constraint(equalToConstant: Sizes.animation)

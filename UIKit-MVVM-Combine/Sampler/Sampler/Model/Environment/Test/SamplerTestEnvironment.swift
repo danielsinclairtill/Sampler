@@ -8,9 +8,10 @@
 import Foundation
 import UIKit
 
-class SamplerEnvironment: EnvironmentContract {
-    static let shared = SamplerEnvironment()
+class SamplerTestEnvironment: EnvironmentContract {
+    static let shared = SamplerTestEnvironment()
     
     let api: APIContract = SamplerAPI()
+    let store: StoreContract = SamplerTestStore()
     let state: SamplerStateContract = SamplerStateManager()
 }

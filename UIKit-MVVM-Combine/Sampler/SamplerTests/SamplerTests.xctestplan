@@ -1,0 +1,35 @@
+{
+  "configurations" : [
+    {
+      "id" : "5E74E54C-1447-43AA-8DD0-41219807D91E",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "RECORD_SNAPSHOTS",
+        "value" : "NONE"
+      },
+      {
+        "key" : "IS_TEST",
+        "value" : "1"
+      }
+    ],
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Sampler.xcodeproj",
+        "identifier" : "65C112E72F0EC33400D16954",
+        "name" : "SamplerTests"
+      }
+    }
+  ],
+  "version" : 1
+}

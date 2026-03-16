@@ -27,7 +27,7 @@ public struct UserAPIRequest {
         ]
         public let method: APIRequestMethod = .get
         public var headers: [String : String]?
-        public let body: [String: Any]? = nil
+        public let body: APIRequestBody? = nil
         public let timeoutInterval: TimeInterval = 10
         
         public typealias Response = User

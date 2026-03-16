@@ -10,10 +10,12 @@ import Foundation
 @testable import Sampler
 
 class SamplerEnvironmentMock: EnvironmentContract {
-    var api: APIContract { return mockApi }
-    var state: SamplerStateContract { return mockState }
+    var api: APIContract { mockApi }
+    var state: SamplerStateContract { mockState }
+    var store: StoreContract { mockStore }
     
     let mockApi: SamplerAPIMock = SamplerAPIMock()
+    let mockStore: SampleStoreMock = SampleStoreMock()
     let mockState: SamplerStateManagerMock = SamplerStateManagerMock()
     
     /// Reset and clear the mock environment state.

@@ -39,11 +39,12 @@ class ItemsListViewModelTests: XCTestCase {
         
         viewModel.input.refresh.send(())
         
+        waitForValue(viewModel.output.$items, toBe: mockItems)
+        
         let expectedRequest = ItemAPIRequest.List()
         XCTAssertFalse(viewModel.output.isRefreshing)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
-        XCTAssertEqual(viewModel.output.items, mockItems)
     }
     
     func testRefreshSamplerServerError() {
@@ -57,8 +58,9 @@ class ItemsListViewModelTests: XCTestCase {
         
         viewModel.input.refresh.send(())
         
+        waitForValue(viewModel.output.$error, toBe: APIError.serverError.message)
+        
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
-        XCTAssertEqual(viewModel.output.error, APIError.serverError.message)
     }
     
     func testRefreshSamplerEmptyError() {
@@ -72,8 +74,9 @@ class ItemsListViewModelTests: XCTestCase {
         
         viewModel.input.refresh.send(())
         
+        waitForValue(viewModel.output.$error, toBe: APIError.serverError.message)
+        
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
-        XCTAssertEqual(viewModel.output.error, APIError.serverError.message)
     }
     
     func testRefreshSamplerLostConnectionError() {
@@ -87,8 +90,9 @@ class ItemsListViewModelTests: XCTestCase {
         
         viewModel.input.refresh.send(())
         
+        waitForValue(viewModel.output.$error, toBe: APIError.lostConnection.message)
+        
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
-        XCTAssertEqual(viewModel.output.error, APIError.lostConnection.message)
     }
     
     func testRefreshSamplerImagesArePrefetched() {
@@ -102,6 +106,8 @@ class ItemsListViewModelTests: XCTestCase {
         XCTAssertTrue(mockEnvironment.mockApi.mockImageManager.mockPrefetchTaskURLs.isEmpty)
         
         viewModel.input.refresh.send(())
+        
+        waitForValue(viewModel.output.$items, toBe: mockItems)
         
         // prefetches only the first 10 images
         let prefetchImageURLs: [URL] = Array(mockItems.prefix(upTo: 10)).compactMap { $0.image }

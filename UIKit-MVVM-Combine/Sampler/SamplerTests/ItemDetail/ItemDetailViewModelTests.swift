@@ -36,11 +36,12 @@ class ItemDetailViewModelTests: XCTestCase {
         
         viewModel.input.viewDidLoad.send(())
         
+        waitForValue(viewModel.output.$item, toBe: item)
+        waitForValue(viewModel.output.$user, toBe: user)
+
         let expectedRequest = ItemAPIRequest.Detail(id: itemId)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 2)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
-        XCTAssertEqual(viewModel.output.item, item)
-        XCTAssertEqual(viewModel.output.user, user)
     }
     
     func testItemDetailPresentsError() {
@@ -54,7 +55,8 @@ class ItemDetailViewModelTests: XCTestCase {
         
         viewModel.input.viewDidLoad.send(())
 
-        XCTAssertEqual(viewModel.output.error, APIError.serverError.message)
+        waitForValue(viewModel.output.$error, toBe: APIError.serverError.message)
+
         let expectedRequest = ItemAPIRequest.Detail(id: itemId)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })

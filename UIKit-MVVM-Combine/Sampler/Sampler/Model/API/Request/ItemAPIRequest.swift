@@ -39,7 +39,7 @@ public struct ItemAPIRequest {
         ]
         public let method: APIRequestMethod = .get
         public var headers: [String : String]?
-        public let body: [String: Any]? = nil
+        public let body: APIRequestBody? = nil
         public let timeoutInterval: TimeInterval = 10
         
         public struct Response: Decodable {
@@ -83,7 +83,7 @@ public struct ItemAPIRequest {
         ]
         public let method: APIRequestMethod = .get
         public var headers: [String : String]?
-        public let body: [String: Any]? = nil
+        public let body: APIRequestBody? = nil
         public let timeoutInterval: TimeInterval = 10
         
         public struct Response: Decodable {
@@ -118,7 +118,30 @@ public struct ItemAPIRequest {
         ]
         public let method: APIRequestMethod = .get
         public var headers: [String : String]?
-        public let body: [String: Any]? = nil
+        public let body: APIRequestBody? = nil
+        public let timeoutInterval: TimeInterval = 10
+        
+        public typealias Response = Item
+    }
+    
+    /**
+     Creates an item.
+
+     - Response: The created Item object
+     */
+    public struct Create: RequestAPIContract {
+        /// Creates an item.
+        /// - Parameter item: The Item object.
+        init(item: Item) {
+            path = "/recipes/add"
+            body = .encodable(item)
+        }
+        
+        public let path: String
+        public var parameters: [String : String]?
+        public let method: APIRequestMethod = .post
+        public var headers: [String : String]?
+        public let body: APIRequestBody?
         public let timeoutInterval: TimeInterval = 10
         
         public typealias Response = Item

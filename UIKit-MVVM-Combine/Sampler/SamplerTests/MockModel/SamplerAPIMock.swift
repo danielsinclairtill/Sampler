@@ -13,7 +13,7 @@ class SamplerAPIMock: APIContract {
     /// List of mock responses to occur during an API session in order. Can be a success or error response.
     var mockAPIResponses: [Result<Decodable, APIError>] = []
     /// List of mock requests called during this API session in order.
-    var mockAPIRequestsCalled: [RequestAPIContract] = []
+    var mockAPIRequestsCalled: [any RequestAPIContract] = []
     
     /// Function to reset API session state.
     func reset() {
@@ -27,7 +27,8 @@ class SamplerAPIMock: APIContract {
     var imageManager: ImageManagerContract { return mockImageManager }
     let mockImageManager: SamplerImageManagerMock = SamplerImageManagerMock()
 
-    func request<R>(_ request: R, result: ((Result<R.Response, Sampler.APIError>) -> Void)?) where R : Sampler.RequestAPIContract {
+    func request<R: RequestAPIContract>(_ request: R,
+                                        result: ((Result<R.Response, APIError>) -> Void)?) {
         // log called request
         mockAPIRequestsCalled.append(request)
 

@@ -15,6 +15,7 @@ public struct Item: Codable, Equatable {
     public let difficulty: String?
     public let tags: [String]?
     @StringForced public var userId: String?
+    public var user: User?
     public let image: URL?
     
     enum CodingKeys: String, CodingKey {

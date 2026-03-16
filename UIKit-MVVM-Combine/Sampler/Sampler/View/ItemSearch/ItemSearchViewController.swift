@@ -21,10 +21,10 @@ class ItemSearchViewController: UIViewController,
         static let empty = 25.0
     }
     
-    nonisolated private enum Section: Hashable, Sendable {
+    private enum Section: Hashable, Sendable {
         case main
     }
-    nonisolated private enum Row: Hashable, Sendable {
+    private enum Row: Hashable, Sendable {
         case item(Item)
         case loading
     }

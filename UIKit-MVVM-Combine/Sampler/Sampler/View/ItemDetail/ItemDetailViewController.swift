@@ -16,7 +16,7 @@ class ItemDetailViewController: UIViewController {
     private lazy var rootStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.alignment = .center
+        stackView.alignment = .leading
         stackView.spacing = 16.0
         stackView.backgroundColor = .clear
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,6 +66,19 @@ class ItemDetailViewController: UIViewController {
         return stackView
     }()
     
+    
+    private lazy var actionStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 8.0
+        stackView.distribution = .equalSpacing
+        stackView.backgroundColor = .clear
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
+    }()
+    
     private lazy var authorTitle: UILabel = {
         let label = UILabel()
         label.adjustsFontForContentSizeCategory = true
@@ -80,6 +93,22 @@ class ItemDetailViewController: UIViewController {
         label.numberOfLines = 0
         
         return label
+    }()
+    
+    private lazy var postButton: UIButton = {
+        let button = UIButton(configuration: .borderedTinted())
+        button.configuration?.title = "com.danielsinclairtill.Sampler.itemDetail.postButton.title".localized()
+        button.addTarget(self, action: #selector(didTapPostButton), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private lazy var saveButton: UIButton = {
+        let button = UIButton(configuration: .borderedTinted())
+        button.configuration?.title = "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save".localized()
+        button.addTarget(self, action: #selector(didTapSaveButton), for: .touchUpInside)
+        
+        return button
     }()
     
     init(viewModel: any ItemDetailViewModelBinding.Contract) {
@@ -135,6 +164,13 @@ class ItemDetailViewController: UIViewController {
         // make the descriptionTitle be the first the compress if the vertical spacing cannot fit all elements
         descriptionTitle.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         descrptionStackView.addArrangedSubview(descriptionTitle)
+        
+        // action section
+        rootStackView.addArrangedSubview(actionStackView)
+        
+        // buttons
+        actionStackView.addArrangedSubview(postButton)
+        actionStackView.addArrangedSubview(saveButton)
     }
     
     private func setupDesign() {
@@ -148,30 +184,48 @@ class ItemDetailViewController: UIViewController {
                 strongSelf.authorTitle.textColor = theme.attributes.colors.primaryFill()
                 strongSelf.descriptionTitle.font = theme.attributes.fonts.body()
                 strongSelf.descriptionTitle.textColor = theme.attributes.colors.primaryFill()
+                
+                strongSelf.postButton.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .highlighted:
+                        button.configuration?.baseForegroundColor = theme.attributes.colors.primaryFill().withAlphaComponent(0.8)
+                        button.configuration?.background.backgroundColor = theme.attributes.colors.secondary().withAlphaComponent(0.8)
+                    default:
+                        button.configuration?.baseForegroundColor = theme.attributes.colors.primaryFill()
+                        button.configuration?.background.backgroundColor = theme.attributes.colors.secondary()
+                    }
+                }
+                strongSelf.saveButton.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .highlighted:
+                        button.configuration?.baseForegroundColor = .white.withAlphaComponent(0.8)
+                        button.configuration?.background.backgroundColor = .systemGreen.withAlphaComponent(0.8)
+                    default:
+                        button.configuration?.baseForegroundColor = .white
+                        button.configuration?.background.backgroundColor = .systemGreen
+                    }
+                }
             }
             .store(in: &cancelBag)
     }
     
     private func bindViewModel() {
         viewModel.output.$item
-            .receive(on: DispatchQueue.main)
             .sink { [weak self] item in
                 self?.setItem(item: item)
             }
             .store(in: &cancelBag)
-        
-        viewModel.output.$user
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] user in
-                self?.setUser(user: user)
-            }
-            .store(in: &cancelBag)
 
         viewModel.output.$error
-            .receive(on: DispatchQueue.main)
             .dropFirst()
             .sink { [weak self] message in
                 self?.presentError(message: message)
+            }
+            .store(in: &cancelBag)
+        
+        viewModel.output.$isSaved
+            .sink { [weak self] isSaved in
+                self?.setIsSaved(isSaved)
             }
             .store(in: &cancelBag)
     }
@@ -183,6 +237,8 @@ class ItemDetailViewController: UIViewController {
 
         itemTitle.text = item?.name ?? "..."
         descriptionTitle.text = item?.ingredients?.joined(separator: ", ") ?? "..."
+        
+        setUser(user: item?.user)
     }
     
     private func setUser(user: User?) {
@@ -194,8 +250,28 @@ class ItemDetailViewController: UIViewController {
         authorTitle.text = user?.username ?? "..."
     }
     
+    private func setIsSaved(_ isSaved: Bool) {
+        saveButton.configuration?.title = isSaved ?
+        "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved".localized() :
+        "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save".localized()
+        saveButton.configuration?.background.backgroundColorTransformer = UIConfigurationColorTransformer { color in
+            isSaved ? color.withAlphaComponent(0.3) : color
+        }
+        saveButton.isEnabled = !isSaved
+    }
+    
     private func presentError(message: String) {
         let alert = AlertFactory.createAPIError(message: message, refreshHandler: nil)
         present(alert, animated: true, completion: nil)
+    }
+    
+    @objc
+    private func didTapPostButton() {
+        viewModel.input.tappedPostButton.send(())
+    }
+    
+    @objc
+    private func didTapSaveButton() {
+        viewModel.input.tappedSaveButton.send(())
     }
 }

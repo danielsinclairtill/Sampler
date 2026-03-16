@@ -15,13 +15,8 @@ class ItemDetailViewTests: XCTestCase {
         let user = ModelMockData.makeUser(id: "123")
         let viewModel = MockItemDetailViewModel(item: item, user: user)
         let view = ItemDetailViewController(viewModel: viewModel)
-        
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
+
+        assertSnapshotSuite(of: view)
     }
     
     func testStoryDetailLongTitle() {
@@ -35,13 +30,8 @@ class ItemDetailViewTests: XCTestCase {
         let user = ModelMockData.makeUser(id: "123")
         let viewModel = MockItemDetailViewModel(item: item, user: user)
         let view = ItemDetailViewController(viewModel: viewModel)
-        
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
+
+        assertSnapshotSuite(of: view)
     }
     
     func testStoryDetailLongUsername() {
@@ -54,12 +44,7 @@ class ItemDetailViewTests: XCTestCase {
         let viewModel = MockItemDetailViewModel(item: item, user: user)
         let view = ItemDetailViewController(viewModel: viewModel)
         
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
+        assertSnapshotSuite(of: view)
     }
     
     func testStoryDetailLongDetail() {
@@ -77,44 +62,7 @@ class ItemDetailViewTests: XCTestCase {
         let viewModel = MockItemDetailViewModel(item: item, user: user)
         let view = ItemDetailViewController(viewModel: viewModel)
         
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
-    }
-
-    func testStoryDetailSmallDevice() {
-        let item = ModelMockData.makeItem(id: "123")
-        let user = ModelMockData.makeUser(id: "123")
-        let viewModel = MockItemDetailViewModel(item: item, user: user)
-        let view = ItemDetailViewController(viewModel: viewModel)
-        
-        assertSnapshot(of: view,
-                       as: .image(on: .iPhoneSe,
-                                  traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(on: .iPhoneSe,
-                                  traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
-    }
-    
-    func testStoryDetailIPad() {
-        let item = ModelMockData.makeItem(id: "123")
-        let user = ModelMockData.makeUser(id: "123")
-        let viewModel = MockItemDetailViewModel(item: item, user: user)
-        let view = ItemDetailViewController(viewModel: viewModel)
-        
-        assertSnapshot(of: view,
-                       as: .image(on: .iPadPro11,
-                                  traits: UITraitCollection(userInterfaceStyle: .light)),
-                       named: "light mode")
-        assertSnapshot(of: view,
-                       as: .image(on: .iPadPro11,
-                                  traits: UITraitCollection(userInterfaceStyle: .dark)),
-                       named: "dark mode")
+        assertSnapshotSuite(of: view)
     }
 }
 
@@ -126,5 +74,6 @@ private class MockItemDetailViewModel: ItemDetailViewModelBinding.Contract {
     init(item: Item?,
          user: User?) {
         self.output = ItemDetailViewModelBinding.Output(item: item, user: user)
+        self.output.item?.user = user
     }
 }
