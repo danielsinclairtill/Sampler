@@ -1,4 +1,4 @@
-# Sampler - UIKit MVVM + Combine
+# Sampler - UIKit + MVVM + Combine
 
 A scalable and testable iOS application demonstrating the MVVM (Model-View-ViewModel) architectural pattern combined with Apple's Combine framework for reactive programming, all built with UIKit.
 
