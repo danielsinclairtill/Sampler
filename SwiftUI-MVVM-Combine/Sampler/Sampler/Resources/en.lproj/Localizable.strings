@@ -1,0 +1,36 @@
+/*
+  Localizable.strings
+  Sampler
+
+
+  
+*/
+
+// MARK: Login
+"com.danielsinclairtill.Sampler.login.title" = "Sampler";
+"com.danielsinclairtill.Sampler.login.usernameField.placeholder" = "Username";
+"com.danielsinclairtill.Sampler.login.passwordField.placholder" = "Password";
+"com.danielsinclairtill.Sampler.login.loginButton.title" = "Login";
+"com.danielsinclairtill.Sampler.login.skipLoginButton.title" = "Login with test account";
+
+// MARK: ItemsList
+"com.danielsinclairtill.Sampler.itemsList.title" = "Sampler";
+
+// MARK: ItemDetail
+"com.danielsinclairtill.Sampler.itemDetail.postButton.title" = "Post";
+"com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save" = "Save";
+"com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved" = "Saved";
+
+// MARK: ItemSearch
+"com.danielsinclairtill.Sampler.itemSearch.title" = "Search";
+
+// MARK: APIErorr
+"com.danielsinclairtill.Sampler.apiError.message.offlineMode" = "There seems to be no internet connection.";
+"com.danielsinclairtill.Sampler.apiError.message.noConnection" = "Lost internet connection.";
+"com.danielsinclairtill.Sampler.apiError.message.serverError" = "There seems to be a problem with our servers at the moment.";
+"com.danielsinclairtill.Sampler.apiError.message.authentification" = "You are not authenticated.";
+
+// MARK: Alert
+"com.danielsinclairtill.Sampler.alert.title" = "Oops!";
+"com.danielsinclairtill.Sampler.alert.apiError.action.refresh" = "Refresh";
+"com.danielsinclairtill.Sampler.alert.apiError.action.okay" = "Okay";
