@@ -9,7 +9,8 @@
 import Foundation
 import Combine
 
-class SamplerStateManager: ObservableObject, SamplerStateContract {
+@Observable
+class SamplerStateManager: SamplerStateContract {
     static let shared: SamplerStateManager = SamplerStateManager()
     private let defaults: UserDefaults
     
@@ -19,7 +20,7 @@ class SamplerStateManager: ObservableObject, SamplerStateContract {
     }
     
     // no secure, should be in keychain
-    @Published var user: AuthUser? {
+    var user: AuthUser? {
         didSet {
             if let encodedUser = try? JSONEncoder().encode(user) {
                 defaults.set(encodedUser, forKey: Keys.user)
@@ -27,7 +28,7 @@ class SamplerStateManager: ObservableObject, SamplerStateContract {
         }
     }
 
-    @Published var theme: SamplerDesignTheme {
+    var theme: SamplerDesignTheme {
         didSet {
             defaults.set(theme.rawValue, forKey: Keys.theme)
         }

@@ -18,25 +18,20 @@ struct ItemSearchView: View {
     }
     
     private var emptyView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 48))
+        VStack {
+            Image("empty")
+                .resizable()
+                .frame(width: 24, height: 24)
                 .foregroundColor(.gray)
-            Text("No Results Found")
-                .font(.headline)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     private var startView: some View {
-        VStack(spacing: 16) {
+        VStack {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(.gray)
-            Text("Start Searching")
-                .font(.headline)
-            Text("Enter a search term to find recipes")
-                .font(.subheadline)
+                .resizable()
+                .frame(width: 24, height: 24)
                 .foregroundColor(.gray)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -82,11 +77,11 @@ struct ItemSearchView: View {
                 .listStyle(.plain)
             }
         }
-        .searchable(text: $searchText, prompt: "Search recipes")
+        .searchable(text: $searchText)
         .onChange(of: searchText) { oldValue, newValue in
             viewModel.input.searchText = newValue
         }
-        .navigationTitle("Search")
+        .navigationTitle(String(localized: "com.danielsinclairtill.Sampler.itemSearch.title"))
         .apiErrorAlert($viewModel.output.error) {
             viewModel.input.refresh.send(())
         }

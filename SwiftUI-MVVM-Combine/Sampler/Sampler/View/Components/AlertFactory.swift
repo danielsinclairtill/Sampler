@@ -11,8 +11,8 @@ import Combine
 /// A view modifier that displays an error alert when an error message is present
 struct ErrorAlertModifier: ViewModifier {
     @Binding var errorMessage: String?
-    var title: String = "Error"
-    var dismissButtonTitle: String = "OK"
+    var title: String
+    var dismissButtonTitle: String
     var onDismiss: (() -> Void)? = nil
     
     var isPresented: Binding<Bool> {
@@ -27,7 +27,8 @@ struct ErrorAlertModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .alert(title, isPresented: isPresented) {
+            .alert(String(localized: LocalizedStringResource(stringLiteral: title)),
+                   isPresented: isPresented) {
                 Button(dismissButtonTitle) {
                     errorMessage = nil
                     onDismiss?()
@@ -48,7 +49,7 @@ extension View {
     ///   - onDismiss: Optional callback when alert is dismissed
     func errorAlert(
         _ errorMessage: Binding<String?>,
-        title: String = "Error",
+        title: String = "com.danielsinclairtill.Sampler.errir.title",
         dismissButtonTitle: String = "OK",
         onDismiss: (() -> Void)? = nil
     ) -> some View {

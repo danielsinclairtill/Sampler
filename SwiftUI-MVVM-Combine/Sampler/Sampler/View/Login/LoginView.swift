@@ -18,21 +18,11 @@ struct LoginView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [
-                    Color(SamplerDesign.shared.theme.attributes.colors.primary()),
-                    Color(SamplerDesign.shared.theme.attributes.colors.primary()).opacity(0.8)
-                ]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
             VStack(spacing: 16) {
                 Spacer()
                 
                 // Title
-                Text("Sampler")
+                Text("com.danielsinclairtill.Sampler.login.title")
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(Color(SamplerDesign.shared.theme.attributes.colors.primaryFill()))
                     .padding(.bottom, 48)
@@ -46,7 +36,7 @@ struct LoginView: View {
                     .disableAutocorrection(true)
                 
                 // Password TextField
-                SecureField(String(localized: "com.danielsinclairtill.Sampler.login.passwordField.placeholder"),
+                SecureField(String(localized: "com.danielsinclairtill.Sampler.login.passwordField.placholder"),
                             text: $viewModel.input.password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 24)
@@ -58,25 +48,22 @@ struct LoginView: View {
                 Button(action: {
                     viewModel.input.loginTapped.send(())
                 }) {
-                    Text("Login")
+                    Text("com.danielsinclairtill.Sampler.login.loginButton.title")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color(SamplerDesign.shared.theme.attributes.colors.primaryFill()))
-                        .foregroundColor(.white)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 24)
                 .disabled(!viewModel.output.loginButtonEnabled)
-                .opacity(viewModel.output.loginButtonEnabled ? 1.0 : 0.5)
+                .buttonStyle(.borderedProminent)
                 
                 // Skip Button
                 Button(action: {
                     viewModel.input.skipLoginTapped.send(())
                 }) {
-                    Text("Skip")
+                    Text("com.danielsinclairtill.Sampler.login.skipLoginButton.title")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color(SamplerDesign.shared.theme.attributes.colors.primary()).opacity(0.3))
                         .foregroundColor(Color(SamplerDesign.shared.theme.attributes.colors.primaryFill()))
                         .cornerRadius(8)
                 }
@@ -86,10 +73,10 @@ struct LoginView: View {
             }
             .padding(.vertical, 24)
         }
-        .errorAlert($viewModel.output.error, title: "Login Failed")
+        .errorAlert($viewModel.output.error)
     }
 }
 
 #Preview {
-    LoginView(viewModel: LoginViewModel(environment: SamplerEnvironment.shared))
+    LoginView(viewModel: LoginViewModel(environment: SamplerEnvironment.mock))
 }

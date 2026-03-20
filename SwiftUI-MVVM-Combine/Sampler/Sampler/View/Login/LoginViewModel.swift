@@ -44,12 +44,14 @@ enum LoginViewModelBinding {
 // MARK: ViewModel
 class LoginViewModel: LoginViewModelBinding.Contract {
     @PublishedObject var input = LoginViewModelBinding.Input()
-    @PublishedObject var output = LoginViewModelBinding.Output()
+    @PublishedObject var output: LoginViewModelBinding.Output
     private var cancelBag = Set<AnyCancellable>()
     
     private let environment: any EnvironmentContract
     
-    init(environment: any EnvironmentContract) {
+    init(output: LoginViewModelBinding.Output = .init(),
+         environment: any EnvironmentContract) {
+        self.output = output
         self.environment = environment
         
         // bind inputs and outputs

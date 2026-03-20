@@ -6,32 +6,35 @@
 //
 
 import Foundation
-import Combine
+import SwiftUI
 
-class SamplerEnvironment: ObservableObject, EnvironmentContract {
-    static let shared: any EnvironmentContract = {
+@Observable
+class SamplerEnvironment: EnvironmentContract {
+    static let shared: SamplerEnvironment = {
         if SamplerEnvironment.isTesting {
-            SamplerTestEnvironment()
+            SamplerEnvironment.mock
         } else {
-            SamplerEnvironment()
+            SamplerEnvironment.production
         }
     }()
     
-    let api: APIContract = SamplerAPI()
-    let store: StoreContract = SamplerStore(container: SamplerStore.persistentContainer())
-    @Published var state: any SamplerStateContract
+    let api: APIContract
+    let store: StoreContract
+    var state: any SamplerStateContract
     
-    private var cancellables = Set<AnyCancellable>()
-    
-    init() {
-        let stateManager = SamplerStateManager()
-        self.state = stateManager
-        
-        // Forward changes from the nested StateManager to this environment
-        stateManager.objectWillChange
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
+    init(api: APIContract = SamplerAPI(),
+         store: StoreContract = SamplerStore(container: SamplerStore.persistentContainer()),
+         state: any SamplerStateContract = SamplerStateManager()) {
+        self.api = api
+        self.store = store
+        self.state = state
     }
+}
+
+extension SamplerEnvironment {
+    static let production = SamplerEnvironment()
+    
+    static let mock = SamplerEnvironment(api: SamplerAPI(),
+                                         store: SamplerTestStore(),
+                                         state: SamplerStateManager())
 }
