@@ -11,34 +11,21 @@ class SamplerAPI: APIContract {
     // See [https://dummyjson.com/docs/recipes#recipes-all](https://dummyjson.com/docs/recipes#recipes-all) for documentation on test API
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
-    private let urlSession: URLSession
     
-    init(urlSession: URLSession = URLSession.shared) {
-        self.urlSession = urlSession
-    }
-    
-    func request<R>(_ request: R, result: ((Result<R.Response, APIError>) -> Void)?) where R : RequestAPIContract {
-        func completion(_ finalResult: Result<R.Response, APIError>) {
-            DispatchQueue.main.async {
-                result?(finalResult)
-            }
-        }
-        
-        // 1. URL Construction (Renamed variable to avoid shadowing)
-        guard var components = URLComponents(string: baseUrl + request.path) else {
+    func request<R>(_ request: R) async throws -> R.Response where R : RequestAPIContract {
+        // 1. URL Construction
+        guard var urlComponents = URLComponents(string: baseUrl + request.path) else {
             assertionFailure("url for api request was not formatted correctly")
-            completion(.failure(.serverError))
-            return
+            throw APIError.serverError
         }
         
-        components.queryItems = request.parameters?.map { key, value in
+        urlComponents.queryItems = request.parameters?.map { key, value in
             URLQueryItem(name: key, value: value)
         }.sorted { $0.name < $1.name }
         
-        guard let url = components.url else {
+        guard let url = urlComponents.url else {
             assertionFailure("url for api request was not formatted correctly")
-            completion(.failure(.serverError))
-            return
+            throw APIError.serverError
         }
         
         // 2. Request Configuration
@@ -60,65 +47,63 @@ class SamplerAPI: APIContract {
                     encoder.outputFormatting = .sortedKeys
                     data = try encoder.encode(object)
                 case .dictionary(let dict):
+                    guard JSONSerialization.isValidJSONObject(dict) else {
+                        assertionFailure("body for api request was not formatted correctly")
+                        throw APIError.requestError
+                    }
                     data = try JSONSerialization.data(withJSONObject: dict, options: [.sortedKeys])
                 }
                 urlRequest.httpBody = data
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             } catch {
                 assertionFailure("body for api request was not formatted correctly")
-                result?(.failure(.requestError))
-                return
+                throw APIError.requestError
             }
         }
         
         // 3. Network Execution
-        let task = urlSession.dataTask(with: urlRequest) { data, response, error in
-            // Check for fundamental networking errors (e.g., offline)
-            if let error = error as? URLError {
-                if error.code == .notConnectedToInternet || error.code == .timedOut {
-                    completion(.failure(.lostConnection))
-                } else {
-                    completion(.failure(.serverError))
-                }
-                return
-            }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(.serverError))
-                return
+                throw APIError.serverError
             }
             
-            // 4. Status Code Handling (Using Switch to prevent multiple callbacks)
+            // 4. Status Code Handling
             switch httpResponse.statusCode {
             case 200...299:
-                // Success range, proceed to decoding
+                // Success - continue to decoding
                 break
             case 400:
-                completion(.failure(.requestError))
-                return
+                throw APIError.requestError
             case 401:
-                completion(.failure(.authentification))
-                return
+                throw APIError.authentification
             default:
-                completion(.failure(.serverError))
-                return
+                throw APIError.serverError
             }
             
-            // 5. Data Unwrapping
-            guard let data = data else {
-                completion(.failure(.serverError))
-                return
-            }
-            
-            // 6. Decoding
+            // 5. Decoding
             do {
                 let decoder = JSONDecoder()
-                let decodedData = try decoder.decode(R.Response.self, from: data)
-                completion(.success(decodedData))
+                return try decoder.decode(R.Response.self, from: data)
             } catch {
-                completion(.failure(.serverError))
+                // Mapping decoding errors to serverError to match original logic
+                throw APIError.serverError
             }
+            
+        } catch let error as URLError {
+            // 6. Network Error Mapping
+            if error.code == .notConnectedToInternet || error.code == .timedOut {
+                throw APIError.lostConnection
+            } else {
+                throw APIError.serverError
+            }
+        } catch let error as APIError {
+            // Re-throw known API errors (from status code checks)
+            throw error
+        } catch {
+            // Catch-all for any other unexpected errors
+            throw APIError.serverError
         }
-        task.resume()
     }
 }

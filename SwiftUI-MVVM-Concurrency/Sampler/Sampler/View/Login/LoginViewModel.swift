@@ -57,14 +57,13 @@ class LoginViewModel: LoginViewModelBinding.Contract {
     }
     
     private func login(username: String, password: String) {
-        environment.api.request(LoginAPIRequest.Login(username: username,
-                                                      password: password)) { [weak self] result in
+        Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
-            
-            switch result {
-            case .success(let response):
+            do {
+                let response = try await strongSelf.environment.api.request(LoginAPIRequest.Login(username: username,
+                                                                                                  password: password))
                 strongSelf.environment.state.user = response
-            case .failure(let error):
+            } catch let error as APIError {
                 // the API returns a `.requestError` when login credentials are not found
                 if error == .requestError {
                     strongSelf.output.error = APIError.authentification.message

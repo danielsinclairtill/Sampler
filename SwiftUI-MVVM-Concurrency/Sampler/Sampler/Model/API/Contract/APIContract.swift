@@ -16,6 +16,5 @@ public protocol APIContract {
     var imageManager: ImageManagerContract { get }
     
     /// Function to handle a GET request for a certain API request, which must conform to the APIRequestContract.
-    func request<R: RequestAPIContract>(_ request: R,
-                                        result: ((Result<R.Response, APIError>) -> Void)?)
+    func request<R: RequestAPIContract>(_ request: R) async throws -> R.Response
 }

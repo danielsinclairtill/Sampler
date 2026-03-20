@@ -101,29 +101,27 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
             return
         }
         
-        environment.api.request(ItemAPIRequest.Search(text: searchText, offset: offset)) { [weak self] result in
+        Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
-            switch result {
-            case .success(let data):
-                guard !data.items.isEmpty else {
+            do {
+                let results = try await strongSelf.environment.api.request(ItemAPIRequest.Search(text: searchText, offset: offset))
+                if results.items.isEmpty {
                     strongSelf.output.items = []
-                    break
-                }
-                
-                let newItems = data.items
-                
-                strongSelf.output.total = data.total
-                // if an offset was passed it is a load next page call
-                if offset > 0 && !strongSelf.output.items.isEmpty {
-                    strongSelf.output.items.append(contentsOf: newItems)
                 } else {
-                    strongSelf.output.items = newItems
+                    let newItems = results.items
+                    
+                    strongSelf.output.total = results.total
+                    // if an offset was passed it is a load next page call
+                    if offset > 0 && !strongSelf.output.items.isEmpty {
+                        strongSelf.output.items.append(contentsOf: newItems)
+                    } else {
+                        strongSelf.output.items = newItems
+                    }
+                    // prefetch the first 10 items images required for the cells
+                    strongSelf.prefetchImages(items: Array(newItems.prefix(10)))
                 }
-                strongSelf.output.hasMorePages = strongSelf.output.items.count < strongSelf.output.total
-
-                // prefetch the first 10 items images required for the cells
-                strongSelf.prefetchImages(items: Array(newItems.prefix(10)))
-            case .failure(let error):
+            }
+            catch let error as APIError {
                 // keep whatever the previous state of the items list was, and send an error
                 strongSelf.output.error = error.message
             }
