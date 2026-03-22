@@ -173,6 +173,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
     
     func setExternalItemUpdate() {
         NotificationCenter.default.publisher(for: .itemDidUpdate)
+            .receive(on: DispatchQueue.main)
             .compactMap { $0.object as? Item } // Extract the ID safely
             .filter { [weak self] updatedItem in updatedItem.id == self?.itemId } // Only react if it matches MY recipe
             .sink { [weak self] _ in
