@@ -15,7 +15,6 @@ enum ItemSearchDestination: Hashable {
 }
 
 /// Router for managing navigation in the Item Search tab
-@MainActor
 class ItemSearchRouter: @MainActor NavigationRouter {
     @Published var navigationPath = NavigationPath()
     

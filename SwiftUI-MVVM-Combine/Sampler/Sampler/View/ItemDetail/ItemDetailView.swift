@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemDetailView: View {    
-    @StateObject private var viewModel: ItemDetailViewModel
+struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
+    @StateObject private var viewModel: ViewModel
     
-    init(viewModel: ItemDetailViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
@@ -90,7 +90,7 @@ struct ItemDetailView: View {
         .onAppearOnce {
             viewModel.input.viewDidLoad.send(())
         }
-        .errorAlert($viewModel.output.error)
+        .errorAlert(viewModel.output.error)
     }
 }
 

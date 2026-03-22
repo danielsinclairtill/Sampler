@@ -93,6 +93,7 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     }
     
     private func updateData(offset: Int = 0) {
+        output.error = nil
         output.isLoading = true
         environment.api.request(ItemAPIRequest.List(offset: offset)) { [weak self] result in
             guard let strongSelf = self else { return }

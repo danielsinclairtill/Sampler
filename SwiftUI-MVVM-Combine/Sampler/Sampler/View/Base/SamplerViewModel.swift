@@ -12,6 +12,6 @@ protocol SamplerViewModelContract: ObservableObject {
     associatedtype Input
     associatedtype Output
 
-    var input: Input { get }
+    var input: Input { get set }
     var output: Output { get }
 }

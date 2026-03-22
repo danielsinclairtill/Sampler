@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemsListView: View {
-    @StateObject private var viewModel: ItemsListViewModel
+struct ItemsListView<ViewModel: ItemsListViewModelBinding.Contract>: View {
+    @StateObject private var viewModel: ViewModel
     
-    init(viewModel: ItemsListViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
@@ -69,7 +69,7 @@ struct ItemsListView: View {
         .onAppearOnce {
             viewModel.input.viewDidLoad.send(())
         }
-        .apiErrorAlert($viewModel.output.error) {
+        .apiErrorAlert(viewModel.output.error) {
             viewModel.input.refresh.send(())
         }
     }

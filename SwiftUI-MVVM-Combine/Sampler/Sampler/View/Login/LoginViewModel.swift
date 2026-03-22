@@ -59,6 +59,7 @@ class LoginViewModel: LoginViewModelBinding.Contract {
     }
     
     private func login(username: String, password: String) {
+        output.error = nil
         environment.api.request(LoginAPIRequest.Login(username: username,
                                                       password: password)) { [weak self] result in
             guard let strongSelf = self else { return }

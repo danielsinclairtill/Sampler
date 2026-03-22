@@ -82,7 +82,7 @@ struct ItemSearchView: View {
             viewModel.input.searchText = newValue
         }
         .navigationTitle(String(localized: "com.danielsinclairtill.Sampler.itemSearch.title"))
-        .apiErrorAlert($viewModel.output.error) {
+        .apiErrorAlert(viewModel.output.error) {
             viewModel.input.refresh.send(())
         }
     }

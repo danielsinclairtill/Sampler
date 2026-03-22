@@ -8,7 +8,6 @@ import Foundation
 import Combine
 
 /// Coordinator for managing root-level tab navigation
-@MainActor
 class TabRouter: ObservableObject {
     @Published var selectedTab: Int = 0
     @PublishedObject var itemsListRouter = ItemsListRouter()

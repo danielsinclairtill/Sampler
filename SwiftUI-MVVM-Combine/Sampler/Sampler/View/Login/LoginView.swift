@@ -8,11 +8,11 @@
 import SwiftUI
 import Combine
 
-struct LoginView: View {
-    @StateObject private var viewModel: LoginViewModel
+struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
+    @StateObject private var viewModel: ViewModel
     @State private var errorMessage = ""
 
-    init(viewModel: LoginViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
@@ -73,7 +73,7 @@ struct LoginView: View {
             }
             .padding(.vertical, 24)
         }
-        .errorAlert($viewModel.output.error)
+        .errorAlert(viewModel.output.error)
     }
 }
 

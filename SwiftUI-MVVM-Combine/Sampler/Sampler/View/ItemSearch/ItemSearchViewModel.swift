@@ -92,6 +92,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
     
     private func updateData(searchText: String,
                             offset: Int = 0) {
+        output.error = nil
         output.isLoading = true
 
         guard !searchText.isEmpty else {

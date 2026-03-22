@@ -81,6 +81,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
     }
     
     private func updateItem(itemId: String) {
+        output.error = nil
         environment.store.get(ItemStoreRequest.GetDetail(id: itemId)) { [weak self] result in
             guard let strongSelf = self else { return }
             switch result {
