@@ -17,21 +17,30 @@ struct AsyncImageView: View {
         self.url = url
         self.placeholder = placeholder
     }
+    
+    @ViewBuilder
+    private var placeholderView: some View {
+        if let placeholder {
+            placeholder
+                .resizable()
+                .scaledToFit()
+        } else {
+            Color(.systemGray6)
+        }
+    }
 
     var body: some View {
-        KFImage(url)
-            .placeholder {
-                if let placeholder {
-                    placeholder
-                        .resizable()
-                        .scaledToFit()
-                } else {
-                    Color(.systemGray6)
+        if SamplerEnvironment.isTesting {
+            placeholderView
+        } else {
+            KFImage(url)
+                .placeholder {
+                    placeholderView
                 }
-            }
-            .fade(duration: 0.25)
-            .resizable()
-            .scaledToFit()
+                .fade(duration: 0.25)
+                .resizable()
+                .scaledToFit()
+        }
     }
 }
 

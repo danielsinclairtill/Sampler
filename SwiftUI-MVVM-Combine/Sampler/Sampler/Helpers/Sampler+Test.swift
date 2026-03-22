@@ -9,6 +9,6 @@ import Foundation
 
 extension SamplerEnvironment {
     static var isTesting: Bool {
-        ProcessInfo.processInfo.environment["IS_TESTING"] == "1"
+        ProcessInfo.processInfo.environment["IS_TEST"] == "1"
     }
 }
