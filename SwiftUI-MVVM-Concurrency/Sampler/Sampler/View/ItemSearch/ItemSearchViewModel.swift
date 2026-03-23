@@ -11,37 +11,28 @@ import Combine
 
 // MARK: Input + Output
 enum ItemSearchViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Input == ItemSearchViewModelBinding.Input,
-                                                      Output == ItemSearchViewModelBinding.Output {
+    protocol Contract: SamplerViewModelContract where Output == ItemSearchViewModelBinding.Output {
         var imageManager: ImageManagerContract { get }
-    }
-    
-    class Input: ObservableObject {
+        
         /// The items list is in the loading state and ready to refresh the data.
-        var refresh = PassthroughSubject<Void, Never>()
+        func refresh()
         /// The user performs an action which intends to refresh the items list.
-        var refreshBegin = PassthroughSubject<Void, Never>()
+        func refreshBegin()
         /// The next page of items in the list should load.
-        var loadNextPage = PassthroughSubject<Void, Never>()
-        /// The items list is currently scrolling automatically.
-        @Published var isScrolling: Bool = false
-        /// The user is at the top of the items list.
-        @Published var isTopOfPage: Bool = true
+        func loadNextPage()
         /// A cell at a row index was tapped in the items list.
-        var cellTapped = PassthroughSubject<Int, Never>()
-        /// The text in the search bar.
-        @Published var searchText: String = ""
+        func cellTapped(index: Int)
     }
 
     class Output: ObservableObject {
+        /// The text in the search bar.
+        @Published var searchText: String
         /// The items list to display.
         @Published var items: [Item] = []
         /// Show the items list in a refreshing state.
         @Published var isRefreshing: Bool = false
         /// Show an error message to display over the items list.
         @Published var error: String?
-        /// Scroll the items list to the top automatically.
-        fileprivate(set) var scrollToTop = PassthroughSubject<Void, Never>()
         /// The total number of items possible in the list.
         @Published var total: Int = 0
         /// If the items list are loading by refreshing or pagnation.
@@ -49,16 +40,16 @@ enum ItemSearchViewModelBinding {
         /// If the list has more  items that should load.
         @Published var hasMorePages: Bool = false
         
-        init(items: [Item] = [],
+        init(searchText: String = "",
+             items: [Item] = [],
              isRefreshing: Bool = false,
              error: String? = nil,
-             scrollToTop: PassthroughSubject<Void, Never> = PassthroughSubject<Void, Never>(),
              total: Int = 0,
              isLoading: Bool = false) {
+            self.searchText = ""
             self.items = items
             self.isRefreshing = isRefreshing
             self.error = error
-            self.scrollToTop = scrollToTop
             self.total = total
             self.isLoading = isLoading
         }
@@ -66,8 +57,7 @@ enum ItemSearchViewModelBinding {
 }
 
 // MARK: ViewModel
-class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
-    @PublishedObject var input = ItemSearchViewModelBinding.Input()
+class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject {
     @PublishedObject var output: ItemSearchViewModelBinding.Output
     private var cancelBag = Set<AnyCancellable>()
     
@@ -84,10 +74,7 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
         self.environment = environment
         self.router = router
         
-        // bind inputs and outputs
-        setRefresh()
-        setLoadNextPage()
-        setCellTapped()
+        listenSearchText()
     }
     
     private func updateData(searchText: String,
@@ -136,63 +123,45 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
     }
     
     // MARK: Binding
-    private func setRefresh() {
-        input.$searchText
+    private func listenSearchText() {
+        output.$searchText
             .removeDuplicates()
             // debounce search text input to limit how often we request to the API and refresh
             .debounce(for: 0.2,
                       scheduler: DispatchQueue.main)
             .sink { [weak self] searchText in
-                guard let strongSelf = self else { return }
+                guard let self = self else { return }
                 guard !searchText.isEmpty else {
-                    strongSelf.output.items = []
-                    strongSelf.output.isLoading = false
-                    strongSelf.output.isRefreshing = false
+                    self.output.items = []
+                    self.output.isLoading = false
+                    self.output.isRefreshing = false
                     return
                 }
-                strongSelf.input.refreshBegin.send(())
-            }
-            .store(in: &cancelBag)
-        
-        input.refreshBegin
-            .sink { [weak self] refreshType in
-                guard let strongSelf = self else { return }
-                strongSelf.output.isRefreshing = true
-            }
-            .store(in: &cancelBag)
-        
-        // all animations should be completed after refreshBegin and before starting the refresh
-        input.refresh
-            .sink { [weak self] _ in
-                guard let strongSelf = self else { return }
-                strongSelf.updateData(searchText: strongSelf.input.searchText)
+                refreshBegin()
             }
             .store(in: &cancelBag)
     }
     
-    private func setLoadNextPage() {
-        input.loadNextPage
-            // ensure not to load anymore if the total number of items is already displayed
-            .filter { [weak self] in
-                guard let strongSelf = self else { return false }
-                return !strongSelf.output.isLoading && strongSelf.output.hasMorePages
-            }
-            .sink {  [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.updateData(searchText: strongSelf.input.searchText,
-                                      offset: strongSelf.output.items.count)
-            }
-            .store(in: &cancelBag)
+    func refreshBegin() {
+        output.isRefreshing = true
+    }
+    
+    func refresh() {
+        // all animations should be completed after refreshBegin and before starting the refresh
+        updateData(searchText: output.searchText)
     }
 
-    private func setCellTapped() {
-        input.cellTapped.map { ($0, self.output.items) }
-            .sink { [weak self] (row, items) in
-                if items.indices.contains(row),
-                   let id = items[row].id {
-                    self?.router.navigate(to: .itemDetail(id: id))
-                }
-            }
-            .store(in: &cancelBag)
+    func loadNextPage() {
+        // ensure not to load anymore if the total number of items is already displayed
+        guard !output.isLoading && output.hasMorePages else { return }
+        updateData(searchText: output.searchText,
+                   offset: output.items.count)
+    }
+
+    func cellTapped(index: Int) {
+        if output.items.indices.contains(index),
+           let id = output.items[index].id {
+            router.navigate(to: .itemDetail(id: id))
+        }
     }
 }

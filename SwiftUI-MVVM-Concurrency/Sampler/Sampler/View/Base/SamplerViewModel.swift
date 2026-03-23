@@ -8,10 +8,8 @@
 import Foundation
 import SwiftUI
 
-protocol SamplerViewModelContract: ObservableObject {
-    associatedtype Input
+protocol SamplerViewModelContract {
     associatedtype Output
 
-    var input: Input { get }
     var output: Output { get }
 }

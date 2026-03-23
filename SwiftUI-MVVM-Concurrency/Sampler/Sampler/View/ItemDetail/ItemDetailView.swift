@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct ItemDetailView: View {    
-    @StateObject private var viewModel: ItemDetailViewModel
+    @State private var viewModel: ItemDetailViewModel
     
     init(viewModel: ItemDetailViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -65,7 +65,7 @@ struct ItemDetailView: View {
                 // Action Buttons
                 HStack(spacing: 12) {
                     Button(action: {
-                        viewModel.input.tappedPostButton.send(())
+                        viewModel.tappedPostButton()
                     }) {
                         Text("com.danielsinclairtill.Sampler.itemDetail.postButton.title")
                             .frame(maxWidth: .infinity)
@@ -76,7 +76,7 @@ struct ItemDetailView: View {
                     }
                     
                     Button(action: {
-                        viewModel.input.tappedSaveButton.send(())
+                        viewModel.tappedSaveButton()
                     }) {
                         Text(viewModel.output.isSaved ? "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved" : "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save")
                             .frame(maxWidth: .infinity)
@@ -94,7 +94,7 @@ struct ItemDetailView: View {
         .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
         .onAppearOnce {
-            viewModel.input.viewDidLoad.send(())
+            viewModel.viewDidLoad()
         }
         .errorAlert($viewModel.output.error)
     }

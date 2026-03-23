@@ -11,27 +11,24 @@ import Combine
 
 // MARK: Input + Output
 enum LoginViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Input == LoginViewModelBinding.Input,
-                                                      Output == LoginViewModelBinding.Output { }
-    
-    class Input: ObservableObject {
-        /// The inputted email.
-        @Published var username: String = ""
-        /// The inputted password.
-        @Published var password: String = ""
-        
+    protocol Contract: SamplerViewModelContract where Output == LoginViewModelBinding.Output {
         /// When the login button is tapped.
-        var loginTapped = PassthroughSubject<Void, Never>()
+        func loginTapped()
         
         /// When the skip login button is tapped.
-        var skipLoginTapped = PassthroughSubject<Void, Never>()
+        func skipLoginTapped()
     }
 
-    class Output: ObservableObject {
+    @Observable
+    class Output {
+        /// The inputted email.
+        var username: String = ""
+        /// The inputted password.
+        var password: String = ""
         /// If the login button is enabled.
-        @Published var loginButtonEnabled: Bool = false
+        var loginButtonEnabled: Bool = false
         /// Show an error message to display over the item details.
-        @Published var error: String?
+        var error: String?
         
         init(loginbuttonEnabled: Bool = false,
              error: String? = nil) {
@@ -42,59 +39,57 @@ enum LoginViewModelBinding {
 }
 
 // MARK: ViewModel
-class LoginViewModel: LoginViewModelBinding.Contract {
-    @PublishedObject var input = LoginViewModelBinding.Input()
-    @PublishedObject var output = LoginViewModelBinding.Output()
+class LoginViewModel: ObservableViewModel, LoginViewModelBinding.Contract {
+    var output = LoginViewModelBinding.Output()
     private var cancelBag = Set<AnyCancellable>()
-    
+
     private let environment: any EnvironmentContract
     
-    init(environment: any EnvironmentContract) {
+    init(environment: any EnvironmentContract,
+         output: LoginViewModelBinding.Output = .init()) {
+        self.output = output
         self.environment = environment
         
+        super.init()
         // bind inputs and outputs
-        setLogin()
+        listenInput()
+    }
+    
+    private func listenInput() {
+        observe { [weak self] in
+            _ = self?.output.username
+            _ = self?.output.password
+        } onChange: { [weak self] in
+            guard let self else { return }
+            self.output.loginButtonEnabled = !self.output.username.isEmpty && !self.output.password.isEmpty
+        }
     }
     
     private func login(username: String, password: String) {
         Task { @MainActor [weak self] in
-            guard let strongSelf = self else { return }
+            guard let self else { return }
             do {
-                let response = try await strongSelf.environment.api.request(LoginAPIRequest.Login(username: username,
-                                                                                                  password: password))
-                strongSelf.environment.state.user = response
+                let response = try await self.environment.api.request(LoginAPIRequest.Login(username: username,
+                                                                                            password: password))
+                self.environment.state.user = response
             } catch let error as APIError {
                 // the API returns a `.requestError` when login credentials are not found
                 if error == .requestError {
-                    strongSelf.output.error = APIError.authentification.message
+                    self.output.error = APIError.authentification.message
                 } else {
-                    strongSelf.output.error = error.message
+                    self.output.error = error.message
                 }
             }
         }
     }
     
-    private func setLogin() {
-        input.$username
-            .combineLatest(input.$password)
-            .sink { [weak self] username, password in
-                self?.output.loginButtonEnabled = !username.isEmpty && !password.isEmpty
-            }
-            .store(in: &cancelBag)
-        
-        input.loginTapped
-            .sink { [weak self] _ in
-                guard let strongSelf = self else { return }
-                strongSelf.login(username: strongSelf.input.username, password: strongSelf.input.password)
-            }
-            .store(in: &cancelBag)
-        
-        input.skipLoginTapped
-            .sink { [weak self] _ in
-                // Just used for testing purposes to login without credentials.
-                // It's fine these credentials are exposed since we are using a test API.
-                self?.login(username: "emilys", password: "emilyspass")
-            }
-            .store(in: &cancelBag)
+    func loginTapped() {
+        login(username: output.username, password: output.password)
+    }
+    
+    func skipLoginTapped() {
+        // Just used for testing purposes to login without credentials.
+        // It's fine these credentials are exposed since we are using a test API.
+        login(username: "emilys", password: "emilyspass")
     }
 }

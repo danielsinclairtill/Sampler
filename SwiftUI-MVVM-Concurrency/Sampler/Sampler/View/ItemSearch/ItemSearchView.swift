@@ -9,12 +9,10 @@ import SwiftUI
 import Combine
 
 struct ItemSearchView: View {
-    @StateObject private var viewModel: ItemSearchViewModel
-
-    @State private var searchText = ""
+    @State private var viewModel: ItemSearchViewModel
     
     init(viewModel: ItemSearchViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     private var emptyView: some View {
@@ -52,21 +50,21 @@ struct ItemSearchView: View {
         ZStack {
             if viewModel.output.items.isEmpty &&
                 !viewModel.output.isRefreshing &&
-                !searchText.isEmpty {
+                !viewModel.output.searchText.isEmpty {
                 emptyView
-            } else if searchText.isEmpty {
+            } else if viewModel.output.searchText.isEmpty {
                 startView
             } else if viewModel.output.isRefreshing {
                 loadingAnimation
                     .onAppear {
-                        viewModel.input.refresh.send(())
+                        viewModel.refresh()
                     }
             } else {
                 List {
                     ForEach(viewModel.output.items.enumerated(), id: \.element.id) { index, item in
                         ItemCell(item: item, imageManager: viewModel.imageManager)
                             .onTapGesture {
-                                viewModel.input.cellTapped.send((index))
+                                viewModel.cellTapped(index: index)
                             }
                             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
                             .listRowSeparator(.hidden)
@@ -75,20 +73,17 @@ struct ItemSearchView: View {
                     if viewModel.output.hasMorePages {
                         LoadingCell()
                             .onAppear {
-                                viewModel.input.loadNextPage.send(())
+                                viewModel.loadNextPage()
                             }
                     }
                 }
                 .listStyle(.plain)
             }
         }
-        .searchable(text: $searchText, prompt: "Search recipes")
-        .onChange(of: searchText) { oldValue, newValue in
-            viewModel.input.searchText = newValue
-        }
+        .searchable(text: $viewModel.output.searchText, prompt: "Search recipes")
         .navigationTitle("Search")
         .apiErrorAlert($viewModel.output.error) {
-            viewModel.input.refresh.send(())
+            viewModel.refreshBegin()
         }
     }
 }

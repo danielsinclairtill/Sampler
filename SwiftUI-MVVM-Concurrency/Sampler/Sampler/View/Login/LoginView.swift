@@ -9,11 +9,10 @@ import SwiftUI
 import Combine
 
 struct LoginView: View {
-    @StateObject private var viewModel: LoginViewModel
-    @State private var errorMessage = ""
+    @State private var viewModel: LoginViewModel
 
     init(viewModel: LoginViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     var body: some View {
@@ -39,7 +38,7 @@ struct LoginView: View {
                 
                 // Username TextField
                 TextField(String(localized: "com.danielsinclairtill.Sampler.login.usernameField.placeholder"),
-                          text: $viewModel.input.username)
+                          text: $viewModel.output.username)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 24)
                     .autocapitalization(.none)
@@ -47,7 +46,7 @@ struct LoginView: View {
                 
                 // Password TextField
                 SecureField(String(localized: "com.danielsinclairtill.Sampler.login.passwordField.placeholder"),
-                            text: $viewModel.input.password)
+                            text: $viewModel.output.password)
                     .textFieldStyle(.roundedBorder)
                     .padding(.horizontal, 24)
                 
@@ -56,7 +55,7 @@ struct LoginView: View {
                 
                 // Login Button
                 Button(action: {
-                    viewModel.input.loginTapped.send(())
+                    viewModel.loginTapped()
                 }) {
                     Text("Login")
                         .frame(maxWidth: .infinity)
@@ -71,7 +70,7 @@ struct LoginView: View {
                 
                 // Skip Button
                 Button(action: {
-                    viewModel.input.skipLoginTapped.send(())
+                    viewModel.skipLoginTapped()
                 }) {
                     Text("Skip")
                         .frame(maxWidth: .infinity)

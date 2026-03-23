@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct ItemsListView: View {
-    @StateObject private var viewModel: ItemsListViewModel
+    @State private var viewModel: ItemsListViewModel
     
     init(viewModel: ItemsListViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     
@@ -38,7 +38,7 @@ struct ItemsListView: View {
             if viewModel.output.isRefreshing {
                 loadingAnimation
                     .onAppear {
-                        viewModel.input.refresh.send(())
+                        viewModel.refresh()
                     }
             } else if viewModel.output.items.isEmpty {
                 emptyView
@@ -47,7 +47,7 @@ struct ItemsListView: View {
                     ForEach(viewModel.output.items.enumerated(), id: \.element.id) { index, item in
                         ItemCell(item: item, imageManager: viewModel.imageManager)
                             .onTapGesture {
-                                viewModel.input.cellTapped.send((index))
+                                viewModel.cellTapped(index: index)
                             }
                             .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
                             .listRowSeparator(.hidden)
@@ -56,22 +56,22 @@ struct ItemsListView: View {
                     if viewModel.output.hasMorePages {
                         LoadingCell()
                             .onAppear {
-                                viewModel.input.loadNextPage.send(())
+                                viewModel.loadNextPage()
                             }
                     }
                 }
                 .listStyle(.plain)
                 .refreshable {
-                    viewModel.input.refreshBegin.send(())
+                    viewModel.refreshBegin()
                 }
             }
         }
         .navigationTitle("Recipes")
         .onAppearOnce {
-            viewModel.input.viewDidLoad.send(())
+            viewModel.viewDidLoad()
         }
         .apiErrorAlert($viewModel.output.error) {
-            viewModel.input.refresh.send(())
+            viewModel.refreshBegin()
         }
     }
 }
