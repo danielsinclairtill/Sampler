@@ -8,28 +8,23 @@
 import SwiftUI
 import Combine
 
-/// A view modifier that displays an error alert when an error message is present
 struct ErrorAlertModifier: ViewModifier {
-    @Binding var errorMessage: String?
-    var title: String = "Error"
-    var dismissButtonTitle: String = "OK"
+    let errorMessage: String?
+    var title: String
+    var dismissButtonTitle: String
     var onDismiss: (() -> Void)? = nil
-    
-    var isPresented: Binding<Bool> {
-        Binding(
-            get: {
-                guard let errorMessage else { return false }
-                return !errorMessage.isEmpty
-            },
-            set: { if !$0 { errorMessage = nil } }
-        )
-    }
-    
+
+    @State private var isPresented: Bool = false
+
     func body(content: Content) -> some View {
         content
-            .alert(title, isPresented: isPresented) {
+            .onChange(of: errorMessage) { _, newValue in
+                isPresented = newValue != nil
+            }
+            .alert(String(localized: LocalizedStringResource(stringLiteral: title)),
+                   isPresented: $isPresented) {
                 Button(dismissButtonTitle) {
-                    errorMessage = nil
+                    isPresented = false
                     onDismiss?()
                 }
             } message: {
@@ -38,17 +33,10 @@ struct ErrorAlertModifier: ViewModifier {
     }
 }
 
-/// Helper function to show an error alert
 extension View {
-    /// Displays an error alert when errorMessage is not empty
-    /// - Parameters:
-    ///   - errorMessage: Binding to error message string
-    ///   - title: Alert title (default: "Error")
-    ///   - dismissButtonTitle: Dismiss button text (default: "OK")
-    ///   - onDismiss: Optional callback when alert is dismissed
     func errorAlert(
-        _ errorMessage: Binding<String?>,
-        title: String = "Error",
+        _ errorMessage: String?,
+        title: String = "com.danielsinclairtill.Sampler.error.title",
         dismissButtonTitle: String = "OK",
         onDismiss: (() -> Void)? = nil
     ) -> some View {
@@ -63,31 +51,26 @@ extension View {
     }
 }
 
-/// Helper function for API errors with refresh option
 struct APIErrorAlertModifier: ViewModifier {
-    @Binding var errorMessage: String?
+    let errorMessage: String?
     var onRefresh: (() -> Void)? = nil
-    
-    var isPresented: Binding<Bool> {
-        Binding(
-            get: {
-                guard let errorMessage else { return false }
-                return !errorMessage.isEmpty
-            },
-            set: { if !$0 { errorMessage = nil } }
-        )
-    }
-    
+
+    @State private var isPresented: Bool = false
+
     func body(content: Content) -> some View {
         content
-            .alert("Error", isPresented: isPresented) {
-                if let onRefresh = onRefresh {
+            .onChange(of: errorMessage) { _, newValue in
+                isPresented = newValue != nil
+            }
+            .alert("Error", isPresented: $isPresented) {
+                if let onRefresh {
                     Button("Refresh") {
+                        isPresented = false
                         onRefresh()
                     }
                 }
                 Button("OK") {
-                    errorMessage = nil
+                    isPresented = false
                 }
             } message: {
                 Text(errorMessage ?? "")
@@ -96,12 +79,8 @@ struct APIErrorAlertModifier: ViewModifier {
 }
 
 extension View {
-    /// Displays an error alert with optional refresh button for API errors
-    /// - Parameters:
-    ///   - errorMessage: Binding to error message string
-    ///   - onRefresh: Optional callback for refresh button action
     func apiErrorAlert(
-        _ errorMessage: Binding<String?>,
+        _ errorMessage: String?,
         onRefresh: (() -> Void)? = nil
     ) -> some View {
         modifier(

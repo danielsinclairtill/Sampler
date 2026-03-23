@@ -68,6 +68,7 @@ class LoginViewModel: ObservableViewModel, LoginViewModelBinding.Contract {
     private func login(username: String, password: String) {
         Task { @MainActor [weak self] in
             guard let self else { return }
+            output.error = nil
             do {
                 let response = try await self.environment.api.request(LoginAPIRequest.Login(username: username,
                                                                                             password: password))

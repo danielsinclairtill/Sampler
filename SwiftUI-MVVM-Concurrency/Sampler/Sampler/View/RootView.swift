@@ -9,7 +9,7 @@ import SwiftUI
 
 /// Root view that manages navigation between Login and Main app screens
 struct RootView: View {
-    @EnvironmentObject var environment: SamplerEnvironment
+    @Environment(SamplerEnvironment.self) var environment
     @StateObject private var tabRouter = TabRouter()
     
     var body: some View {
@@ -49,5 +49,5 @@ struct RootView: View {
 
 #Preview {
     RootView()
-        .environmentObject(SamplerEnvironment.shared)
+        .environment(SamplerEnvironment.mock)
 }

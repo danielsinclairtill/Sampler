@@ -8,21 +8,20 @@
 import SwiftUI
 import Combine
 
-struct ItemsListView: View {
-    @State private var viewModel: ItemsListViewModel
+struct ItemsListView<ViewModel: ItemsListViewModelBinding.Contract>: View {
+    @State private var viewModel: ViewModel
     
-    init(viewModel: ItemsListViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     
     
     private var emptyView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "tray.fill")
-                .font(.system(size: 48))
+        VStack {
+            Image("empty")
+                .resizable()
+                .frame(width: 24, height: 24)
                 .foregroundColor(.gray)
-            Text("No Items Found")
-                .font(.headline)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -66,11 +65,11 @@ struct ItemsListView: View {
                 }
             }
         }
-        .navigationTitle("Recipes")
+        .navigationTitle(String(localized: "com.danielsinclairtill.Sampler.itemsList.title"))
         .onAppearOnce {
             viewModel.viewDidLoad()
         }
-        .apiErrorAlert($viewModel.output.error) {
+        .apiErrorAlert(viewModel.output.error) {
             viewModel.refreshBegin()
         }
     }
@@ -86,7 +85,7 @@ struct ItemCell: View {
             AsyncImageView(
                 url: item.image,
             )
-            .frame(width: 100, height: 150)
+            .frame(width: 100, height: 100)
             .cornerRadius(8)
             .clipped()
             

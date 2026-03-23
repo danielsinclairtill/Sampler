@@ -79,6 +79,8 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     
     private func updateData(offset: Int = 0) {
         output.isLoading = true
+        output.error = nil
+
         Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
             do {

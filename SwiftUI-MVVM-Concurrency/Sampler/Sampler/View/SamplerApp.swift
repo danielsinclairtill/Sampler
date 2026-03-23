@@ -10,13 +10,13 @@ import CoreData
 
 @main
 struct SamplerApp: App {
-    @StateObject var environment = SamplerEnvironment()
+    let environment = SamplerEnvironment.shared
     
     var body: some Scene {
         WindowGroup {
             if !SamplerEnvironment.isTesting {
                 RootView()
-                    .environmentObject(environment)
+                    .environment(environment)
             } else {
                 EmptyView()
             }

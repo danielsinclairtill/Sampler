@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemDetailView: View {    
-    @State private var viewModel: ItemDetailViewModel
+struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
+    @State private var viewModel: ViewModel
     
-    init(viewModel: ItemDetailViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     
@@ -19,14 +19,12 @@ struct ItemDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 // Item Image
-                if let photoURL = viewModel.output.item?.image {
-                    AsyncImageView(
-                        url: photoURL,
-                    )
-                    .frame(height: 240)
-                    .cornerRadius(12)
-                    .clipped()
-                }
+                AsyncImageView(
+                    url: viewModel.output.item?.image,
+                )
+                .frame(width: 240, height: 240)
+                .cornerRadius(12)
+                .clipped()
                 
                 // Item Title
                 Text(viewModel.output.item?.name ?? "")
@@ -38,6 +36,7 @@ struct ItemDetailView: View {
                 HStack(spacing: 12) {
                     CircularImageView(
                         url: viewModel.output.item?.user?.image,
+                        placeholder: Image("UnkownUser"),
                         size: 40
                     )
                     
@@ -52,9 +51,6 @@ struct ItemDetailView: View {
                 
                 // Description
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Ingredients")
-                        .font(.headline)
-                    
                     Text(viewModel.output.item?.ingredients?.joined(separator: ", ") ?? "")
                         .font(.body)
                         .foregroundColor(.gray)
@@ -91,12 +87,10 @@ struct ItemDetailView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .navigationTitle("Details")
-        .navigationBarTitleDisplayMode(.inline)
         .onAppearOnce {
             viewModel.viewDidLoad()
         }
-        .errorAlert($viewModel.output.error)
+        .errorAlert(viewModel.output.error)
     }
 }
 

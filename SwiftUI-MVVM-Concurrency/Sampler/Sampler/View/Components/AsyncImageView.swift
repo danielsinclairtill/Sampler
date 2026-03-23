@@ -10,13 +10,37 @@ import Kingfisher
 
 struct AsyncImageView: View {
     let url: URL?
+    let placeholder: Image?
+    
+    init(url: URL?,
+         placeholder: Image? = nil) {
+        self.url = url
+        self.placeholder = placeholder
+    }
+    
+    @ViewBuilder
+    private var placeholderView: some View {
+        if let placeholder {
+            placeholder
+                .resizable()
+                .scaledToFit()
+        } else {
+            Color(.systemGray6)
+        }
+    }
 
     var body: some View {
-        KFImage(url)
-            .placeholder { Color(.systemGray6) }
-            .fade(duration: 0.25)
-            .resizable()
-            .scaledToFill()
+        if SamplerEnvironment.isTesting {
+            placeholderView
+        } else {
+            KFImage(url)
+                .placeholder {
+                    placeholderView
+                }
+                .fade(duration: 0.25)
+                .resizable()
+                .scaledToFit()
+        }
     }
 }
 

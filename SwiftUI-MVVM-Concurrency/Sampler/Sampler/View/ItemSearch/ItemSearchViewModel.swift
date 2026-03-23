@@ -80,7 +80,8 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
     private func updateData(searchText: String,
                             offset: Int = 0) {
         output.isLoading = true
-
+        output.error = nil
+        
         guard !searchText.isEmpty else {
             output.items = []
             output.isLoading = false

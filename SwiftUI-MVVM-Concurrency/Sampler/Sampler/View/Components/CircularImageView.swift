@@ -10,10 +10,20 @@ import Kingfisher
 
 struct CircularImageView: View {
     let url: URL?
+    let placeholder: Image?
     let size: CGFloat
+    
+    init(url: URL?,
+         placeholder: Image? = nil,
+         size: CGFloat) {
+        self.url = url
+        self.placeholder = placeholder
+        self.size = size
+    }
 
     var body: some View {
-        AsyncImageView(url: url)
+        AsyncImageView(url: url,
+                       placeholder: placeholder)
             .frame(width: size, height: size)
             .clipShape(Circle())
     }

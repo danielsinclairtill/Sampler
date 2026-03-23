@@ -11,5 +11,5 @@ import SwiftUI
 protocol SamplerViewModelContract {
     associatedtype Output
 
-    var output: Output { get }
+    var output: Output { get set }
 }
