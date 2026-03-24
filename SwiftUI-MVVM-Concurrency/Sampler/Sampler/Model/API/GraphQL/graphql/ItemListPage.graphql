@@ -1,0 +1,20 @@
+query ItemListPage($first: Int, $after: String) {
+  posts(first: $first, after: $after) {
+    nodes {
+      body
+      id
+      title
+      user {
+        id
+        name
+      }
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}

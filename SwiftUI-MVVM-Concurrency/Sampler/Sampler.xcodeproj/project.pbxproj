@@ -10,6 +10,8 @@
 		65041B352F6DAA450062C225 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 65041B342F6DAA450062C225 /* Kingfisher */; };
 		65041BDD2F6DAA800062C225 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65041BDC2F6DAA800062C225 /* SnapshotTesting */; };
 		65041BE02F6DAA930062C225 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 65041BDF2F6DAA930062C225 /* Lottie */; };
+		65436DDA2F72DAEE0014EAE8 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = 65436DD92F72DAEE0014EAE8 /* Apollo */; };
+		65436DF62F72E41F0014EAE8 /* SamplerAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 65436DF52F72E41F0014EAE8 /* SamplerAPI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,9 +29,23 @@
 		65041A732F6DA9EC0062C225 /* SamplerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SamplerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		65436DF12F72E3CA0014EAE8 /* Exceptions for "Sampler" folder in "Sampler" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/API/GraphQL/graphql/ItemList.graphql,
+				Model/API/GraphQL/graphql/ItemListPage.graphql,
+			);
+			target = 65041A602F6DA9EB0062C225 /* Sampler */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		65041A632F6DA9EB0062C225 /* Sampler */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				65436DF12F72E3CA0014EAE8 /* Exceptions for "Sampler" folder in "Sampler" target */,
+			);
 			path = Sampler;
 			sourceTree = "<group>";
 		};
@@ -45,7 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65436DF62F72E41F0014EAE8 /* SamplerAPI in Frameworks */,
 				65041B352F6DAA450062C225 /* Kingfisher in Frameworks */,
+				65436DDA2F72DAEE0014EAE8 /* Apollo in Frameworks */,
 				65041BE02F6DAA930062C225 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -101,6 +119,8 @@
 			packageProductDependencies = (
 				65041B342F6DAA450062C225 /* Kingfisher */,
 				65041BDF2F6DAA930062C225 /* Lottie */,
+				65436DD92F72DAEE0014EAE8 /* Apollo */,
+				65436DF52F72E41F0014EAE8 /* SamplerAPI */,
 			);
 			productName = Sampler;
 			productReference = 65041A612F6DA9EB0062C225 /* Sampler.app */;
@@ -162,6 +182,8 @@
 				65041B332F6DAA450062C225 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				65041BDB2F6DAA800062C225 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 				65041BDE2F6DAA930062C225 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				65436DD82F72DAEE0014EAE8 /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				65436DF42F72E41F0014EAE8 /* XCLocalSwiftPackageReference "Sampler/Model/API/GraphQL/SamplerAPI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65041A622F6DA9EB0062C225 /* Products */;
@@ -472,6 +494,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		65436DF42F72E41F0014EAE8 /* XCLocalSwiftPackageReference "Sampler/Model/API/GraphQL/SamplerAPI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Sampler/Model/API/GraphQL/SamplerAPI;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		65041B332F6DAA450062C225 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -497,6 +526,14 @@
 				minimumVersion = 4.6.0;
 			};
 		};
+		65436DD82F72DAEE0014EAE8 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.6;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -514,6 +551,15 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 65041BDE2F6DAA930062C225 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		65436DD92F72DAEE0014EAE8 /* Apollo */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65436DD82F72DAEE0014EAE8 /* XCRemoteSwiftPackageReference "apollo-ios" */;
+			productName = Apollo;
+		};
+		65436DF52F72E41F0014EAE8 /* SamplerAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SamplerAPI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,0 +1,568 @@
+"""
+A directive used by the Apollo iOS client to annotate operations or fragments that should be used exclusively for generating local cache mutations instead of as standard operations.
+"""
+directive @apollo_client_ios_localCacheMutation on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""
+A directive used by the Apollo iOS code generation engine to generate custom import statements in operation or fragment definition files. An import statement to import a module with the name provided in the `module` argument will be added to the generated definition file.
+"""
+directive @import(
+  """The name of the module to import."""
+  module: String!
+) repeatable on QUERY | MUTATION | SUBSCRIPTION | FRAGMENT_DEFINITION
+
+"""Attach extra information to a given type."""
+directive @typePolicy(
+  """
+  A selection set containing fields used to compute the cache key of an object. Referenced fields must have non-nullable scalar types. Order is important.
+  """
+  keyFields: String!
+) on OBJECT | INTERFACE
+
+"""
+A directive used by Apollo iOS to map query input data to cache keys of objects.
+"""
+directive @fieldPolicy(
+  """The field you are setting the @fieldPolicy for."""
+  forField: String!
+
+  """Set of fields used to compute the cache key."""
+  keyArgs: String!
+) repeatable on OBJECT | INTERFACE
+
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""An ISO 8601-encoded datetime"""
+scalar ISO8601DateTime
+
+type Mutation {
+  createComment(
+    """Parameters for createComment"""
+    input: createCommentInput!
+  ): createCommentPayload
+  createPost(
+    """Parameters for createPost"""
+    input: createPostInput!
+  ): createPostPayload
+  createTodo(
+    """Parameters for createTodo"""
+    input: createTodoInput!
+  ): createTodoPayload
+  createUser(
+    """Parameters for createUser"""
+    input: createUserInput!
+  ): createUserPayload
+  deleteComment(
+    """Parameters for deleteComment"""
+    input: deleteCommentInput!
+  ): deleteCommentPayload
+  deletePost(
+    """Parameters for deletePost"""
+    input: deletePostInput!
+  ): deletePostPayload
+  deleteTodo(
+    """Parameters for deleteTodo"""
+    input: deleteTodoInput!
+  ): deleteTodoPayload
+  deleteUser(
+    """Parameters for deleteUser"""
+    input: deleteUserInput!
+  ): deleteUserPayload
+  updateComment(
+    """Parameters for updateComment"""
+    input: updateCommentInput!
+  ): updateCommentPayload
+  updatePost(
+    """Parameters for updatePost"""
+    input: updatePostInput!
+  ): updatePostPayload
+  updateTodo(
+    """Parameters for updateTodo"""
+    input: updateTodoInput!
+  ): updateTodoPayload
+  updateUser(
+    """Parameters for updateUser"""
+    input: updateUserInput!
+  ): updateUserPayload
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+}
+
+type Query {
+  """Find a comment by ID"""
+  comment(id: ID!): comment
+
+  """List of comments"""
+  comments(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): commentConnection!
+
+  """Find a post by ID"""
+  post(id: ID!): post
+
+  """List of posts"""
+  posts(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): postConnection!
+
+  """Find a todo by ID"""
+  todo(id: ID!): todo
+
+  """List of todos"""
+  todos(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): todoConnection!
+
+  """Find a user by ID"""
+  user(id: ID!): user
+
+  """List of users"""
+  users(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): userConnection!
+}
+
+type comment {
+  body: String
+  email: String
+  id: Int!
+  name: String
+  post: post!
+  postId: Int!
+}
+
+"""The connection type for comment."""
+type commentConnection {
+  """A list of edges."""
+  edges: [commentEdge]
+
+  """A list of nodes."""
+  nodes: [comment]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """Total count of items"""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type commentEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: comment
+}
+
+"""Autogenerated input type of createComment"""
+input createCommentInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  postId: Int!
+  name: String!
+  email: String!
+  body: String!
+}
+
+"""Autogenerated return type of createComment."""
+type createCommentPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  comment: comment
+}
+
+"""Autogenerated input type of createPost"""
+input createPostInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  userId: Int!
+  title: String!
+  body: String!
+}
+
+"""Autogenerated return type of createPost."""
+type createPostPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  post: post
+}
+
+"""Autogenerated input type of createTodo"""
+input createTodoInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  userId: Int!
+  title: String!
+  dueOn: ISO8601DateTime!
+  status: String!
+}
+
+"""Autogenerated return type of createTodo."""
+type createTodoPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  todo: todo
+}
+
+"""Autogenerated input type of createUser"""
+input createUserInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  name: String!
+  email: String!
+  gender: String!
+  status: String!
+}
+
+"""Autogenerated return type of createUser."""
+type createUserPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  user: user
+}
+
+"""Autogenerated input type of deleteComment"""
+input deleteCommentInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+}
+
+"""Autogenerated return type of deleteComment."""
+type deleteCommentPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  comment: comment
+}
+
+"""Autogenerated input type of deletePost"""
+input deletePostInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+}
+
+"""Autogenerated return type of deletePost."""
+type deletePostPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  post: post
+}
+
+"""Autogenerated input type of deleteTodo"""
+input deleteTodoInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+}
+
+"""Autogenerated return type of deleteTodo."""
+type deleteTodoPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  todo: todo
+}
+
+"""Autogenerated input type of deleteUser"""
+input deleteUserInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+}
+
+"""Autogenerated return type of deleteUser."""
+type deleteUserPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  user: user
+}
+
+type post {
+  body: String!
+
+  """List of comments"""
+  comments(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): commentConnection!
+  id: Int!
+  title: String!
+  user: user!
+  userId: Int!
+}
+
+"""The connection type for post."""
+type postConnection {
+  """A list of edges."""
+  edges: [postEdge]
+
+  """A list of nodes."""
+  nodes: [post]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """Total count of items"""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type postEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: post
+}
+
+type todo {
+  dueOn: ISO8601DateTime
+  id: Int!
+  status: String!
+  title: String!
+  user: user!
+  userId: Int!
+}
+
+"""The connection type for todo."""
+type todoConnection {
+  """A list of edges."""
+  edges: [todoEdge]
+
+  """A list of nodes."""
+  nodes: [todo]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """Total count of items"""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type todoEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: todo
+}
+
+"""Autogenerated input type of updateComment"""
+input updateCommentInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+  postId: Int
+  name: String
+  email: String
+  body: String
+}
+
+"""Autogenerated return type of updateComment."""
+type updateCommentPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  comment: comment
+}
+
+"""Autogenerated input type of updatePost"""
+input updatePostInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+  userId: Int
+  title: String
+  body: String
+}
+
+"""Autogenerated return type of updatePost."""
+type updatePostPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  post: post
+}
+
+"""Autogenerated input type of updateTodo"""
+input updateTodoInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+  userId: Int
+  title: String
+  dueOn: ISO8601DateTime
+  status: String
+}
+
+"""Autogenerated return type of updateTodo."""
+type updateTodoPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  todo: todo
+}
+
+"""Autogenerated input type of updateUser"""
+input updateUserInput {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  id: Int!
+  name: String
+  email: String
+  gender: String
+  status: String
+}
+
+"""Autogenerated return type of updateUser."""
+type updateUserPayload {
+  """A unique identifier for the client performing the mutation."""
+  clientMutationId: String
+  user: user
+}
+
+type user {
+  email: String!
+  gender: String!
+  id: Int!
+  name: String!
+
+  """List of posts"""
+  posts(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): postConnection!
+  status: String!
+
+  """List of todos"""
+  todos(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): todoConnection!
+}
+
+"""The connection type for user."""
+type userConnection {
+  """A list of edges."""
+  edges: [userEdge]
+
+  """A list of nodes."""
+  nodes: [user]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """Total count of items"""
+  totalCount: Int!
+}
+
+"""An edge in a connection."""
+type userEdge {
+  """A cursor for use in pagination."""
+  cursor: String!
+
+  """The item at the end of the edge."""
+  node: user
+}

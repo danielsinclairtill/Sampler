@@ -1,0 +1,20 @@
+query ItemList($first: Int) {
+  posts(first: $first) {
+    nodes {
+      body
+      id
+      title
+      user {
+        id
+        name
+      }
+    }
+    totalCount
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+  }
+}
