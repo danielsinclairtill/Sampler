@@ -7,30 +7,29 @@
 //
 
 import UIKit
+import SamplerAPI
 
 public struct Item: Codable, Equatable {
-    @StringForced public var id: String?
-    public let name: String?
-    public let ingredients: [String]?
-    public let difficulty: String?
-    public let tags: [String]?
-    @StringForced public var userId: String?
+    public var id: Int?
+    public let title: String?
+    public let body: String?
     public var user: User?
     public let image: URL?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case ingredients
-        case difficulty
-        case tags
-        case userId
-        case image
-    }
 }
 
 extension Item: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
+    }
+}
+
+extension Item {
+    static func create(from: ItemCompactGraph?) -> Item? {
+        guard let from else { return nil }
+        return Item(id: from.id,
+                    title: from.title,
+                    body: from.body,
+                    user: User.create(from: from.user.fragments.userGraph),
+                    image: nil)
     }
 }

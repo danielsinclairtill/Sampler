@@ -19,14 +19,11 @@ class SamplerEnvironment: EnvironmentContract {
     }()
     
     let api: APIContract
-    let store: StoreContract
     var state: any SamplerStateContract
     
     init(api: APIContract = SamplerAPI(),
-         store: StoreContract = SamplerStore(container: SamplerStore.persistentContainer()),
          state: any SamplerStateContract = SamplerStateManager()) {
         self.api = api
-        self.store = store
         self.state = state
     }
 }
@@ -35,6 +32,5 @@ extension SamplerEnvironment {
     static let production = SamplerEnvironment()
     
     static let mock = SamplerEnvironment(api: SamplerAPI(),
-                                         store: SamplerTestStore(),
                                          state: SamplerStateManager())
 }

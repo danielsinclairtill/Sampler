@@ -7,19 +7,16 @@
 //
 
 import Foundation
+import SamplerAPI
 
 public struct User: Codable, Equatable {
-    @StringForced public var id: String?
-    public let firstName: String?
-    public let lastName: String?
-    public let username: String?
+    public var id: Int?
+    public let name: String?
     public let image: URL?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case firstName
-        case lastName
-        case username
-        case image
+}
+
+extension User {
+    static func create(from: UserGraph) -> Self {
+        User(name: from.name, image: nil)
     }
 }

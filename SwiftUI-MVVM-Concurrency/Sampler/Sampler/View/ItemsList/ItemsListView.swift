@@ -91,11 +91,11 @@ struct ItemCell: View {
             
             // Content
             VStack(alignment: .leading, spacing: 8) {
-                Text(item.name ?? "")
+                Text(item.title ?? "")
                     .font(.headline)
                     .lineLimit(1)
                 
-                Text(item.ingredients?.joined(separator: ", ") ?? "")
+                Text(item.body ?? "")
                     .font(.body)
                     .lineLimit(3)
                     .foregroundColor(.gray)

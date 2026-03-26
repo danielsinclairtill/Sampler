@@ -14,34 +14,18 @@ struct RootView: View {
     
     var body: some View {
         ZStack {
-            if environment.state.user == nil {
-                LoginView(viewModel: LoginViewModel(environment: environment))
-            } else {
-                TabView(selection: $tabRouter.selectedTab) {
-                    NavigationStack(path: $tabRouter.itemsListRouter.navigationPath) {
-                        ItemsListView(viewModel: ItemsListViewModel(router: tabRouter.itemsListRouter))
-                            .navigationDestination(for: ItemsListDestination.self) { destination in
-                                switch destination {
-                                case .itemDetail(let id):
-                                    ItemDetailView(viewModel: ItemDetailViewModel(itemId: id, environment: environment))
-                                }
+            TabView(selection: $tabRouter.selectedTab) {
+                NavigationStack(path: $tabRouter.itemsListRouter.navigationPath) {
+                    ItemsListView(viewModel: ItemsListViewModel(router: tabRouter.itemsListRouter))
+                        .navigationDestination(for: ItemsListDestination.self) { destination in
+                            switch destination {
+                            case .itemDetail(let id):
+                                EmptyView()
                             }
-                    }
-                    .tabItem { Label("com.danielsinclairtill.Sampler.itemsList.title", systemImage: "list.bullet") }
-                    .tag(0)
-                    
-                    NavigationStack(path: $tabRouter.itemSearchRouter.navigationPath) {
-                        ItemSearchView(viewModel: ItemSearchViewModel(router: tabRouter.itemSearchRouter))
-                            .navigationDestination(for: ItemSearchDestination.self) { destination in
-                                switch destination {
-                                case .itemDetail(let id):
-                                    ItemDetailView(viewModel: ItemDetailViewModel(itemId: id, environment: environment))
-                                }
-                            }
-                    }
-                    .tabItem { Label("com.danielsinclairtill.Sampler.itemSearch.title", systemImage: "magnifyingglass") }
-                    .tag(1)
+                        }
                 }
+                .tabItem { Label("com.danielsinclairtill.Sampler.itemsList.title", systemImage: "list.bullet") }
+                .tag(0)
             }
         }
     }

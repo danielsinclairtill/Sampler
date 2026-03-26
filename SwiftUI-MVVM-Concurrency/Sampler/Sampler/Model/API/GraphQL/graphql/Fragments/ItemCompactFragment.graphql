@@ -1,0 +1,8 @@
+fragment ItemCompactGraph on post {
+    body
+    id
+    title
+    user {
+        ...UserGraph
+    }
+}

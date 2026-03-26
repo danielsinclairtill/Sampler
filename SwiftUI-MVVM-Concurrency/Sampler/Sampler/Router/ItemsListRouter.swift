@@ -11,7 +11,7 @@ import SwiftUI
 
 /// Navigation destinations for the Items List feature
 enum ItemsListDestination: Hashable {
-    case itemDetail(id: String)
+    case itemDetail(id: Int)
 }
 
 /// Router for managing navigation in the Items List tab

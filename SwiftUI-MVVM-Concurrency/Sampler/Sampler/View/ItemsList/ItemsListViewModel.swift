@@ -7,6 +7,8 @@
 
 import Foundation
 import Combine
+import Apollo
+import SamplerAPI
 
 // MARK: Input + Output
 enum ItemsListViewModelBinding {
@@ -67,6 +69,8 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     }
     private var router: ItemsListRouter
     
+    private var endCursor: String? = nil
+    
     init(output: ItemsListViewModelBinding.Output = .init(),
          environment: any EnvironmentContract = SamplerEnvironment.shared,
          router: ItemsListRouter) {
@@ -77,14 +81,14 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     
     // MARK: Private
     
-    private func updateData(offset: Int = 0) {
+    private func updateData(after: String? = nil) {
         output.isLoading = true
         output.error = nil
 
         Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
             do {
-                let data = try await strongSelf.environment.api.request(ItemAPIRequest.List(offset: offset))
+                let data = try await strongSelf.environment.api.query(ItemAPIRequest.List(after: after))
                 if data.items.isEmpty {
                     // if no items were recieved, assume there is an issue with the API
                     // keep whatever the previous state of the items list was, and send an error
@@ -92,14 +96,14 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
                 } else {
                     let newItems = data.items
                     
-                    strongSelf.output.total = data.total
+                    strongSelf.endCursor = data.endCursor
+                    strongSelf.output.hasMorePages = data.hasNextPage
                     // if an offset was passed it is a load next page call
-                    if offset > 0 && !strongSelf.output.items.isEmpty {
+                    if after != nil && !strongSelf.output.items.isEmpty {
                         strongSelf.output.items.append(contentsOf: newItems)
                     } else {
                         strongSelf.output.items = newItems
                     }
-                    strongSelf.output.hasMorePages = strongSelf.output.items.count < strongSelf.output.total
                     
                     // prefetch the first 10 items images required for the cells
                     strongSelf.prefetchImages(items: Array(newItems.prefix(10)))
@@ -136,13 +140,13 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     func loadNextPage() {
         // ensure not to load anymore if the total number of items is already displayed
         guard !output.isLoading && output.hasMorePages else { return }
-        updateData(offset: output.items.count)
+        updateData(after: endCursor)
     }
 
     func cellTapped(index: Int) {
-        if output.items.indices.contains(index),
-           let id = output.items[index].id {
-            router.navigate(to: .itemDetail(id: id))
-        }
+//        if output.items.indices.contains(index),
+//           let id = output.items[index].id {
+//            router.navigate(to: .itemDetail(id: id))
+//        }
     }
 }

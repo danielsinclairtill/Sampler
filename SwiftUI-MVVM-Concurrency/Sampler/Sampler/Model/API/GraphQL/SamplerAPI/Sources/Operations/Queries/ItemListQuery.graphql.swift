@@ -8,16 +8,25 @@ public struct ItemListQuery: GraphQLQuery {
   public static let operationName: String = "ItemList"
   public static let operationDocument: ApolloAPI.OperationDocument = .init(
     definition: .init(
-      #"query ItemList($first: Int) { posts(first: $first) { __typename nodes { __typename body id title user { __typename id name } } totalCount pageInfo { __typename endCursor hasNextPage hasPreviousPage startCursor } } }"#
+      #"query ItemList($first: Int, $after: String) { posts(first: $first, after: $after) { __typename nodes { __typename ...ItemCompactGraph } totalCount pageInfo { __typename endCursor hasNextPage hasPreviousPage startCursor } } }"#,
+      fragments: [ItemCompactGraph.self, UserGraph.self]
     ))
 
   public var first: GraphQLNullable<Int32>
+  public var after: GraphQLNullable<String>
 
-  public init(first: GraphQLNullable<Int32>) {
+  public init(
+    first: GraphQLNullable<Int32>,
+    after: GraphQLNullable<String>
+  ) {
     self.first = first
+    self.after = after
   }
 
-  @_spi(Unsafe) public var __variables: Variables? { ["first": first] }
+  @_spi(Unsafe) public var __variables: Variables? { [
+    "first": first,
+    "after": after
+  ] }
 
   public struct Data: SamplerAPI.SelectionSet {
     @_spi(Unsafe) public let __data: DataDict
@@ -25,7 +34,10 @@ public struct ItemListQuery: GraphQLQuery {
 
     @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { SamplerAPI.Objects.Query }
     @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-      .field("posts", Posts.self, arguments: ["first": .variable("first")]),
+      .field("posts", Posts.self, arguments: [
+        "first": .variable("first"),
+        "after": .variable("after")
+      ]),
     ] }
     @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
       ItemListQuery.Data.self
@@ -69,13 +81,11 @@ public struct ItemListQuery: GraphQLQuery {
         @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { SamplerAPI.Objects.Post }
         @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
           .field("__typename", String.self),
-          .field("body", String.self),
-          .field("id", Int.self),
-          .field("title", String.self),
-          .field("user", User.self),
+          .fragment(ItemCompactGraph.self),
         ] }
         @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-          ItemListQuery.Data.Posts.Node.self
+          ItemListQuery.Data.Posts.Node.self,
+          ItemCompactGraph.self
         ] }
 
         public var body: String { __data["body"] }
@@ -83,26 +93,14 @@ public struct ItemListQuery: GraphQLQuery {
         public var title: String { __data["title"] }
         public var user: User { __data["user"] }
 
-        /// Posts.Node.User
-        ///
-        /// Parent Type: `User`
-        public struct User: SamplerAPI.SelectionSet {
+        public struct Fragments: FragmentContainer {
           @_spi(Unsafe) public let __data: DataDict
           @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
-          @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { SamplerAPI.Objects.User }
-          @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-            .field("__typename", String.self),
-            .field("id", Int.self),
-            .field("name", String.self),
-          ] }
-          @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-            ItemListQuery.Data.Posts.Node.User.self
-          ] }
-
-          public var id: Int { __data["id"] }
-          public var name: String { __data["name"] }
+          public var itemCompactGraph: ItemCompactGraph { _toFragment() }
         }
+
+        public typealias User = ItemCompactGraph.User
       }
 
       /// Posts.PageInfo

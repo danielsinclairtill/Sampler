@@ -1,0 +1,4 @@
+fragment UserGraph on user {
+    id
+    name
+}
