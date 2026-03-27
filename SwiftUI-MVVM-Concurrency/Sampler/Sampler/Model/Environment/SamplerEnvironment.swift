@@ -22,12 +22,15 @@ class SamplerEnvironment: EnvironmentContract {
     let store: StoreContract
     var state: any SamplerStateContract
     
+    let likeManager: any LikeManagerContract
+    
     init(api: APIContract = SamplerAPI(),
          store: StoreContract = SamplerStore(container: SamplerStore.persistentContainer()),
          state: any SamplerStateContract = SamplerStateManager()) {
         self.api = api
         self.store = store
         self.state = state
+        self.likeManager = LikeManager(state: state)
     }
 }
 

@@ -39,9 +39,9 @@ enum LoginViewModelBinding {
 }
 
 // MARK: ViewModel
-class LoginViewModel: ObservableViewModel, LoginViewModelBinding.Contract {
+class LoginViewModel: LoginViewModelBinding.Contract {
     var output = LoginViewModelBinding.Output()
-    private var cancelBag = Set<AnyCancellable>()
+    private var observeBag = ObserveBag()
 
     private let environment: any EnvironmentContract
     
@@ -50,17 +50,12 @@ class LoginViewModel: ObservableViewModel, LoginViewModelBinding.Contract {
         self.output = output
         self.environment = environment
         
-        super.init()
         // bind inputs and outputs
         listenInput()
     }
     
     private func listenInput() {
-        observe { [weak self] in
-            _ = self?.output.username
-            _ = self?.output.password
-        } onChange: { [weak self] in
-            guard let self else { return }
+        observeBag.add {
             self.output.loginButtonEnabled = !self.output.username.isEmpty && !self.output.password.isEmpty
         }
     }

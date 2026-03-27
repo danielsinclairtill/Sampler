@@ -11,13 +11,19 @@ import Combine
 
 // MARK: Input + Output
 enum ItemDetailViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Output == ItemDetailViewModelBinding.Output {
+    protocol Contract: SamplerViewModelContractNew where
+    Input == ItemDetailViewModelBinding.Input,
+    Output == ItemDetailViewModelBinding.Output { }
+    
+    protocol Input {
         /// The view did load.
         func viewDidLoad()
         /// The post button was tapped.
         func tappedPostButton()
         /// The save button was tapped.
         func tappedSaveButton()
+        /// The like button was tapped.
+        func tappedLikeButton()
     }
     
     @Observable
@@ -32,36 +38,45 @@ enum ItemDetailViewModelBinding {
         var isSaved: Bool = false
         /// If the item is currently being saved or not.
         var isSaving: Bool = false
+        /// If the item is liked.
+        var isLiked: Bool = false
 
         
         init(item: Item? = nil,
              user: User? = nil,
              error: String? = nil,
              isSaved: Bool = false,
-             isSaving: Bool = false) {
+             isSaving: Bool = false,
+             isLiked: Bool = false) {
             self.item = item
             self.user = user
             self.error = error
             self.isSaved = isSaved
             self.isSaving = isSaving
+            self.isLiked = isLiked
         }
     }
 }
 
 // MARK: ViewModel
 @Observable
-class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
-    var output: Output
-    private var cancelBag = Set<AnyCancellable>()
+class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
+                           ItemDetailViewModelBinding.Input {
+    var input: Input { self }
+    let output: Output
     
     private let itemId: String
     private let environment: any EnvironmentContract
     
-    required init(itemId: String,
+    private var observeBag = ObserveBag()
+    private var cancelBag = Set<AnyCancellable>()
+
+    public required init(itemId: String,
                   output: Output = .init(),
                   environment: any EnvironmentContract = SamplerEnvironment.shared) {
         self.itemId = itemId
         self.output = output
+        self.output.isLiked = environment.likeManager.isLiked(itemId)
         self.environment = environment
         
         setExternalItemUpdate()
@@ -124,6 +139,13 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
             .store(in: &cancelBag)
     }
     
+    private func syncLike() {
+        observeBag.add { [weak self] in
+            guard let self else { return }
+            self.output.isLiked = self.environment.likeManager.isLiked(self.itemId)
+        }
+    }
+    
     // MARK: Input
     
     func viewDidLoad() {
@@ -160,6 +182,16 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
                 }
                 self.output.isSaving = false
             }
+        }
+    }
+    
+    func tappedLikeButton() {
+        guard let item = self.output.item,
+              let id = item.id else { return }
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.environment.likeManager.toggleLike(id)
+            self.output.isLiked = self.environment.likeManager.isLiked(id)
         }
     }
 }

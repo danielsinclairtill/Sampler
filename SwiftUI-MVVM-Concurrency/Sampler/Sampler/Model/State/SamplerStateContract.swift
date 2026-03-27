@@ -13,4 +13,7 @@ protocol SamplerStateContract: ObservableObject {
     
     /// The current design theme of the application.
     var theme: SamplerDesignTheme { get set }
+    
+    /// The list of liked item ids.
+    var likedItemIds: [String] { get set }
 }

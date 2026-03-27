@@ -12,7 +12,7 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
     @State private var viewModel: ViewModel
     
     init(viewModel: ViewModel) {
-        _viewModel = State(wrappedValue: viewModel)
+        _viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
@@ -46,6 +46,14 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
                             .fontWeight(.medium)
                     }
                     Spacer()
+                    Button(action: {
+                        viewModel.input.tappedLikeButton()
+                    }) {
+                        Image(systemName: viewModel.output.isLiked ? "heart.fill" : "heart")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 30)
+                    }
                 }
                 .padding(.vertical, 8)
                 
@@ -61,7 +69,7 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
                 // Action Buttons
                 HStack(spacing: 12) {
                     Button(action: {
-                        viewModel.tappedPostButton()
+                        viewModel.input.tappedPostButton()
                     }) {
                         Text("com.danielsinclairtill.Sampler.itemDetail.postButton.title")
                             .frame(maxWidth: .infinity)
@@ -72,7 +80,7 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
                     }
                     
                     Button(action: {
-                        viewModel.tappedSaveButton()
+                        viewModel.input.tappedSaveButton()
                     }) {
                         Text(viewModel.output.isSaved ? "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved" : "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save")
                             .frame(maxWidth: .infinity)
@@ -88,15 +96,12 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
             .padding(.vertical, 12)
         }
         .onAppearOnce {
-            viewModel.viewDidLoad()
+            viewModel.input.viewDidLoad()
         }
         .errorAlert(viewModel.output.error)
     }
 }
 
 #Preview {
-    ItemDetailView(viewModel: ItemDetailViewModel(
-        itemId: "1",
-        environment: SamplerEnvironment.shared)
-    )
+    ItemDetailView(viewModel: ItemDetailViewModel(itemId: "1", environment: SamplerEnvironment.mock))
 }
