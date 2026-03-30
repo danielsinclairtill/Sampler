@@ -12,7 +12,7 @@
     "environmentVariableEntries" : [
       {
         "key" : "RECORD_SNAPSHOTS",
-        "value" : "FAILED"
+        "value" : "NONE"
       },
       {
         "key" : "IS_TEST",
@@ -26,7 +26,7 @@
       "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Sampler.xcodeproj",
-        "identifier" : "65042FB02F69F76B006AE035",
+        "identifier" : "65041A722F6DA9EC0062C225",
         "name" : "SamplerTests"
       }
     }
