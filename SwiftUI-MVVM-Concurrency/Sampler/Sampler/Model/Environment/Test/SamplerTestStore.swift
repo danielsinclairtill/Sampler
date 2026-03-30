@@ -6,20 +6,20 @@
 //
 
 class SamplerTestStore: StoreContract {
-    func get<R>(_ request: R, result: ((Result<R.Data, StoreError>) -> Void)?) where R : RequestStoreGetContract {
-        // no op
+    var getError: StoreError?
+    var getResult: Any?
+
+    func get<R: RequestStoreGetContract>(_ request: R) async throws(StoreError) -> R.Data {
+        if let error = getError { throw error }
+        return getResult as! R.Data
     }
+
+    func getList<R: RequestStoreGetListContract>(_ request: R) async throws(StoreError) -> R.DataList {
+        if let error = getError { throw error }
+        return getResult as! R.DataList
+    }
+
+    func store<R: RequestStoreStoreContract>(_ request: R) async throws(StoreError) {}
     
-    func getList<R>(_ request: R,
-                    result: ((Result<R.DataList, StoreError>) -> Void)?) where R : RequestStoreGetListContract {
-        // no op
-    }
-    
-    func store<R>(_ request: R, result: ((Result<Void, StoreError>) -> Void)?) where R : RequestStoreStoreContract {
-        // no op
-    }
-    
-    func wipe(result: ((Result<Void, StoreError>) -> Void)?) {
-        // no op
-    }
+    func wipe() async throws(StoreError) {}
 }

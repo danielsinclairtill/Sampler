@@ -11,7 +11,6 @@ import Combine
 
 @Observable
 class SamplerStateManager: SamplerStateContract {
-    static let shared: SamplerStateManager = SamplerStateManager()
     private let defaults: UserDefaults
     
     private enum Keys: String {

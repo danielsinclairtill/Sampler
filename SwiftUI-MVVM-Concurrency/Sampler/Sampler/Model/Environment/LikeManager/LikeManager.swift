@@ -7,8 +7,8 @@
 
 import Foundation
 
-protocol LikeManagerContract {
-    var likedItemIds: [String] { get }
+protocol LikeManagerContract: AnyObject, Observable {
+    var likedItemIds: Set<String> { get }
     func loadLikes()
     func isLiked(_ id: String) -> Bool
     func toggleLike(_ id: String)
@@ -16,7 +16,7 @@ protocol LikeManagerContract {
 
 @Observable
 final class LikeManager: LikeManagerContract {
-    private(set) var likedItemIds: [String] = []
+    private(set) var likedItemIds: Set<String> = []
     private let state: any SamplerStateContract
 
     init(state: any SamplerStateContract) {
@@ -24,7 +24,7 @@ final class LikeManager: LikeManagerContract {
     }
 
     func loadLikes() {
-        likedItemIds = state.likedItemIds
+        likedItemIds = .init(state.likedItemIds)
     }
 
     func isLiked(_ id: String) -> Bool {
@@ -33,10 +33,10 @@ final class LikeManager: LikeManagerContract {
 
     func toggleLike(_ id: String) {
         if isLiked(id) {
-            likedItemIds.removeAll(where: { $0 == id })
+            likedItemIds.remove(id)
         } else {
-            likedItemIds.append(id)
+            likedItemIds.insert(id)
         }
-        state.likedItemIds = likedItemIds
+        state.likedItemIds = .init(likedItemIds)
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol SamplerStateContract: ObservableObject {
+protocol SamplerStateContract: AnyObject, Observable {
     /// If the user is currently logged in.
     var user: AuthUser? { get set }
     

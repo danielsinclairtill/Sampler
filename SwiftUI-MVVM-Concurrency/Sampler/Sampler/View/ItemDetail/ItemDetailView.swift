@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
-    @State private var viewModel: ViewModel
+struct ItemDetailView: View {
+    @State private var viewModel: ItemDetailViewModel
     
-    init(viewModel: ViewModel) {
+    init(viewModel: ItemDetailViewModel) {
         _viewModel = State(initialValue: viewModel)
     }
     
@@ -69,7 +69,9 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
                 // Action Buttons
                 HStack(spacing: 12) {
                     Button(action: {
-                        viewModel.input.tappedPostButton()
+                        Task {
+                            await viewModel.input.tappedPostButton()
+                        }
                     }) {
                         Text("com.danielsinclairtill.Sampler.itemDetail.postButton.title")
                             .frame(maxWidth: .infinity)
@@ -80,7 +82,9 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
                     }
                     
                     Button(action: {
-                        viewModel.input.tappedSaveButton()
+                        Task {
+                            await viewModel.input.tappedSaveButton()
+                        }
                     }) {
                         Text(viewModel.output.isSaved ? "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved" : "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save")
                             .frame(maxWidth: .infinity)
@@ -96,7 +100,9 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
             .padding(.vertical, 12)
         }
         .onAppearOnce {
-            viewModel.input.viewDidLoad()
+            Task {
+                await viewModel.input.viewDidLoad()
+            }
         }
         .errorAlert(viewModel.output.error)
     }

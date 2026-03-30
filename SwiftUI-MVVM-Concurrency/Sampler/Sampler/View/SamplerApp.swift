@@ -17,6 +17,9 @@ struct SamplerApp: App {
             if !SamplerEnvironment.isTesting {
                 RootView()
                     .environment(environment)
+                    .task {
+                        environment.likeManager.loadLikes()
+                    }
             } else {
                 EmptyView()
             }

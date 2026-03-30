@@ -12,7 +12,7 @@ class SamplerAPI: APIContract {
     let baseUrl = "https://dummyjson.com"
     let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
-    func request<R>(_ request: R) async throws -> R.Response where R : RequestAPIContract {
+    func request<R>(_ request: R) async throws(APIError) -> R.Response where R : RequestAPIContract {
         // 1. URL Construction
         guard var urlComponents = URLComponents(string: baseUrl + request.path) else {
             assertionFailure("url for api request was not formatted correctly")

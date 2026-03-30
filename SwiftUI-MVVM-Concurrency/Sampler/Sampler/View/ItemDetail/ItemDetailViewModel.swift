@@ -17,11 +17,11 @@ enum ItemDetailViewModelBinding {
     
     protocol Input {
         /// The view did load.
-        func viewDidLoad()
+        func viewDidLoad() async
         /// The post button was tapped.
-        func tappedPostButton()
+        func tappedPostButton() async
         /// The save button was tapped.
-        func tappedSaveButton()
+        func tappedSaveButton() async
         /// The like button was tapped.
         func tappedLikeButton()
     }
@@ -30,8 +30,6 @@ enum ItemDetailViewModelBinding {
     class Output {
         /// The item to display.
         var item: Item?
-        /// The user for the item.
-        var user: User?
         /// Show an error message to display over the item details.
         var error: String?
         /// If the item is saved on disk or not.
@@ -43,13 +41,11 @@ enum ItemDetailViewModelBinding {
 
         
         init(item: Item? = nil,
-             user: User? = nil,
              error: String? = nil,
              isSaved: Bool = false,
              isSaving: Bool = false,
              isLiked: Bool = false) {
             self.item = item
-            self.user = user
             self.error = error
             self.isSaved = isSaved
             self.isSaving = isSaving
@@ -80,51 +76,63 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
         self.environment = environment
         
         setExternalItemUpdate()
+        syncLike()
     }
     
     // MARK: Private
     
-    private func updateItem(itemId: String) {
+    private func updateItem(itemId: String) async {
         output.error = nil
 
-        environment.store.get(ItemStoreRequest.GetDetail(id: itemId)) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let item):
-                self.output.item = item
-                self.output.isSaved = true
-            case .failure:
-                // do nothing
-                break
-            }
-            
-            guard self.output.item == nil else { return }
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                do {
-                    let item = try await self.environment.api.request(ItemAPIRequest.Detail(id: itemId))
-                    self.output.item = item
-                    try await self.updateUser(userID: item.userId)
-                } catch let error as APIError {
-                    self.output.item = nil
-                    self.output.error = error.message
+        // item from store
+        do {
+            let item = try await environment.store.get(ItemStoreRequest.GetDetail(id: itemId))
+            output.item = item
+            output.isSaved = true
+            return
+        } catch {
+            switch error {
+            case let e as StoreError:
+                if e != StoreError.empty {
+                    output.error = e.message
                 }
+            default:
+                output.error = nil
+            }
+        }
+        
+        // item from API
+        do {
+            let item = try await environment.api.request(ItemAPIRequest.Detail(id: itemId))
+            output.item = item
+            // update user
+            await updateUser(userID: item.userId)
+        } catch {
+            switch error {
+            case let e as APIError:
+                output.error = e.message
+            default:
+                output.error = nil
             }
         }
     }
     
-    private func updateUser(userID: String?) async throws {
+    private func updateUser(userID: String?) async {
         guard let userID else {
-            output.user = nil
+            output.item?.user = nil
             return
         }
         
         do {
             let user = try await environment.api.request(UserAPIRequest.Detail(id: String(userID)))
             output.item?.user = user
-        } catch let error as APIError {
-            output.item?.user = nil
-            output.error = error.message
+        } catch {
+            switch error {
+            case let e as APIError:
+                output.error = e.message
+            default:
+                output.error = nil
+            }
         }
     }
     
@@ -133,8 +141,10 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
             .compactMap { $0.object as? Item } // Extract the ID safely
             .filter { [weak self] updatedItem in updatedItem.id == self?.itemId } // Only react if it matches MY recipe
             .sink { [weak self] _ in
-                guard let self else { return }
-                self.updateItem(itemId: self.itemId)
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    await self.updateItem(itemId: self.itemId)
+                }
             }
             .store(in: &cancelBag)
     }
@@ -148,50 +158,42 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
     
     // MARK: Input
     
-    func viewDidLoad() {
-        updateItem(itemId: itemId)
+    func viewDidLoad() async {
+        await updateItem(itemId: itemId)
     }
     
-    func tappedPostButton() {
+    func tappedPostButton() async {
         guard let item = output.item else { return }
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            do {
-                let result = try await self.environment.api.request(ItemAPIRequest.Create(item: item))
-                print(result)
-            } catch let error as APIError {
-                self.output.item = nil
-                self.output.error = error.message
+        do {
+            let result = try await environment.api.request(ItemAPIRequest.Create(item: item))
+            print(result)
+        } catch {
+            switch error {
+            case let e as APIError:   output.error = e.message
+            default:                  output.error = nil
             }
         }
     }
     
-    func tappedSaveButton() {
-        guard let item = self.output.item else { return }
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            self.output.isSaving = true
-            self.environment.store.store(ItemStoreRequest.StoreDetail(data: item)) { [weak self] result in
-                guard let self else { return }
-                switch result {
-                case .success(let item):
-                    print(item)
-                    self.output.isSaved = true
-                case .failure(let error):
-                    self.output.error = error.message
-                }
-                self.output.isSaving = false
+    func tappedSaveButton() async {
+        guard let item = output.item else { return }
+        output.isSaving = true
+        do {
+            try await environment.store.store(ItemStoreRequest.StoreDetail(data: item))
+            print(item)
+            output.isSaved = true
+        } catch {
+            switch error {
+            case let e as APIError:   output.error = e.message
+            default:                  output.error = nil
             }
         }
+        output.isSaving = false
     }
     
     func tappedLikeButton() {
-        guard let item = self.output.item,
+        guard let item = output.item,
               let id = item.id else { return }
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            self.environment.likeManager.toggleLike(id)
-            self.output.isLiked = self.environment.likeManager.isLiked(id)
-        }
+        environment.likeManager.toggleLike(id)
     }
 }
