@@ -44,6 +44,7 @@ struct ItemDetailView: View {
                         Text(viewModel.output.item?.user?.username ?? "")
                             .font(.subheadline)
                             .fontWeight(.medium)
+                            .lineLimit(1)
                     }
                     Spacer()
                     Button(action: {
