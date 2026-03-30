@@ -9,22 +9,21 @@ import Foundation
 @testable import Sampler
 
 class SampleStoreMock: StoreContract {
-    func get<R>(_ request: R, result: ((Result<R.Data, Sampler.StoreError>) -> Void)?) where R : Sampler.RequestStoreGetContract {
-        // no op
-        result?(.failure(.empty))
+    var getError: StoreError?
+    var getResult: Any?
+
+    func get<R: RequestStoreGetContract>(_ request: R) async throws -> R.Data {
+        if let error = getError { throw error }
+        guard let getResult else { throw StoreError.empty }
+        return getResult as! R.Data
     }
-    
-    func getList<R>(_ request: R, result: ((Result<R.DataList, Sampler.StoreError>) -> Void)?) where R : Sampler.RequestStoreGetListContract {
-        // no op
-        result?(.failure(.empty))
+
+    func getList<R: RequestStoreGetListContract>(_ request: R) async throws -> R.DataList {
+        if let error = getError { throw error }
+        guard let getResult else { throw StoreError.empty }
+        return getResult as! R.DataList
     }
-    
-    func store<R>(_ request: R, result: ((Result<Void, Sampler.StoreError>) -> Void)?) where R : Sampler.RequestStoreStoreContract {
-        // no op
-        result?(.failure(.empty))
-    }
-    
-    func wipe(result: ((Result<Void, Sampler.StoreError>) -> Void)?) {
-        // no op
-    }
+
+    func store<R: RequestStoreStoreContract>(_ request: R) async throws {}
+    func wipe() async throws {}
 }

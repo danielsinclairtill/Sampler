@@ -10,25 +10,21 @@ import XCTest
 import Combine
 @testable import Sampler
 
-@MainActor
 class ItemDetailViewModelTests: XCTestCase {
     private let itemId = "123"
-    private var mockEnvironment: SamplerEnvironmentMock!
+    private var mockEnvironment = SamplerEnvironmentMock()
     
     override func setUp() {
         super.setUp()
-        mockEnvironment = SamplerEnvironmentMock()
         mockEnvironment.reset()
     }
     
-    override func tearDown() async throws {
-        mockEnvironment = nil
-        try await super.tearDown()
-    }
-    
     func testItemDetailLoad() async {
-        let item = ModelMockData.makeItem(id: itemId)
         let user = ModelMockData.makeUser(id: itemId)
+        let item = ModelMockData.makeItem(id: itemId, userId: user.id, user: nil)
+        var expected = item
+        expected.user = user
+        
         mockEnvironment.mockApi.mockAPIResponses = [
             .success(item),
             .success(user)
@@ -36,19 +32,16 @@ class ItemDetailViewModelTests: XCTestCase {
         let viewModel = ItemDetailViewModel(itemId: itemId,
                                             environment: mockEnvironment)
         
-        viewModel.viewDidLoad()
-        
-        await Task.yield()
-        
-        XCTAssertEqual(viewModel.output.item, item)
-        XCTAssertEqual(viewModel.output.user, user)
+        await viewModel.viewDidLoad()
+                
+        XCTAssertEqual(viewModel.output.item, expected)
 
         let expectedRequest = ItemAPIRequest.Detail(id: itemId)
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 2)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
     }
     
-    func testItemDetailPresentsError() {
+    func testItemDetailPresentsError() async {
         let itemId = "123"
         mockEnvironment.mockApi.mockAPIResponses = [
             .failure(APIError.serverError)
@@ -56,7 +49,7 @@ class ItemDetailViewModelTests: XCTestCase {
         let viewModel = ItemDetailViewModel(itemId: itemId,
                                             environment: mockEnvironment)
         
-        viewModel.viewDidLoad()
+        await viewModel.viewDidLoad()
 
         XCTAssertEqual(viewModel.output.error, APIError.serverError.message)
 
@@ -64,6 +57,5 @@ class ItemDetailViewModelTests: XCTestCase {
         XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 1)
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
         XCTAssertEqual(viewModel.output.item, nil)
-        XCTAssertEqual(viewModel.output.user, nil)
     }
 }

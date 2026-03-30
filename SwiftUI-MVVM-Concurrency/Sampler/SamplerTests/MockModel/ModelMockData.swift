@@ -11,13 +11,16 @@ import Foundation
 
 class ModelMockData {
     /// Make a mock item object with an id.
-    static func makeItem(id: String) -> Item {
+    static func makeItem(id: String,
+                         userId: String? = nil,
+                         user: User? = nil) -> Item {
         Item(id: id,
              name: "name \(id)",
              ingredients: ["ingredient1"],
              difficulty: "difficulty1",
              tags: ["tag1"],
-             userId: id,
+             userId: userId ?? "\(id)",
+             user: user ?? makeUser(id: id),
              image: URL(string: "image_url_\(id)"))
     }
     

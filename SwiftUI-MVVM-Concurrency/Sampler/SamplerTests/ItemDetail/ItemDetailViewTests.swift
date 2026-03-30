@@ -14,10 +14,8 @@ import SnapshotTesting
 class ItemDetailViewTests: XCTestCase {
     func testStoryDetail() {
         let item = ModelMockData.makeItem(id: "123")
-        let user = ModelMockData.makeUser(id: "123")
-//        let viewModel = MockItemDetailViewModel(item: item, user: user)
         let viewModel = ItemDetailViewModel(itemId: item.id ?? "",
-                                            output: .init(item: item, user: user))
+                                            output: .init(item: item))
         let view = ItemDetailView(viewModel: viewModel)
 
         assertSnapshotSuite(of: view)
