@@ -19,12 +19,15 @@ class ItemDetailViewModelTests: XCTestCase {
         mockEnvironment.reset()
     }
     
-    func testItemDetailLoad() async {
+    func testItemDetailLoadAPI() async {
         let user = ModelMockData.makeUser(id: itemId)
         let item = ModelMockData.makeItem(id: itemId, userId: user.id, user: nil)
         var expected = item
         expected.user = user
         
+        mockEnvironment.mockStore.mockGetResponses = [
+            .success(nil),
+        ]
         mockEnvironment.mockApi.mockAPIResponses = [
             .success(item),
             .success(user)
@@ -41,8 +44,32 @@ class ItemDetailViewModelTests: XCTestCase {
         XCTAssertTrue(mockEnvironment.mockApi.mockAPIRequestsCalled.contains { $0.path == expectedRequest.path })
     }
     
+    func testItemDetailLoadStore() async {
+        let item = ModelMockData.makeItem(id: itemId,
+                                          user: ModelMockData.makeUser(id: itemId))
+        
+        mockEnvironment.mockStore.mockGetResponses = [
+            .success(item)
+        ]
+        let viewModel = ItemDetailViewModel(itemId: itemId,
+                                            environment: mockEnvironment)
+        
+        await viewModel.viewDidLoad()
+                
+        XCTAssertEqual(viewModel.output.item, item)
+        XCTAssertEqual(viewModel.output.isSaved, true)
+
+        let expectedRequest = ItemStoreRequest.GetDetail(id: itemId)
+        XCTAssertEqual(mockEnvironment.mockApi.mockAPIRequestsCalled.count, 0)
+        XCTAssertTrue(mockEnvironment.mockStore.mockGetRequestsCalled.contains { $0.id == expectedRequest.id })
+    }
+    
     func testItemDetailPresentsError() async {
         let itemId = "123"
+        
+        mockEnvironment.mockStore.mockGetResponses = [
+            .success(nil),
+        ]
         mockEnvironment.mockApi.mockAPIResponses = [
             .failure(APIError.serverError)
         ]

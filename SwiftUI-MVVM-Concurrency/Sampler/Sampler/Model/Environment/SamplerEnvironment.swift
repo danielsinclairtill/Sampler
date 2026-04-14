@@ -21,8 +21,7 @@ class SamplerEnvironment: EnvironmentContract {
     let api: APIContract
     let imageManager: ImageManagerContract
     let store: StoreContract
-    var state: any SamplerStateContract
-
+    let state: any SamplerStateContract
     let likeManager: any LikeManagerContract
     
     init(api: APIContract = SamplerAPI(),
