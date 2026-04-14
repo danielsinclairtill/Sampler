@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemsListView<ViewModel: ItemsListViewModelBinding.Contract>: View {
-    @State private var viewModel: ViewModel
+struct ItemsListView: View {
+    @State private var viewModel: ItemsListViewModel
     
-    init(viewModel: ViewModel) {
+    init(viewModel: ItemsListViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     

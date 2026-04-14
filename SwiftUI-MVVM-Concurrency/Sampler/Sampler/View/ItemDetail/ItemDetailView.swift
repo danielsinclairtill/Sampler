@@ -48,7 +48,7 @@ struct ItemDetailView: View {
                     }
                     Spacer()
                     Button(action: {
-                        viewModel.input.tappedLikeButton()
+                        viewModel.tappedLikeButton()
                     }) {
                         Image(systemName: viewModel.output.isLiked ? "heart.fill" : "heart")
                             .resizable()
@@ -71,7 +71,7 @@ struct ItemDetailView: View {
                 HStack(spacing: 12) {
                     Button(action: {
                         Task {
-                            await viewModel.input.tappedPostButton()
+                            await viewModel.tappedPostButton()
                         }
                     }) {
                         Text("com.danielsinclairtill.Sampler.itemDetail.postButton.title")
@@ -84,7 +84,7 @@ struct ItemDetailView: View {
                     
                     Button(action: {
                         Task {
-                            await viewModel.input.tappedSaveButton()
+                            await viewModel.tappedSaveButton()
                         }
                     }) {
                         Text(viewModel.output.isSaved ? "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.saved" : "com.danielsinclairtill.Sampler.itemDetail.saveButton.title.save")
@@ -102,7 +102,7 @@ struct ItemDetailView: View {
         }
         .onAppearOnce {
             Task {
-                await viewModel.input.viewDidLoad()
+                await viewModel.viewDidLoad()
             }
         }
         .errorAlert(viewModel.output.error)

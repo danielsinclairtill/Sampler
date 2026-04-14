@@ -10,7 +10,6 @@ import Foundation
 class SamplerAPI: APIContract {
     // See [https://dummyjson.com/docs/recipes#recipes-all](https://dummyjson.com/docs/recipes#recipes-all) for documentation on test API
     let baseUrl = "https://dummyjson.com"
-    let imageManager: ImageManagerContract = SamplerAPIImageManager()
     
     func request<R>(_ request: R) async throws(APIError) -> R.Response where R : RequestAPIContract {
         // 1. URL Construction

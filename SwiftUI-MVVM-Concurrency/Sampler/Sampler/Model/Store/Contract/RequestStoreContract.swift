@@ -12,7 +12,6 @@ public protocol RequestStoreStoreContract {
     var data: Data { get }
 }
 
-
 public enum RequestStoreGetType {
     case id(_ id: String)
     case all
@@ -20,7 +19,7 @@ public enum RequestStoreGetType {
 
 public protocol RequestStoreGetListContract {
     associatedtype Data: StoreConvertible
-    associatedtype DataList = [Data]
+    associatedtype DataList: RangeReplaceableCollection = [Data]
 }
 
 public protocol RequestStoreGetContract {

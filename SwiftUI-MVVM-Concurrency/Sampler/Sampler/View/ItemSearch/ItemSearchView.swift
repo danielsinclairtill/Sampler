@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct ItemSearchView: View {
-    @StateObject private var viewModel: ItemSearchViewModel
+    @State private var viewModel: ItemSearchViewModel
     
     init(viewModel: ItemSearchViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        _viewModel = State(wrappedValue: viewModel)
     }
     
     private var emptyView: some View {

@@ -10,9 +10,11 @@ import Combine
 
 // MARK: Input + Output
 enum ItemsListViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Output == ItemsListViewModelBinding.Output {
-        var imageManager: ImageManagerContract { get }
-        
+    protocol Contract: SamplerViewModelContract where
+    Input == ItemsListViewModelBinding.Input,
+    Output == ItemsListViewModelBinding.Output { }
+    
+    protocol Input {
         /// The view did load.
         func viewDidLoad()
         /// The items list is in the loading state and ready to refresh the data.
@@ -57,18 +59,22 @@ enum ItemsListViewModelBinding {
 
 // MARK: ViewModel
 @Observable
-class ItemsListViewModel: ItemsListViewModelBinding.Contract {
-    var output: ItemsListViewModelBinding.Output
-    private var cancelBag = Set<AnyCancellable>()
-    
-    private let environment: any EnvironmentContract
-    var imageManager: ImageManagerContract {
-        return environment.api.imageManager
-    }
+class ItemsListViewModel: ItemsListViewModelBinding.Contract,
+                          ItemsListViewModelBinding.Input {
+    var output: Output
+    typealias Environment = ItemRepositoryProvider &
+                            ImageMangagerProvider
+    private let environment: Environment
     private var router: ItemsListRouter
     
+    private var cancelBag = Set<AnyCancellable>()
+    
+    var imageManager: ImageManagerContract {
+        environment.imageManager
+    }
+    
     init(output: ItemsListViewModelBinding.Output = .init(),
-         environment: any EnvironmentContract = SamplerEnvironment.shared,
+         environment: Environment = SamplerEnvironment.shared,
          router: ItemsListRouter) {
         self.output = output
         self.environment = environment
@@ -84,15 +90,16 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
         Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
             do {
-                let data = try await strongSelf.environment.api.request(ItemAPIRequest.List(offset: offset))
-                if data.items.isEmpty {
+                let result = try await strongSelf.environment.itemRepository.getItems(offset: offset,
+                                                                                    limit: 10)
+                if result.data.items.isEmpty {
                     // if no items were recieved, assume there is an issue with the API
                     // keep whatever the previous state of the items list was, and send an error
                     strongSelf.output.error = APIError.serverError.message
                 } else {
-                    let newItems = data.items
+                    let newItems = result.data.items
                     
-                    strongSelf.output.total = data.total
+                    strongSelf.output.total = result.data.total
                     // if an offset was passed it is a load next page call
                     if offset > 0 && !strongSelf.output.items.isEmpty {
                         strongSelf.output.items.append(contentsOf: newItems)
@@ -115,7 +122,7 @@ class ItemsListViewModel: ItemsListViewModelBinding.Contract {
 
     private func prefetchImages(items: [Item]) {
         let prefetchImageURLs = items.compactMap { $0.image }
-        environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)
+        environment.imageManager.prefetchImages(prefetchImageURLs, reset: true)
     }
     
     // MARK: Input

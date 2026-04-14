@@ -18,7 +18,7 @@ class SamplerStore: StoreContract {
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
 
-    func get<R: RequestStoreGetContract>(_ request: R) async throws -> R.Data {
+    func get<R: RequestStoreGetContract>(_ request: R) async throws -> R.Data? {
         let context = container.viewContext
         return try await context.perform {
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: R.Data.enitityName)
@@ -26,7 +26,7 @@ class SamplerStore: StoreContract {
 
             let results = try context.fetch(fetchRequest)
 
-            guard !results.isEmpty else { throw StoreError.empty }
+            guard !results.isEmpty else { return nil }
             guard let dataCD = results.first as? R.Data.CD else { throw StoreError.readError }
             return R.Data.convertFromCD(dataCD)
         }
@@ -38,6 +38,7 @@ class SamplerStore: StoreContract {
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: R.Data.enitityName)
             let results = try context.fetch(fetchRequest)
 
+            guard !results.isEmpty else { return R.DataList() }
             guard let dataCD = results as? [R.Data.CD] else { throw StoreError.readError }
             let data = dataCD.map { R.Data.convertFromCD($0) }
             guard let dataList = data as? R.DataList else { throw StoreError.readError }
@@ -45,7 +46,7 @@ class SamplerStore: StoreContract {
         }
     }
 
-    func store<R: RequestStoreStoreContract>(_ request: R) async throws {
+    func store<R: RequestStoreStoreContract>(_ request: R) async throws -> R.Data {
         let context = container.newBackgroundContext()
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
@@ -59,6 +60,8 @@ class SamplerStore: StoreContract {
         await MainActor.run {
             NotificationCenter.default.post(name: .itemDidUpdate, object: request.data)
         }
+        
+        return request.data
     }
 
     func wipe() async throws {

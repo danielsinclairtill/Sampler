@@ -11,10 +11,13 @@ import Combine
 
 // MARK: Input + Output
 enum LoginViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Output == LoginViewModelBinding.Output {
+    protocol Contract: SamplerViewModelContract where
+    Input == LoginViewModelBinding.Input,
+    Output == LoginViewModelBinding.Output  { }
+    
+    protocol Input {
         /// When the login button is tapped.
         func loginTapped()
-        
         /// When the skip login button is tapped.
         func skipLoginTapped()
     }
@@ -39,13 +42,16 @@ enum LoginViewModelBinding {
 }
 
 // MARK: ViewModel
-class LoginViewModel: LoginViewModelBinding.Contract {
-    var output = LoginViewModelBinding.Output()
-    private var observeBag = ObserveBag()
-
-    private let environment: any EnvironmentContract
+class LoginViewModel: LoginViewModelBinding.Contract,
+                      LoginViewModelBinding.Input {
+    var output: Output
+    typealias Environment = AuthRepositoryProvider &
+                            StateProvider
+    private let environment: Environment
     
-    init(environment: any EnvironmentContract,
+    private var observeBag = ObserveBag()
+    
+    init(environment: Environment,
          output: LoginViewModelBinding.Output = .init()) {
         self.output = output
         self.environment = environment
@@ -54,9 +60,12 @@ class LoginViewModel: LoginViewModelBinding.Contract {
         listenInput()
     }
     
+    // MARK: Input
+    
     private func listenInput() {
-        observeBag.add {
-            self.output.loginButtonEnabled = !self.output.username.isEmpty && !self.output.password.isEmpty
+        observeBag.add { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.output.loginButtonEnabled = !strongSelf.output.username.isEmpty && !strongSelf.output.password.isEmpty
         }
     }
     
@@ -65,8 +74,8 @@ class LoginViewModel: LoginViewModelBinding.Contract {
             guard let self else { return }
             output.error = nil
             do {
-                let response = try await self.environment.api.request(LoginAPIRequest.Login(username: username,
-                                                                                            password: password))
+                let response = try await self.environment.authRepository.login(username: username,
+                                                                               password: password)
                 self.environment.state.user = response
             } catch let error as APIError {
                 // the API returns a `.requestError` when login credentials are not found

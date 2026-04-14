@@ -11,7 +11,7 @@ import Combine
 
 // MARK: Input + Output
 enum ItemDetailViewModelBinding {
-    protocol Contract: SamplerViewModelContractNew where
+    protocol Contract: SamplerViewModelContract where
     Input == ItemDetailViewModelBinding.Input,
     Output == ItemDetailViewModelBinding.Output { }
     
@@ -58,21 +58,23 @@ enum ItemDetailViewModelBinding {
 @Observable
 class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
                            ItemDetailViewModelBinding.Input {
-    var input: Input { self }
-    let output: Output
-    
-    private let itemId: String
-    private let environment: any EnvironmentContract
-    
+    var output: Output
+    typealias Environment = ItemRepositoryProvider &
+                            UserRepositoryProvider &
+                            LikeManagerProvider
+    private let environment: Environment
+            
     private var observeBag = ObserveBag()
     private var cancelBag = Set<AnyCancellable>()
-
+    
+    private let itemId: String
+    
     public required init(itemId: String,
-                  output: Output = .init(),
-                  environment: any EnvironmentContract = SamplerEnvironment.shared) {
+                         output: Output = .init(),
+                         environment: Environment = SamplerEnvironment.shared) {
         self.itemId = itemId
+        output.isLiked = environment.likeManager.isLiked(itemId)
         self.output = output
-        self.output.isLiked = environment.likeManager.isLiked(itemId)
         self.environment = environment
         
         setExternalItemUpdate()
@@ -86,33 +88,18 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
 
         // item from store
         do {
-            let item = try await environment.store.get(ItemStoreRequest.GetDetail(id: itemId))
-            output.item = item
-            output.isSaved = true
-            return
-        } catch {
-            switch error {
-            case let e as StoreError:
-                if e != StoreError.empty {
-                    output.error = e.message
-                }
-            default:
-                output.error = nil
+            let item = try await environment.itemRepository.getItem(id: itemId)
+            output.item = item.data
+            output.isSaved = item.source == .store
+            
+            if item.source != .store {
+                await updateUser(userID: output.item?.userId)
             }
-        }
-        
-        // item from API
-        do {
-            let item = try await environment.api.request(ItemAPIRequest.Detail(id: itemId))
-            output.item = item
-            // update user
-            await updateUser(userID: item.userId)
         } catch {
             switch error {
-            case let e as APIError:
-                output.error = e.message
-            default:
-                output.error = nil
+            case let e as StoreError: output.error = e.message
+            case let e as APIError: output.error = e.message
+            default: output.error = nil
             }
         }
     }
@@ -124,14 +111,12 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
         }
         
         do {
-            let user = try await environment.api.request(UserAPIRequest.Detail(id: String(userID)))
-            output.item?.user = user
+            let user = try await environment.userRepository.getUser(id: userID)
+            output.item?.user = user.data
         } catch {
             switch error {
-            case let e as APIError:
-                output.error = e.message
-            default:
-                output.error = nil
+            case let e as APIError: output.error = e.message
+            default: output.error = nil
             }
         }
     }
@@ -165,7 +150,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
     func tappedPostButton() async {
         guard let item = output.item else { return }
         do {
-            let result = try await environment.api.request(ItemAPIRequest.Create(item: item))
+            let result = try await environment.itemRepository.createItem(item: item)
             print(result)
         } catch {
             switch error {
@@ -179,7 +164,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
         guard let item = output.item else { return }
         output.isSaving = true
         do {
-            try await environment.store.store(ItemStoreRequest.StoreDetail(data: item))
+            let item = try await environment.itemRepository.saveItem(item: item)
             print(item)
             output.isSaved = true
         } catch {

@@ -45,15 +45,22 @@ final class ObserveBag {
     func add(tracking: @escaping @Sendable @MainActor () -> Void) {
         let task = Task { @MainActor in
             while !Task.isCancelled {
-                await withCheckedContinuation { continuation in
-                    withObservationTracking {
-                        tracking()
-                    } onChange: {
-                        // Called once when any tracked dependency changes.
-                        // Resumes the continuation to trigger the next loop iteration,
-                        // which re-registers the observation fresh.
-                        continuation.resume()
+                let box = ContinuationBox()
+                
+                await withTaskCancellationHandler {
+                    await withCheckedContinuation { continuation in
+                        box.store(continuation)
+                        withObservationTracking {
+                            tracking()
+                        } onChange: {
+                            // Called once when any tracked dependency changes.
+                            // Resumes the continuation to trigger the next loop iteration,
+                            // which re-registers the observation fresh.
+                            box.resume()
+                        }
                     }
+                } onCancel: {
+                    box.resume()
                 }
             }
         }
@@ -67,5 +74,22 @@ final class ObserveBag {
     deinit {
         tasks.forEach { $0.cancel() }
         tasks.removeAll()
+    }
+}
+
+/// Thread-safe box ensuring the continuation is resumed exactly once
+nonisolated private final class ContinuationBox: @unchecked Sendable {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private let lock = NSLock()
+
+    func store(_ cont: CheckedContinuation<Void, Never>) {
+        lock.withLock { continuation = cont }
+    }
+
+    func resume() {
+        lock.withLock {
+            continuation?.resume()
+            continuation = nil  // nil out so a second call is a no-op
+        }
     }
 }

@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
-    @State private var viewModel: ViewModel
+struct LoginView: View {
+    @State private var viewModel: LoginViewModel
 
-    init(viewModel: ViewModel) {
+    init(viewModel: LoginViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     

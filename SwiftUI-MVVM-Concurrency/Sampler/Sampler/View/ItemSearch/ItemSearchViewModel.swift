@@ -11,9 +11,10 @@ import Combine
 
 // MARK: Input + Output
 enum ItemSearchViewModelBinding {
-    protocol Contract: SamplerViewModelContract where Output == ItemSearchViewModelBinding.Output {
-        var imageManager: ImageManagerContract { get }
-        
+    protocol Contract: SamplerViewModelContract where
+    Output == ItemSearchViewModelBinding.Output { }
+    
+    protocol Input {
         /// The items list is in the loading state and ready to refresh the data.
         func refresh()
         /// The user performs an action which intends to refresh the items list.
@@ -24,21 +25,22 @@ enum ItemSearchViewModelBinding {
         func cellTapped(index: Int)
     }
 
-    class Output: ObservableObject {
+    @Observable
+    class Output {
         /// The text in the search bar.
-        @Published var searchText: String
+        var searchText: String
         /// The items list to display.
-        @Published var items: [Item] = []
+        var items: [Item] = []
         /// Show the items list in a refreshing state.
-        @Published var isRefreshing: Bool = false
+        var isRefreshing: Bool = false
         /// Show an error message to display over the items list.
-        @Published var error: String?
+        var error: String?
         /// The total number of items possible in the list.
-        @Published var total: Int = 0
+        var total: Int = 0
         /// If the items list are loading by refreshing or pagnation.
-        @Published fileprivate var isLoading: Bool = false
+        fileprivate var isLoading: Bool = false
         /// If the list has more  items that should load.
-        @Published var hasMorePages: Bool = false
+        var hasMorePages: Bool = false
         
         init(searchText: String = "",
              items: [Item] = [],
@@ -57,24 +59,32 @@ enum ItemSearchViewModelBinding {
 }
 
 // MARK: ViewModel
-class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject {
-    @PublishedObject var output: ItemSearchViewModelBinding.Output
-    private var cancelBag = Set<AnyCancellable>()
-    
-    private let environment: any EnvironmentContract
-    var imageManager: ImageManagerContract {
-        return environment.api.imageManager
-    }
+class ItemSearchViewModel: ItemSearchViewModelBinding.Contract,
+                            ItemSearchViewModelBinding.Input {
+    var output: Output
+    typealias Environment = ItemRepositoryProvider &
+                            ImageMangagerProvider
+    private let environment: Environment
     private var router: ItemSearchRouter
+    
+    private lazy var searchDebounce = Debounce(for: .milliseconds(200)) { [weak self] text in
+        await self?.searchText(text)
+    }
+    private var cancelBag = Set<AnyCancellable>()
+    private var observeBag = ObserveBag()
+
+    var imageManager: ImageManagerContract {
+        environment.imageManager
+    }
 
     init(output: ItemSearchViewModelBinding.Output = .init(),
-         environment: any EnvironmentContract = SamplerEnvironment.shared,
+         environment: Environment = SamplerEnvironment.shared,
          router: ItemSearchRouter) {
         self.output = output
         self.environment = environment
         self.router = router
         
-        listenSearchText()
+        debounceSearchText()
     }
     
     private func updateData(searchText: String,
@@ -92,13 +102,15 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
         Task { @MainActor [weak self] in
             guard let strongSelf = self else { return }
             do {
-                let results = try await strongSelf.environment.api.request(ItemAPIRequest.Search(text: searchText, offset: offset))
-                if results.items.isEmpty {
+                let results = try await strongSelf.environment.itemRepository.searchItem(text: searchText,
+                                                                                         offset: offset,
+                                                                                         limit: 10)
+                if results.data.items.isEmpty {
                     strongSelf.output.items = []
                 } else {
-                    let newItems = results.items
+                    let newItems = results.data.items
                     
-                    strongSelf.output.total = results.total
+                    strongSelf.output.total = results.data.total
                     // if an offset was passed it is a load next page call
                     if offset > 0 && !strongSelf.output.items.isEmpty {
                         strongSelf.output.items.append(contentsOf: newItems)
@@ -120,27 +132,29 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract, ObservableObject
     
     private func prefetchImages(items: [Item]) {
         let prefetchImageURLs = items.compactMap { $0.image }
-        environment.api.imageManager.prefetchImages(prefetchImageURLs, reset: true)
+        environment.imageManager.prefetchImages(prefetchImageURLs, reset: true)
     }
     
-    // MARK: Binding
-    private func listenSearchText() {
-        output.$searchText
-            .removeDuplicates()
-            // debounce search text input to limit how often we request to the API and refresh
-            .debounce(for: 0.2,
-                      scheduler: DispatchQueue.main)
-            .sink { [weak self] searchText in
-                guard let self = self else { return }
-                guard !searchText.isEmpty else {
-                    self.output.items = []
-                    self.output.isLoading = false
-                    self.output.isRefreshing = false
-                    return
-                }
-                refreshBegin()
+    // MARK: Input
+    
+    private func searchText(_ text: String) {
+        guard !text.isEmpty else {
+            output.items = []
+            output.isLoading = false
+            output.isRefreshing = false
+            return
+        }
+        refreshBegin()
+    }
+    
+    private func debounceSearchText() {
+        observeBag.add { [weak self] in
+            guard let self else { return }
+            let text = self.output.searchText
+            Task { [weak self] in
+                await self?.searchDebounce(text)
             }
-            .store(in: &cancelBag)
+        }
     }
     
     func refreshBegin() {
