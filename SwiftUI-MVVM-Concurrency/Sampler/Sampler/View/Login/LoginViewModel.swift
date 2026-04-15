@@ -46,8 +46,7 @@ enum LoginViewModelBinding {
 }
 
 // MARK: ViewModel
-class LoginViewModel: LoginViewModelBinding.Contract,
-                      LoginViewModelBinding.Input {
+class LoginViewModel: LoginViewModelBinding.Contract {
     var output: Output
     typealias Environment = AuthRepositoryProvider &
                             StateProvider
