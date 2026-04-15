@@ -11,11 +11,9 @@ import Combine
 
 // MARK: Input + Output
 enum ItemDetailViewModelBinding {
-    protocol Contract: SamplerViewModelContract where
-    Input == ItemDetailViewModelBinding.Input,
-    Output == ItemDetailViewModelBinding.Output { }
+    protocol Contract: ItemDetailViewModelBinding.Input where Output == ItemDetailViewModelBinding.Output { }
     
-    protocol Input {
+    protocol Input: SamplerViewModelContract {
         /// The view did load.
         func viewDidLoad() async
         /// The post button was tapped.
@@ -56,8 +54,7 @@ enum ItemDetailViewModelBinding {
 
 // MARK: ViewModel
 @Observable
-class ItemDetailViewModel: ItemDetailViewModelBinding.Contract,
-                           ItemDetailViewModelBinding.Input {
+class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
     var output: Output
     typealias Environment = ItemRepositoryProvider &
                             UserRepositoryProvider &

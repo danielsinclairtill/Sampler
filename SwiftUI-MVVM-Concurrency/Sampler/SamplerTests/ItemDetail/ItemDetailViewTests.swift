@@ -11,10 +11,16 @@ import Combine
 import SnapshotTesting
 
 class ItemDetailViewTests: XCTestCase {
+    private var mockEnvironment = SamplerEnvironmentMock()
+    
+    override func setUp() {
+        super.setUp()
+        mockEnvironment.reset()
+    }
+    
     func testStoryDetail() {
         let item = ModelMockData.makeItem(id: "123")
-        let viewModel = ItemDetailViewModel(itemId: item.id ?? "",
-                                            output: .init(item: item))
+        let viewModel = MockItemDetailViewModel(output: .init(item: item))
         let view = ItemDetailView(viewModel: viewModel)
 
         assertSnapshotSuite(of: view)
@@ -28,8 +34,7 @@ class ItemDetailViewTests: XCTestCase {
                         tags: ["tag1"],
                         user: ModelMockData.makeUser(id: "1"),
                         image: URL(string: "image_url_123"))
-        let viewModel = ItemDetailViewModel(itemId: item.id ?? "",
-                                            output: .init(item: item))
+        let viewModel = MockItemDetailViewModel(output: .init(item: item))
         let view = ItemDetailView(viewModel: viewModel)
         
         assertSnapshotSuite(of: view)
@@ -45,8 +50,7 @@ class ItemDetailViewTests: XCTestCase {
                        image: URL(string: "image_url_123")
                       )
         )
-        let viewModel = ItemDetailViewModel(itemId: item.id ?? "",
-                                            output: .init(item: item))
+        let viewModel = MockItemDetailViewModel(output: .init(item: item))
         let view = ItemDetailView(viewModel: viewModel)
         
         assertSnapshotSuite(of: view)
@@ -63,10 +67,33 @@ class ItemDetailViewTests: XCTestCase {
                         tags: ["tag1"],
                         user: ModelMockData.makeUser(id: "1"),
                         image: URL(string: "image_url_123"))
-        let viewModel = ItemDetailViewModel(itemId: item.id ?? "",
-                                            output: .init(item: item))
+        let viewModel = MockItemDetailViewModel(output: .init(item: item))
         let view = ItemDetailView(viewModel: viewModel)
         
         assertSnapshotSuite(of: view)
+    }
+}
+
+private class MockItemDetailViewModel: ItemDetailViewModelBinding.Contract {
+    var output: Sampler.ItemDetailViewModelBinding.Output
+    
+    init(output: Sampler.ItemDetailViewModelBinding.Output) {
+        self.output = output
+    }
+    
+    func viewDidLoad() async {
+        // no op
+    }
+    
+    func tappedPostButton() async {
+        // no op
+    }
+    
+    func tappedSaveButton() async {
+        // no op
+    }
+    
+    func tappedLikeButton() {
+        // no op
     }
 }

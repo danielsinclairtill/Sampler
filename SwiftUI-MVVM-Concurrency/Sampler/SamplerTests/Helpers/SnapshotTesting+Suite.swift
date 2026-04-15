@@ -45,18 +45,16 @@ public func assertSnapshotRecordable<Value, Format>(
         fatalError("Ensure to set the RECORD_SNAPSHOTS environment variable for the test configuration.")
     }
     
-    withSnapshotTesting(record: recordingState.configuration) {
-        SnapshotTesting.assertSnapshot(of: value,
-                                       as: snapshotting,
-                                       named: name,
-                                       record: recording,
-                                       timeout: timeout,
-                                       fileID: fileID,
-                                       file: filePath,
-                                       testName: testName,
-                                       line: line,
-                                       column: column)
-    }
+    SnapshotTesting.assertSnapshot(of: value,
+                                   as: snapshotting,
+                                   named: name,
+                                   record: recordingState.configuration,
+                                   timeout: timeout,
+                                   fileID: fileID,
+                                   file: filePath,
+                                   testName: testName,
+                                   line: line,
+                                   column: column)
 }
 
 // MARK: UIView
