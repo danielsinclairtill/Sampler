@@ -12,9 +12,10 @@ import SamplerMacros
 // MARK: Input + Output
 @Mockable
 enum ItemDetailViewModelBinding {
-    protocol Contract: ItemDetailViewModelBinding.Input where Output == ItemDetailViewModelBinding.Output { }
+    protocol Contract: SamplerViewModelContract,
+                       ItemDetailViewModelBinding.Input where Output == ItemDetailViewModelBinding.Output { }
     
-    protocol Input: SamplerViewModelContract {
+    protocol Input {
         /// The view did load.
         func viewDidLoad() async
         /// The post button was tapped.

@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct ItemsListView: View {
-    @State private var viewModel: ItemsListViewModel
+struct ItemsListView<ViewModel: ItemsListViewModelBinding.Contract>: View {
+    @State private var viewModel: ViewModel
     
-    init(viewModel: ItemsListViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     
@@ -44,7 +44,7 @@ struct ItemsListView: View {
             } else {
                 List {
                     ForEach(viewModel.output.items.enumerated(), id: \.element.id) { index, item in
-                        ItemCell(item: item, imageManager: viewModel.imageManager)
+                        ItemCell(item: item)
                             .onTapGesture {
                                 viewModel.cellTapped(index: index)
                             }
@@ -77,7 +77,6 @@ struct ItemsListView: View {
 
 struct ItemCell: View {
     let item: Item
-    let imageManager: ImageManagerContract
     
     var body: some View {
         HStack(spacing: 12) {
@@ -121,6 +120,40 @@ struct LoadingCell: View {
     }
 }
 
-#Preview {
-    ItemsListView(viewModel: ItemsListViewModel(router: ItemsListRouter()))
+#if DEBUG
+struct ItemsListPreview: View {
+    let output: ItemsListViewModelBinding.Output
+
+    var body: some View {
+        ItemsListView(viewModel: ItemsListViewModelBindingMock(output: output))
+    }
 }
+
+extension ItemsListPreview {
+    static func createItems(count: Int) -> [Item] {
+        (1...count).map { index in
+            .init(
+                id: String(index),
+                name: "Item \(index)",
+                ingredients: [
+                    "Ingredient \(index)-1",
+                    "Ingredient \(index)-2",
+                    "Ingredient \(index)-3"
+                ],
+                difficulty: "Medium",
+                tags: [
+                    "Tag \(index)-1",
+                    "Tag \(index)-2"
+                ],
+                image: nil
+            )
+        }
+    }
+}
+
+#Preview("Blank") {
+    ItemsListPreview(
+        output: .init(items: ItemsListPreview.createItems(count: 50))
+    )
+}
+#endif

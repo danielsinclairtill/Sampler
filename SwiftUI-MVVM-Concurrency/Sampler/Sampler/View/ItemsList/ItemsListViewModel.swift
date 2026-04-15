@@ -7,12 +7,13 @@
 
 import Foundation
 import Combine
+import SamplerMacros
 
 // MARK: Input + Output
+@Mockable
 enum ItemsListViewModelBinding {
-    protocol Contract: SamplerViewModelContract where
-    Input == ItemsListViewModelBinding.Input,
-    Output == ItemsListViewModelBinding.Output { }
+    protocol Contract: SamplerViewModelContract,
+                        ItemsListViewModelBinding.Input where Output == ItemsListViewModelBinding.Output { }
     
     protocol Input {
         /// The view did load.

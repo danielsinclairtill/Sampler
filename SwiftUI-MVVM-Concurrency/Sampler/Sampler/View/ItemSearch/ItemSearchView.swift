@@ -57,7 +57,7 @@ struct ItemSearchView: View {
             } else {
                 List {
                     ForEach(viewModel.output.items.enumerated(), id: \.element.id) { index, item in
-                        ItemCell(item: item, imageManager: viewModel.imageManager)
+                        ItemCell(item: item)
                             .onTapGesture {
                                 viewModel.cellTapped(index: index)
                             }
