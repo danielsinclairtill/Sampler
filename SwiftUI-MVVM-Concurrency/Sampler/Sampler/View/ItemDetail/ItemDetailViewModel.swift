@@ -7,9 +7,10 @@
 
 import Foundation
 import Combine
-
+import SamplerMacros
 
 // MARK: Input + Output
+@Mockable
 enum ItemDetailViewModelBinding {
     protocol Contract: ItemDetailViewModelBinding.Input where Output == ItemDetailViewModelBinding.Output { }
     

@@ -109,6 +109,80 @@ struct ItemDetailView<ViewModel: ItemDetailViewModelBinding.Contract>: View {
     }
 }
 
-#Preview {
-    ItemDetailView(viewModel: ItemDetailViewModel(itemId: "1", environment: SamplerEnvironment.mock))
+#if DEBUG
+struct ItemDetailPreview: View {
+    let output: ItemDetailViewModelBinding.Output
+
+    var body: some View {
+        ItemDetailView(viewModel: ItemDetailViewModelBindingMock(output: output))
+    }
 }
+
+#Preview("Blank") {
+    ItemDetailPreview(
+        output: .init(
+            item: .init(
+                name: "Pasta Dish",
+                ingredients: ["Tomato", "Basil", "Cheese"],
+                difficulty: "Easy",
+                tags: ["Dinner"],
+                image: nil
+            ),
+            isSaved: false,
+            isSaving: false,
+            isLiked: false
+        )
+    )
+}
+
+#Preview("Saved") {
+    ItemDetailPreview(
+        output: .init(
+            item: .init(
+                name: "Pasta Dish",
+                ingredients: ["Tomato", "Basil", "Cheese"],
+                difficulty: "Easy",
+                tags: ["Dinner"],
+                image: nil
+            ),
+            isSaved: true,
+            isSaving: false,
+            isLiked: false
+        )
+    )
+}
+
+#Preview("Saving") {
+    ItemDetailPreview(
+        output: .init(
+            item: .init(
+                name: "Pasta Dish",
+                ingredients: ["Tomato", "Basil", "Cheese"],
+                difficulty: "Easy",
+                tags: ["Dinner"],
+                image: nil
+            ),
+            isSaved: false,
+            isSaving: true,
+            isLiked: false
+        )
+    )
+}
+    
+#Preview("Liked") {
+    ItemDetailPreview(
+        output: .init(
+            item: .init(
+                name: "Pasta Dish",
+                ingredients: ["Tomato", "Basil", "Cheese"],
+                difficulty: "Easy",
+                tags: ["Dinner"],
+                image: nil
+            ),
+            isSaved: false,
+            isSaving: false,
+            isLiked: true
+        )
+    )
+}
+#endif

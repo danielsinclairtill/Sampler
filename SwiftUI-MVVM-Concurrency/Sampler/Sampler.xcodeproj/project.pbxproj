@@ -10,6 +10,7 @@
 		65041B352F6DAA450062C225 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 65041B342F6DAA450062C225 /* Kingfisher */; };
 		65041BDD2F6DAA800062C225 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 65041BDC2F6DAA800062C225 /* SnapshotTesting */; };
 		65041BE02F6DAA930062C225 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 65041BDF2F6DAA930062C225 /* Lottie */; };
+		65A5374C2F9019D100EB5C2D /* SamplerMacros in Frameworks */ = {isa = PBXBuildFile; productRef = 65A5374B2F9019D100EB5C2D /* SamplerMacros */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 			files = (
 				65041B352F6DAA450062C225 /* Kingfisher in Frameworks */,
 				65041BE02F6DAA930062C225 /* Lottie in Frameworks */,
+				65A5374C2F9019D100EB5C2D /* SamplerMacros in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +103,7 @@
 			packageProductDependencies = (
 				65041B342F6DAA450062C225 /* Kingfisher */,
 				65041BDF2F6DAA930062C225 /* Lottie */,
+				65A5374B2F9019D100EB5C2D /* SamplerMacros */,
 			);
 			productName = Sampler;
 			productReference = 65041A612F6DA9EB0062C225 /* Sampler.app */;
@@ -162,6 +165,7 @@
 				65041B332F6DAA450062C225 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				65041BDB2F6DAA800062C225 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 				65041BDE2F6DAA930062C225 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				65A5374A2F9019D100EB5C2D /* XCLocalSwiftPackageReference "SamplerMacros" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 65041A622F6DA9EB0062C225 /* Products */;
@@ -358,6 +362,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = danielsinclairtill.Sampler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -474,6 +479,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		65A5374A2F9019D100EB5C2D /* XCLocalSwiftPackageReference "SamplerMacros" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SamplerMacros;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		65041B332F6DAA450062C225 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -516,6 +528,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 65041BDE2F6DAA930062C225 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
+		};
+		65A5374B2F9019D100EB5C2D /* SamplerMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SamplerMacros;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
