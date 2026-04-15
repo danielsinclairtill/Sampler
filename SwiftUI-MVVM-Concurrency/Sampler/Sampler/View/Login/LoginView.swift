@@ -8,10 +8,10 @@
 import SwiftUI
 import Combine
 
-struct LoginView: View {
-    @State private var viewModel: LoginViewModel
+struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
+    @State private var viewModel: ViewModel
 
-    init(viewModel: LoginViewModel) {
+    init(viewModel: ViewModel) {
         _viewModel = State(wrappedValue: viewModel)
     }
     
@@ -76,6 +76,26 @@ struct LoginView: View {
     }
 }
 
-#Preview {
-    LoginView(viewModel: LoginViewModel(environment: SamplerEnvironment.mock))
+#if DEBUG
+struct LoginViewPreview: View {
+    let output: LoginViewModelBinding.Output
+
+    var body: some View {
+        LoginView(viewModel: LoginViewModelBindingMock(output: output))
+    }
 }
+
+#Preview("Blank") {
+    LoginViewPreview(
+        output: .init(loginbuttonEnabled: false)
+    )
+}
+
+#Preview("Filled") {
+    LoginViewPreview(
+        output: .init(username: "username",
+                      password: "password",
+                      loginbuttonEnabled: true)
+    )
+}
+#endif

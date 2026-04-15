@@ -7,13 +7,13 @@
 
 import Foundation
 import Combine
-
+import SamplerMacros
 
 // MARK: Input + Output
+@Mockable
 enum LoginViewModelBinding {
-    protocol Contract: SamplerViewModelContract where
-    Input == LoginViewModelBinding.Input,
-    Output == LoginViewModelBinding.Output  { }
+    protocol Contract: SamplerViewModelContract,
+                        LoginViewModelBinding.Input where Output == LoginViewModelBinding.Output  { }
     
     protocol Input {
         /// When the login button is tapped.
@@ -33,8 +33,12 @@ enum LoginViewModelBinding {
         /// Show an error message to display over the item details.
         var error: String?
         
-        init(loginbuttonEnabled: Bool = false,
+        init(username: String = "",
+             password: String = "",
+             loginbuttonEnabled: Bool = false,
              error: String? = nil) {
+            self.username = username
+            self.password = password
             self.loginButtonEnabled = loginbuttonEnabled
             self.error = error
         }
