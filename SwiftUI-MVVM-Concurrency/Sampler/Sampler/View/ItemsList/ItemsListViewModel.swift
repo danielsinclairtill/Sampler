@@ -60,7 +60,6 @@ enum ItemsListViewModelBinding {
 
 
 // MARK: ViewModel
-@Observable
 class ItemsListViewModel: ItemsListViewModelBinding.Contract {
     var output: ItemsListViewModelBinding.Output
     typealias Environment = ItemRepositoryProvider &

@@ -12,7 +12,7 @@ struct LoginView: View {
     @State var viewModel: any LoginViewModelBinding.Contract
     
     init(viewModel: any LoginViewModelBinding.Contract) {
-        self.viewModel = viewModel
+        _viewModel = State(initialValue: viewModel)
     }
     
     var body: some View {
