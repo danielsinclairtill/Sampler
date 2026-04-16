@@ -7,9 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is an Xcode project — there is no Makefile or CLI build system.
 
 - **Open project**: `open Sampler/Sampler.xcodeproj`
-- **Build from CLI**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 16' build`
-- **Run tests**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 16' test`
-- **Run a single test**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 16' test -only-testing:SamplerTests/TargetTestClass/testMethodName`
+- **Build from CLI**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 17' build`
+- **Run tests**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 17' test`
+- **Run a single test**: `xcodebuild -project Sampler/Sampler.xcodeproj -scheme Sampler -destination 'platform=iOS Simulator,name=iPhone 17' test -only-testing:SamplerTests/TargetTestClass/testMethodName`
 
 The `SamplerMacros` Swift package (under `Sampler/SamplerMacros/`) is a local dependency — it is built automatically as part of the Xcode project.
 
