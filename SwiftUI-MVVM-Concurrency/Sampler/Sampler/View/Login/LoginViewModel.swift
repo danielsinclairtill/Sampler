@@ -12,8 +12,9 @@ import SamplerMacros
 // MARK: Input + Output
 @Mockable
 enum LoginViewModelBinding {
-    protocol Contract: SamplerViewModelContract,
-                        LoginViewModelBinding.Input where Output == LoginViewModelBinding.Output  { }
+    protocol Contract: Input {
+        var output: LoginViewModelBinding.Output { get set }
+    }
     
     protocol Input {
         /// When the login button is tapped.
@@ -47,7 +48,7 @@ enum LoginViewModelBinding {
 
 // MARK: ViewModel
 class LoginViewModel: LoginViewModelBinding.Contract {
-    var output: Output
+    var output: LoginViewModelBinding.Output
     typealias Environment = AuthRepositoryProvider &
                             StateProvider
     private let environment: Environment

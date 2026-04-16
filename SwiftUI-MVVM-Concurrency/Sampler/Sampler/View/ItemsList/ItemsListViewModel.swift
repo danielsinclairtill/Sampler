@@ -12,8 +12,9 @@ import SamplerMacros
 // MARK: Input + Output
 @Mockable
 enum ItemsListViewModelBinding {
-    protocol Contract: SamplerViewModelContract,
-                        ItemsListViewModelBinding.Input where Output == ItemsListViewModelBinding.Output { }
+    protocol Contract: Input {
+        var output: ItemsListViewModelBinding.Output { get }
+    }
     
     protocol Input {
         /// The view did load.
@@ -61,7 +62,7 @@ enum ItemsListViewModelBinding {
 // MARK: ViewModel
 @Observable
 class ItemsListViewModel: ItemsListViewModelBinding.Contract {
-    var output: Output
+    var output: ItemsListViewModelBinding.Output
     typealias Environment = ItemRepositoryProvider &
                             ImageMangagerProvider
     private let environment: Environment

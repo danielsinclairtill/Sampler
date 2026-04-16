@@ -8,11 +8,11 @@
 import SwiftUI
 import Combine
 
-struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
-    @State private var viewModel: ViewModel
-
-    init(viewModel: ViewModel) {
-        _viewModel = State(wrappedValue: viewModel)
+struct LoginView: View {
+    @State var viewModel: any LoginViewModelBinding.Contract
+    
+    init(viewModel: any LoginViewModelBinding.Contract) {
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -29,16 +29,16 @@ struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
                 // Username TextField
                 TextField(String(localized: "com.danielsinclairtill.Sampler.login.usernameField.placeholder"),
                           text: $viewModel.output.username)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal, 24)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
+                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal, 24)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
                 
                 // Password TextField
                 SecureField(String(localized: "com.danielsinclairtill.Sampler.login.passwordField.placholder"),
                             text: $viewModel.output.password)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.horizontal, 24)
+                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal, 24)
                 
                 Spacer()
                     .frame(height: 48)
@@ -79,7 +79,7 @@ struct LoginView<ViewModel: LoginViewModelBinding.Contract>: View {
 #if DEBUG
 struct LoginViewPreview: View {
     let output: LoginViewModelBinding.Output
-
+    
     var body: some View {
         LoginView(viewModel: LoginViewModelBindingMock(output: output))
     }

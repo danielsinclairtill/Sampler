@@ -12,8 +12,9 @@ import SamplerMacros
 // MARK: Input + Output
 @Mockable
 enum ItemDetailViewModelBinding {
-    protocol Contract: SamplerViewModelContract,
-                       ItemDetailViewModelBinding.Input where Output == ItemDetailViewModelBinding.Output { }
+    protocol Contract: Input {
+        var output: ItemDetailViewModelBinding.Output { get }
+    }
     
     protocol Input {
         /// The view did load.
@@ -39,7 +40,6 @@ enum ItemDetailViewModelBinding {
         /// If the item is liked.
         var isLiked: Bool = false
 
-        
         init(item: Item? = nil,
              error: String? = nil,
              isSaved: Bool = false,
@@ -57,7 +57,7 @@ enum ItemDetailViewModelBinding {
 // MARK: ViewModel
 @Observable
 class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
-    var output: Output
+    var output: ItemDetailViewModelBinding.Output
     typealias Environment = ItemRepositoryProvider &
                             UserRepositoryProvider &
                             LikeManagerProvider
@@ -69,7 +69,7 @@ class ItemDetailViewModel: ItemDetailViewModelBinding.Contract {
     private let itemId: String
     
     public required init(itemId: String,
-                         output: Output = .init(),
+                         output: ItemDetailViewModelBinding.Output = .init(),
                          environment: Environment = SamplerEnvironment.shared) {
         self.itemId = itemId
         output.isLiked = environment.likeManager.isLiked(itemId)
