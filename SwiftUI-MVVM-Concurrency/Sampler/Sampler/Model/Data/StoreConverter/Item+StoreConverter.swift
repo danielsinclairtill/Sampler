@@ -16,9 +16,9 @@ extension Item: StoreConvertible {
         itemCD.id = id
         itemCD.difficulty = difficulty
         itemCD.image = image?.absoluteString
-        itemCD.ingredients = ingredients
+        itemCD.ingredients = ingredients as NSArray?
         itemCD.name = name
-        itemCD.tags = tags
+        itemCD.tags = tags as NSArray?
         if let user = user {
             itemCD.user = user.convertToCD(context: context)
         }
@@ -38,9 +38,9 @@ extension Item: StoreConvertible {
 
         return Item(id: itemCD.id,
                     name: itemCD.name,
-                    ingredients: itemCD.ingredients,
+                    ingredients: itemCD.ingredients as? [String],
                     difficulty: itemCD.difficulty,
-                    tags: itemCD.tags,
+                    tags: itemCD.tags as? [String],
                     userId: user?.id,
                     user: user,
                     image: image)
