@@ -7,13 +7,16 @@
 
 import Foundation
 import Combine
+import SamplerMacros
 
 
 // MARK: Input + Output
+@Mockable
 enum ItemSearchViewModelBinding {
-    protocol Contract: SamplerViewModelContract where
-    Output == ItemSearchViewModelBinding.Output { }
-    
+    protocol Contract: Input {
+        var output: ItemSearchViewModelBinding.Output { get set }
+    }
+
     protocol Input {
         /// The items list is in the loading state and ready to refresh the data.
         func refresh()
@@ -35,8 +38,6 @@ enum ItemSearchViewModelBinding {
         var isRefreshing: Bool = false
         /// Show an error message to display over the items list.
         var error: String?
-        /// The total number of items possible in the list.
-        var total: Int = 0
         /// If the items list are loading by refreshing or pagnation.
         fileprivate var isLoading: Bool = false
         /// If the list has more  items that should load.
@@ -46,22 +47,19 @@ enum ItemSearchViewModelBinding {
              items: [Item] = [],
              isRefreshing: Bool = false,
              error: String? = nil,
-             total: Int = 0,
              isLoading: Bool = false) {
-            self.searchText = ""
+            self.searchText = searchText
             self.items = items
             self.isRefreshing = isRefreshing
             self.error = error
-            self.total = total
             self.isLoading = isLoading
         }
     }
 }
 
 // MARK: ViewModel
-class ItemSearchViewModel: ItemSearchViewModelBinding.Contract,
-                            ItemSearchViewModelBinding.Input {
-    var output: Output
+class ItemSearchViewModel: ItemSearchViewModelBinding.Contract {
+    var output: ItemSearchViewModelBinding.Output
     typealias Environment = ItemRepositoryProvider &
                             ImageMangagerProvider
     private let environment: Environment
@@ -110,7 +108,6 @@ class ItemSearchViewModel: ItemSearchViewModelBinding.Contract,
                 } else {
                     let newItems = results.data.items
                     
-                    strongSelf.output.total = results.data.total
                     // if an offset was passed it is a load next page call
                     if offset > 0 && !strongSelf.output.items.isEmpty {
                         strongSelf.output.items.append(contentsOf: newItems)

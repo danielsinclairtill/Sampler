@@ -9,10 +9,10 @@ import SwiftUI
 import Combine
 
 struct ItemSearchView: View {
-    @State private var viewModel: ItemSearchViewModel
-    
-    init(viewModel: ItemSearchViewModel) {
-        _viewModel = State(wrappedValue: viewModel)
+    @State private var viewModel: any ItemSearchViewModelBinding.Contract
+
+    init(viewModel: any ItemSearchViewModelBinding.Contract) {
+        _viewModel = State(initialValue: viewModel)
     }
     
     private var emptyView: some View {
@@ -42,7 +42,7 @@ struct ItemSearchView: View {
     }
     
     var body: some View {
-        ZStack {
+        return ZStack {
             if viewModel.output.items.isEmpty &&
                 !viewModel.output.isRefreshing &&
                 !viewModel.output.searchText.isEmpty {
@@ -83,6 +83,36 @@ struct ItemSearchView: View {
     }
 }
 
-#Preview {
-    ItemSearchView(viewModel: ItemSearchViewModel(router: ItemSearchRouter()))
+#if DEBUG
+struct ItemSearchPreview: View {
+    let output: ItemSearchViewModelBinding.Output
+
+    var body: some View {
+        ItemSearchView(viewModel: ItemSearchViewModelBindingMock(output: output))
+    }
 }
+
+#Preview("Start") {
+    ItemSearchPreview(output: .init())
+}
+
+#Preview("Refreshing") {
+    ItemSearchPreview(output: .init(
+        searchText: "test",
+        isRefreshing: true
+    ))
+}
+
+#Preview("Blank") {
+    ItemSearchPreview(output: .init(
+        searchText: "blank",
+    ))
+}
+
+#Preview("Filled") {
+    ItemSearchPreview(output: .init(
+        searchText: "test",
+        items: ItemsListPreview.createItems(count: 30)
+    ))
+}
+#endif
