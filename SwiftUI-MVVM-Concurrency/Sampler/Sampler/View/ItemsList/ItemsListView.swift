@@ -10,6 +10,7 @@ import Combine
 
 struct ItemsListView: View {
     @State private var viewModel: any ItemsListViewModelBinding.Contract
+    @Environment(SamplerEnvironment.self) private var environment
 
     init(viewModel: any ItemsListViewModelBinding.Contract) {
         _viewModel = State(initialValue: viewModel)
@@ -44,7 +45,7 @@ struct ItemsListView: View {
             } else {
                 List {
                     ForEach(viewModel.output.items.enumerated(), id: \.element.id) { index, item in
-                        ItemCell(item: item)
+                        ItemCell(item: item, isLiked: environment.likeManager.isLiked(item.id ?? ""))
                             .onTapGesture {
                                 viewModel.cellTapped(index: index)
                             }
@@ -77,7 +78,8 @@ struct ItemsListView: View {
 
 struct ItemCell: View {
     let item: Item
-    
+    let isLiked: Bool
+
     var body: some View {
         HStack(spacing: 12) {
             // Image
@@ -87,13 +89,20 @@ struct ItemCell: View {
             .frame(width: 100, height: 100)
             .cornerRadius(8)
             .clipped()
-            
+
             // Content
             VStack(alignment: .leading, spacing: 8) {
-                Text(item.name ?? "")
-                    .font(.headline)
-                    .lineLimit(1)
-                
+                HStack(spacing: 4) {
+                    Text(item.name ?? "")
+                        .font(.headline)
+                        .lineLimit(1)
+                    if isLiked {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+                }
+
                 Text(item.ingredients?.joined(separator: ", ") ?? "")
                     .font(.body)
                     .lineLimit(3)
@@ -155,5 +164,6 @@ extension ItemsListPreview {
     ItemsListPreview(
         output: .init(items: ItemsListPreview.createItems(count: 50))
     )
+    .environment(SamplerEnvironment.mock)
 }
 #endif
