@@ -78,7 +78,7 @@ struct ItemsListView: View {
 
 struct ItemCell: View {
     let item: Item
-    var isLiked: Bool = false
+    let isLiked: Bool
 
     var body: some View {
         HStack(spacing: 12) {
